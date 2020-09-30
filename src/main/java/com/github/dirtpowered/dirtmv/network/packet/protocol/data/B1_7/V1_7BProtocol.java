@@ -25,6 +25,7 @@ package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7;
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Protocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arrays.ItemArrayDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arrays.MultiBlockArrayDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arrays.PositionArrayDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.chunk.ChunkDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.item.ItemDataType;
@@ -38,6 +39,7 @@ public class V1_7BProtocol extends Protocol {
     public static final DataType ITEM_ARRAY;
     public static final DataType POSITION_ARRAY;
     public static final DataType MOTION;
+    public static final DataType MULTIBLOCK_ARRAY;
 
     static {
         // custom instructions
@@ -47,6 +49,7 @@ public class V1_7BProtocol extends Protocol {
         ITEM_ARRAY = new ItemArrayDataType();
         POSITION_ARRAY = new PositionArrayDataType();
         MOTION = new MotionDataType();
+        MULTIBLOCK_ARRAY = new MultiBlockArrayDataType();
     }
 
     @Override
@@ -89,7 +92,7 @@ public class V1_7BProtocol extends Protocol {
         dataTypes[40] = new DataType[]{METADATA};
         dataTypes[50] = new DataType[]{INT, INT, BYTE};
         dataTypes[51] = new DataType[]{CHUNK};
-        dataTypes[52] = new DataType[]{}; // TODO: Multi-block change packet
+        dataTypes[52] = new DataType[]{INT, INT, MULTIBLOCK_ARRAY};
         dataTypes[53] = new DataType[]{INT, BYTE, INT, BYTE, BYTE};
         dataTypes[54] = new DataType[]{INT, SHORT, INT, BYTE, BYTE};
         dataTypes[60] = new DataType[]{DOUBLE, DOUBLE, DOUBLE, FLOAT, POSITION_ARRAY};

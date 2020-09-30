@@ -79,7 +79,7 @@ public class V1_8BProtocol extends Protocol {
         dataTypes[43] = new DataType[]{BYTE, BYTE, SHORT};
         dataTypes[50] = new DataType[]{INT, INT, BYTE};
         dataTypes[51] = new DataType[]{V1_7BProtocol.CHUNK};
-        dataTypes[52] = new DataType[]{}; // TODO: Multi-block change packet
+        dataTypes[52] = new DataType[]{INT, INT, V1_7BProtocol.MULTIBLOCK_ARRAY};
         dataTypes[53] = new DataType[]{INT, BYTE, INT, BYTE, BYTE};
         dataTypes[54] = new DataType[]{INT, SHORT, INT, BYTE, BYTE};
         dataTypes[60] = new DataType[]{DOUBLE, DOUBLE, DOUBLE, FLOAT, V1_7BProtocol.POSITION_ARRAY};

@@ -100,6 +100,9 @@ public class PacketData {
                 case MOTION:
                     V1_7BProtocol.MOTION.write(typeHolder, buffer);
                     break;
+                case V1_7MULTIBLOCK_ARRAY:
+                    V1_7BProtocol.MULTIBLOCK_ARRAY.write(typeHolder, buffer);
+                    break;
             }
         }
 
