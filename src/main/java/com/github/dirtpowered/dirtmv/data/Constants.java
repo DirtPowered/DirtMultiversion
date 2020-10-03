@@ -23,8 +23,8 @@
 package com.github.dirtpowered.dirtmv.data;
 
 public class Constants {
-    public static final MinecraftVersion REMOTE_SERVER_VERSION = MinecraftVersion.B_1_6_6;
-    public static final MinecraftVersion LOCAL_CLIENT_VERSION = MinecraftVersion.B_1_8_1;
+    public static final MinecraftVersion REMOTE_SERVER_VERSION = MinecraftVersion.B_1_8_1;
+    public static final MinecraftVersion LOCAL_CLIENT_VERSION = MinecraftVersion.R1_0;
 
     public static final String SERVER_HOST = "localhost";
     public static final String REMOTE_HOST = "localhost";

@@ -39,5 +39,7 @@ public enum Type {
     V1_8B_ITEM,
     POSITION_ARRAY,
     MOTION,
-    V1_7MULTIBLOCK_ARRAY
+    V1_7MULTIBLOCK_ARRAY,
+    V1_0R_ITEM,
+    V1_0R_ITEM_ARRAY
 }

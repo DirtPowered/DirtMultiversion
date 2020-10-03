@@ -27,7 +27,8 @@ import lombok.Getter;
 public enum MinecraftVersion {
     B_1_6_6(13),
     B_1_7_3(14),
-    B_1_8_1(17);
+    B_1_8_1(17),
+    R1_0(22);
 
     @Getter
     private int protocolVersion;

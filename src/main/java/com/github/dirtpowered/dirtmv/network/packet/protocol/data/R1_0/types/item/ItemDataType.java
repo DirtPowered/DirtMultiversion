@@ -20,18 +20,21 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.item;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.types.item;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.utils.item.LegacyItemList;
+import com.github.dirtpowered.dirtmv.utils.nbt.NBTUtils;
+import com.mojang.nbt.CompoundTag;
 import io.netty.buffer.ByteBuf;
 
 public class ItemDataType extends DataType<ItemStack> {
 
     public ItemDataType() {
-        super(Type.V1_7B_ITEM);
+        super(Type.V1_0R_ITEM);
     }
 
     @Override
@@ -42,7 +45,12 @@ public class ItemDataType extends DataType<ItemStack> {
             int amount = buffer.readByte();
             int data = buffer.readShort();
 
-            return new ItemStack(itemId, amount, data, null);
+            CompoundTag compoundTag = null;
+
+            if (LegacyItemList.ITEM_LIST.get(itemId))
+                compoundTag = NBTUtils.readNBT(buffer);
+
+            return new ItemStack(itemId, amount, data, compoundTag);
         }
 
         return null;
@@ -58,6 +66,10 @@ public class ItemDataType extends DataType<ItemStack> {
             buffer.writeShort(itemStack.getItemId());
             buffer.writeByte(itemStack.getAmount());
             buffer.writeShort(itemStack.getData());
+
+            if (LegacyItemList.ITEM_LIST.get(itemStack.getItemId())) {
+                NBTUtils.writeNBT(itemStack.getCompoundTag(), buffer);
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
 public class ProxyProtocol extends ServerProtocol {
 
     public ProxyProtocol() {
-        super(MinecraftVersion.B_1_8_1, MinecraftVersion.B_1_8_1);
+        super(MinecraftVersion.R1_0, MinecraftVersion.R1_0);
     }
 
     @Override

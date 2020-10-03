@@ -20,21 +20,26 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arrays;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.V1_7BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
 
 import java.io.IOException;
 
 public class ItemArrayDataType extends DataType<ItemStack[]> {
 
-    public ItemArrayDataType() {
-        super(Type.V1_7B_ITEM_ARRAY);
+    @Getter
+    private DataType childInstruction;
+
+    public ItemArrayDataType(Type type, DataType child) {
+        super(type);
+
+        this.childInstruction = child;
     }
 
     @Override
@@ -44,7 +49,7 @@ public class ItemArrayDataType extends DataType<ItemStack[]> {
         ItemStack[] objArray = new ItemStack[length];
 
         for (short i = 0; i < length; i++) {
-            objArray[i] = (ItemStack) V1_7BProtocol.ITEM.read(buffer);
+            objArray[i] = (ItemStack) childInstruction.read(buffer);
         }
         return objArray;
     }
@@ -57,7 +62,7 @@ public class ItemArrayDataType extends DataType<ItemStack[]> {
         buffer.writeShort(objArray.length);
 
         for (ItemStack item : objArray) {
-            V1_7BProtocol.ITEM.write(new TypeHolder(Type.V1_7B_ITEM, item), buffer);
+            childInstruction.write(new TypeHolder(childInstruction.getType(), item), buffer);
         }
     }
 }

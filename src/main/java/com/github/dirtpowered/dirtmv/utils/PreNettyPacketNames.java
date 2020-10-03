@@ -104,7 +104,6 @@ public enum PreNettyPacketNames {
     CLIENT_SHARED_KEY(252),
     SERVER_AUTH_DATA(253),
     PING_REQUEST(254),
-
     KICK_DISCONNECT(255);
 
     private int packetId;

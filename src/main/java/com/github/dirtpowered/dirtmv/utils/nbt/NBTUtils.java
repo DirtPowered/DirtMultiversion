@@ -20,17 +20,44 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects;
+package com.github.dirtpowered.dirtmv.utils.nbt;
 
 import com.mojang.nbt.CompoundTag;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.mojang.nbt.NbtIo;
+import io.netty.buffer.ByteBuf;
 
-@Data
-@AllArgsConstructor
-public class ItemStack {
-    private int itemId;
-    private int amount;
-    private int data;
-    private CompoundTag compoundTag;
+import java.io.IOException;
+
+public class NBTUtils {
+
+    public static CompoundTag readNBT(ByteBuf buffer) {
+        try {
+            short size = buffer.readShort();
+
+            if (size < 0) {
+                return null;
+            } else {
+                byte[] data = new byte[size];
+                buffer.readBytes(data);
+                return NbtIo.decompress(data);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void writeNBT(CompoundTag tag, ByteBuf buffer) {
+        try {
+            if (tag == null) {
+                buffer.writeShort(-1);
+            } else {
+                byte[] data = NbtIo.compress(tag);
+                buffer.writeShort((short) data.length);
+                buffer.writeBytes(data);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

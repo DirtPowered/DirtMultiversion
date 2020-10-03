@@ -23,8 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.handler.registry;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.handler.ProtocolBeta14To13;
-import com.github.dirtpowered.dirtmv.network.handler.ProtocolBeta17to14;
+import com.github.dirtpowered.dirtmv.network.handler.ProtocolRelease22To17;
 import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
 import lombok.Getter;
 
@@ -39,8 +38,9 @@ public class TranslatorRegistry {
 
     public TranslatorRegistry() {
         //registerProtocol(new ProxyProtocol());
-        registerProtocol(new ProtocolBeta17to14());
-        registerProtocol(new ProtocolBeta14To13());
+        registerProtocol(new ProtocolRelease22To17());
+        //registerProtocol(new ProtocolBeta17to14());
+        //registerProtocol(new ProtocolBeta14To13());
     }
 
     private void registerProtocol(ServerProtocol serverProtocol) {
@@ -58,7 +58,8 @@ public class TranslatorRegistry {
         List<ServerProtocol> serverProtocols = new LinkedList<>();
 
         serverProtocols.add(protocols.get(0));
-        serverProtocols.add(protocols.get(1));
+        //serverProtocols.add(protocols.get(1));
+        //serverProtocols.add(protocols.get(2));
 
         //TODO: add basic functionality
         return serverProtocols;

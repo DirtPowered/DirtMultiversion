@@ -42,7 +42,7 @@ public class ItemDataType extends DataType<ItemStack> {
             int amount = buffer.readShort();
             int data = buffer.readShort();
 
-            return new ItemStack(itemId, amount, data);
+            return new ItemStack(itemId, amount, data, null);
         }
 
         return null;
@@ -52,7 +52,7 @@ public class ItemDataType extends DataType<ItemStack> {
     public void write(TypeHolder typeHolder, ByteBuf buffer) {
         ItemStack itemStack = (ItemStack) typeHolder.getObject();
 
-        if (itemStack == null || itemStack.getItemId() <= 0) {
+        if (itemStack == null) {
             buffer.writeShort(-1);
         } else {
             buffer.writeShort(itemStack.getItemId());

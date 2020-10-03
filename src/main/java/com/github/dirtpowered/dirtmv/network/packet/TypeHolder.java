@@ -22,14 +22,11 @@
 
 package com.github.dirtpowered.dirtmv.network.packet;
 
-import lombok.Getter;
+import lombok.Data;
 
+@Data
 public class TypeHolder {
-
-    @Getter
     private Type type;
-
-    @Getter
     private Object object;
 
     public TypeHolder(Type type, Object object) {
