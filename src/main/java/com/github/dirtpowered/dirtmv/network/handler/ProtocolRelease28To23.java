@@ -20,32 +20,19 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types;
+package com.github.dirtpowered.dirtmv.network.handler;
 
-import com.github.dirtpowered.dirtmv.network.packet.DataType;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import io.netty.buffer.ByteBuf;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
 
-public class ByteDataType extends DataType<Byte> {
+public class ProtocolRelease28To23 extends ServerProtocol {
 
-    public ByteDataType() {
-        super(Type.BYTE);
+    public ProtocolRelease28To23() {
+        super(MinecraftVersion.R1_2_1, MinecraftVersion.R1_1);
     }
 
     @Override
-    public Byte read(ByteBuf buffer) {
-        return buffer.readByte();
-    }
+    public void registerTranslators() {
 
-    @Override
-    public void write(TypeHolder typeHolder, ByteBuf buffer) {
-        if (typeHolder.getObject() instanceof Integer) {
-
-            buffer.writeByte((((Integer) typeHolder.getObject()).byteValue()));
-            return;
-        }
-
-        buffer.writeByte((Byte) typeHolder.getObject());
     }
 }

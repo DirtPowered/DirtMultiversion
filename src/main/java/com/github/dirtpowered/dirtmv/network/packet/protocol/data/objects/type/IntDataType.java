@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;

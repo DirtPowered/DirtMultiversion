@@ -111,12 +111,15 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                float exp = 0.0F; // TODO convert progress
 
-                //TODO: translate
+                short level = ((Byte) data.read(1).getObject()).shortValue();
+                short totalExperience = ((Byte) data.read(0).getObject()).shortValue();
+
                 return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x2B, new TypeHolder[]{
-                        new TypeHolder(Type.FLOAT, 0.3F),
-                        new TypeHolder(Type.SHORT, 1),
-                        new TypeHolder(Type.SHORT, 1)
+                        new TypeHolder(Type.FLOAT, exp),
+                        new TypeHolder(Type.SHORT, level),
+                        new TypeHolder(Type.SHORT, totalExperience)
                 });
             }
         });

@@ -20,32 +20,26 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import io.netty.buffer.ByteBuf;
 
-public class LongDataType extends DataType<Long> {
+public class DoubleDataType extends DataType<Double> {
 
-    public LongDataType() {
-        super(Type.LONG);
+    public DoubleDataType() {
+        super(Type.DOUBLE);
     }
 
     @Override
-    public Long read(ByteBuf buffer) {
-        return buffer.readLong();
+    public Double read(ByteBuf buffer) {
+        return buffer.readDouble();
     }
 
     @Override
     public void write(TypeHolder typeHolder, ByteBuf buffer) {
-        if (typeHolder.getObject() instanceof Integer) {
-
-            buffer.writeLong((((Integer) typeHolder.getObject()).longValue()));
-            return;
-        }
-
-        buffer.writeLong((Long) typeHolder.getObject());
+        buffer.writeDouble((Double) typeHolder.getObject());
     }
 }

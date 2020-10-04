@@ -20,52 +20,36 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.type.arrays;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.google.common.base.Preconditions;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_2MultiBlockArray;
 import io.netty.buffer.ByteBuf;
 
-public class ByteArrayDataType extends DataType<byte[]> {
+public class MultiBlockArrayDataType extends DataType<V1_2MultiBlockArray> {
 
-    public ByteArrayDataType(Type readDataType) {
-        super(readDataType);
+    public MultiBlockArrayDataType() {
+        super(Type.V1_2MULTIBLOCK_ARRAY);
     }
 
     @Override
-    public byte[] read(ByteBuf buffer) {
-        byte[] bytes = new byte[0];
+    public V1_2MultiBlockArray read(ByteBuf buffer) {
+        int recordCount = buffer.readShort() & 0xffff;
+        int dataSize = buffer.readInt();
+        byte[] data = new byte[dataSize];
 
-        if (getType() == Type.BYTE_BYTE_ARRAY) {
-            bytes = new byte[buffer.readByte() & 255];
-
-            buffer.readBytes(bytes);
-        } else if (getType() == Type.SHORT_BYTE_ARRAY) {
-            int size = buffer.readShort();
-
-            Preconditions.checkArgument(size < 32767, "Payload too big");
-
-            bytes = new byte[size];
-            buffer.readBytes(bytes);
-        }
-
-        return bytes;
+        buffer.readBytes(data);
+        return new V1_2MultiBlockArray(recordCount, dataSize, data);
     }
 
     @Override
     public void write(TypeHolder typeHolder, ByteBuf buffer) {
-        byte[] byteArray = (byte[]) typeHolder.getObject();
+        V1_2MultiBlockArray multiBlockArray = (V1_2MultiBlockArray) typeHolder.getObject();
 
-        if (getType() == Type.BYTE_BYTE_ARRAY) {
-
-            buffer.writeByte(byteArray.length);
-            buffer.writeBytes(byteArray);
-        } else if (getType() == Type.SHORT_BYTE_ARRAY) {
-
-            buffer.writeShort(byteArray.length);
-            buffer.writeBytes(byteArray);
-        }
+        buffer.writeShort(multiBlockArray.getRecordCount());
+        buffer.writeInt(multiBlockArray.getDataSize());
+        buffer.writeBytes(multiBlockArray.getData());
     }
 }

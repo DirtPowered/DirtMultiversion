@@ -20,49 +20,39 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
-import lombok.Getter;
 
-import java.io.IOException;
+import java.nio.charset.Charset;
 
-public class ItemArrayDataType extends DataType<ItemStack[]> {
+public class UTF8StringDataType extends DataType<String> {
 
-    @Getter
-    private DataType childInstruction;
-
-    public ItemArrayDataType(Type type, DataType child) {
-        super(type);
-
-        this.childInstruction = child;
+    public UTF8StringDataType() {
+        super(Type.UTF8_STRING);
     }
 
     @Override
-    public ItemStack[] read(ByteBuf buffer) throws IOException {
-        short length = buffer.readShort();
+    public String read(ByteBuf buffer) {
+        int stringLength = buffer.readShort();
+        Preconditions.checkArgument(stringLength < 32767, "String too big");
 
-        ItemStack[] objArray = new ItemStack[length];
+        byte[] bytes = new byte[stringLength];
+        buffer.readBytes(bytes);
 
-        for (short i = 0; i < length; i++) {
-            objArray[i] = (ItemStack) childInstruction.read(buffer);
-        }
-        return objArray;
+        return new String(bytes, Charset.forName("UTF-8"));
     }
 
-
     @Override
-    public void write(TypeHolder typeHolder, ByteBuf buffer) throws IOException {
-        ItemStack[] objArray = (ItemStack[]) typeHolder.getObject();
+    public void write(TypeHolder typeHolder, ByteBuf buffer) {
+        String string = (String) typeHolder.getObject();
 
-        buffer.writeShort(objArray.length);
-
-        for (ItemStack item : objArray) {
-            childInstruction.write(new TypeHolder(childInstruction.getType(), item), buffer);
-        }
+        byte[] message = string.getBytes(Charset.forName("UTF-8"));
+        buffer.writeShort(message.length);
+        buffer.writeBytes(message);
     }
 }

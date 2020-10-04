@@ -31,7 +31,7 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.chun
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.item.ItemDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.metadata.MetadataDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.motion.MotionDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.ItemArrayDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ItemArrayDataType;
 
 public class V1_7BProtocol extends Protocol {
     public static final DataType METADATA;

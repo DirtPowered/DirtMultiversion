@@ -20,56 +20,32 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.types.item;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
-import com.github.dirtpowered.dirtmv.utils.item.LegacyItemList;
-import com.github.dirtpowered.dirtmv.utils.nbt.NBTUtils;
-import com.mojang.nbt.CompoundTag;
 import io.netty.buffer.ByteBuf;
 
-public class ItemDataType extends DataType<ItemStack> {
+public class ByteDataType extends DataType<Byte> {
 
-    public ItemDataType() {
-        super(Type.V1_0R_ITEM);
+    public ByteDataType() {
+        super(Type.BYTE);
     }
 
     @Override
-    public ItemStack read(ByteBuf buffer) {
-        int itemId = buffer.readShort();
-
-        if (itemId >= 0) {
-            int amount = buffer.readByte();
-            int data = buffer.readShort();
-
-            CompoundTag compoundTag = null;
-
-            if (LegacyItemList.ITEM_LIST.get(itemId))
-                compoundTag = NBTUtils.readNBT(buffer);
-
-            return new ItemStack(itemId, amount, data, compoundTag);
-        }
-
-        return null;
+    public Byte read(ByteBuf buffer) {
+        return buffer.readByte();
     }
 
     @Override
     public void write(TypeHolder typeHolder, ByteBuf buffer) {
-        ItemStack itemStack = (ItemStack) typeHolder.getObject();
+        if (typeHolder.getObject() instanceof Integer) {
 
-        if (itemStack == null) {
-            buffer.writeShort(-1);
-        } else {
-            buffer.writeShort(itemStack.getItemId());
-            buffer.writeByte(itemStack.getAmount());
-            buffer.writeShort(itemStack.getData());
-
-            if (LegacyItemList.ITEM_LIST.get(itemStack.getItemId())) {
-                NBTUtils.writeNBT(itemStack.getCompoundTag(), buffer);
-            }
+            buffer.writeByte((((Integer) typeHolder.getObject()).byteValue()));
+            return;
         }
+
+        buffer.writeByte((Byte) typeHolder.getObject());
     }
 }

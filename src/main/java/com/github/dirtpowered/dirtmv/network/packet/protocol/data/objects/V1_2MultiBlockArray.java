@@ -20,29 +20,15 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects;
 
-public enum Type {
-    BYTE,
-    DOUBLE,
-    FLOAT,
-    INT,
-    LONG,
-    SHORT,
-    STRING,
-    BYTE_BYTE_ARRAY,
-    SHORT_BYTE_ARRAY,
-    UTF8_STRING,
-    V1_7B_CHUNK,
-    V1_7B_ITEM,
-    V1_7B_ITEM_ARRAY,
-    V1_7B_METADATA,
-    V1_8B_ITEM,
-    POSITION_ARRAY,
-    MOTION,
-    V1_7MULTIBLOCK_ARRAY,
-    V1_0R_ITEM,
-    V1_0R_ITEM_ARRAY,
-    V1_2MULTIBLOCK_ARRAY,
-    V1_2_CHUNK,
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class V1_2MultiBlockArray {
+    private int recordCount;
+    private int dataSize;
+    private byte[] data;
 }

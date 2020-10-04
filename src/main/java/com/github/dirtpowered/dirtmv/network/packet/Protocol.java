@@ -22,18 +22,18 @@
 
 package com.github.dirtpowered.dirtmv.network.packet;
 
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.ByteArrayDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.ByteDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.DoubleDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.FloatDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.IntDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.LongDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.ShortDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.StringDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.UTF8StringDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ByteArrayDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ByteDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.DoubleDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.FloatDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.IntDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.LongDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ShortDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.StringDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.UTF8StringDataType;
 
 public abstract class Protocol {
-    // data types
+    // data type
     public static final DataType INT = new IntDataType();
     public static final DataType BYTE = new ByteDataType();
     public static final DataType SHORT = new ShortDataType();

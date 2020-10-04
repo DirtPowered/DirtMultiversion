@@ -20,26 +20,20 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects;
 
-import com.github.dirtpowered.dirtmv.network.packet.DataType;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-public class FloatDataType extends DataType<Float> {
-
-    public FloatDataType() {
-        super(Type.FLOAT);
-    }
-
-    @Override
-    public Float read(ByteBuf buffer) {
-        return buffer.readFloat();
-    }
-
-    @Override
-    public void write(TypeHolder typeHolder, ByteBuf buffer) {
-        buffer.writeFloat((Float) typeHolder.getObject());
-    }
+@Data
+@AllArgsConstructor
+public class V1_2Chunk {
+    private int chunkX;
+    private int chunkZ;
+    private boolean groundUp;
+    private short primaryBitmap;
+    private short additionalBitmap;
+    private int compressedDataSize;
+    private int noop;
+    private byte[] data;
 }
