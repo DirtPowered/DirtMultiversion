@@ -27,6 +27,7 @@ import com.github.dirtpowered.dirtmv.network.handler.ProtocolBeta14To13;
 import com.github.dirtpowered.dirtmv.network.handler.ProtocolBeta17to14;
 import com.github.dirtpowered.dirtmv.network.handler.ProtocolPassthrough;
 import com.github.dirtpowered.dirtmv.network.handler.ProtocolRelease22To17;
+import com.github.dirtpowered.dirtmv.network.handler.ProtocolRelease23To22;
 import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
 import lombok.Getter;
 
@@ -43,6 +44,7 @@ public class TranslatorRegistry {
 
     public TranslatorRegistry() {
         registerProtocol(new ProtocolRelease22To17());
+        registerProtocol(new ProtocolRelease23To22());
         registerProtocol(new ProtocolBeta17to14());
         registerProtocol(new ProtocolBeta14To13());
     }

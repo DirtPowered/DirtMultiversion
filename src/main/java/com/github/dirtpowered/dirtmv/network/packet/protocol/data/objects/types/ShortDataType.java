@@ -20,27 +20,32 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types;
 
-public enum Type {
-    BYTE,
-    DOUBLE,
-    FLOAT,
-    INT,
-    LONG,
-    SHORT,
-    STRING,
-    BYTE_BYTE_ARRAY,
-    SHORT_BYTE_ARRAY,
-    UTF8_STRING,
-    V1_7B_CHUNK,
-    V1_7B_ITEM,
-    V1_7B_ITEM_ARRAY,
-    V1_7B_METADATA,
-    V1_8B_ITEM,
-    POSITION_ARRAY,
-    MOTION,
-    V1_7MULTIBLOCK_ARRAY,
-    V1_0R_ITEM,
-    V1_0R_ITEM_ARRAY
+import com.github.dirtpowered.dirtmv.network.packet.DataType;
+import com.github.dirtpowered.dirtmv.network.packet.Type;
+import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import io.netty.buffer.ByteBuf;
+
+public class ShortDataType extends DataType<Short> {
+
+    public ShortDataType() {
+        super(Type.SHORT);
+    }
+
+    @Override
+    public Short read(ByteBuf buffer) {
+        return buffer.readShort();
+    }
+
+    @Override
+    public void write(TypeHolder typeHolder, ByteBuf buffer) {
+        if (typeHolder.getObject() instanceof Integer) {
+
+            buffer.writeShort(((Integer) typeHolder.getObject()));
+            return;
+        }
+
+        buffer.writeShort((Short) typeHolder.getObject());
+    }
 }

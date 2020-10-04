@@ -22,157 +22,28 @@
 
 package com.github.dirtpowered.dirtmv.network.packet;
 
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arrays.ByteArrayDataType;
-import io.netty.buffer.ByteBuf;
-
-import java.nio.charset.Charset;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.ByteArrayDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.ByteDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.DoubleDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.FloatDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.IntDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.LongDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.ShortDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.StringDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.types.UTF8StringDataType;
 
 public abstract class Protocol {
-
-    public static final DataType INT = new DataType<Integer>(Type.INT) {
-
-        @Override
-        public Integer read(ByteBuf buffer) {
-            return buffer.readInt();
-        }
-
-        @Override
-        public void write(TypeHolder typeHolder, ByteBuf buffer) {
-            buffer.writeInt((Integer) typeHolder.getObject());
-        }
-    };
-
-    public static final DataType BYTE = new DataType<Byte>(Type.BYTE) {
-
-        @Override
-        public Byte read(ByteBuf buffer) {
-            return buffer.readByte();
-        }
-
-        @Override
-        public void write(TypeHolder typeHolder, ByteBuf buffer) {
-            if (typeHolder.getObject() instanceof Integer) {
-
-                buffer.writeByte((((Integer) typeHolder.getObject()).byteValue()));
-                return;
-            }
-
-            buffer.writeByte((Byte) typeHolder.getObject());
-        }
-    };
-
-    public static final DataType SHORT = new DataType<Short>(Type.SHORT) {
-
-        @Override
-        public Short read(ByteBuf buffer) {
-            return buffer.readShort();
-        }
-
-        @Override
-        public void write(TypeHolder typeHolder, ByteBuf buffer) {
-            if (typeHolder.getObject() instanceof Integer) {
-
-                buffer.writeShort(((Integer) typeHolder.getObject()));
-                return;
-            }
-
-            buffer.writeShort((Short) typeHolder.getObject());
-        }
-    };
-
-    public static final DataType FLOAT = new DataType<Float>(Type.FLOAT) {
-
-        @Override
-        public Float read(ByteBuf buffer) {
-            return buffer.readFloat();
-        }
-
-        @Override
-        public void write(TypeHolder typeHolder, ByteBuf buffer) {
-            buffer.writeFloat((Float) typeHolder.getObject());
-        }
-    };
-
-    public static final DataType STRING = new DataType<String>(Type.STRING) {
-
-        @Override
-        public String read(ByteBuf buffer) {
-            short stringLength = buffer.readShort();
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < stringLength; i++) {
-                String s = String.valueOf(buffer.readChar());
-                sb.append(s);
-            }
-
-            return sb.toString();
-        }
-
-        @Override
-        public void write(TypeHolder typeHolder, ByteBuf buffer) {
-            String string = (String) typeHolder.getObject();
-            buffer.writeShort(string.length());
-
-            for (char c : string.toCharArray()) {
-                buffer.writeChar(c);
-            }
-        }
-    };
-
-    protected static final DataType LONG = new DataType<Long>(Type.LONG) {
-
-        @Override
-        public Long read(ByteBuf buffer) {
-            return buffer.readLong();
-        }
-
-        @Override
-        public void write(TypeHolder typeHolder, ByteBuf buffer) {
-            if (typeHolder.getObject() instanceof Integer) {
-
-                buffer.writeLong((((Integer) typeHolder.getObject()).longValue()));
-                return;
-            }
-
-            buffer.writeLong((Long) typeHolder.getObject());
-        }
-    };
-
-    protected static final DataType DOUBLE = new DataType<Double>(Type.DOUBLE) {
-
-        @Override
-        public Double read(ByteBuf buffer) {
-            return buffer.readDouble();
-        }
-
-        @Override
-        public void write(TypeHolder typeHolder, ByteBuf buffer) {
-            buffer.writeDouble((Double) typeHolder.getObject());
-        }
-    };
-
-    protected static final DataType UTF8_STRING = new DataType<String>(Type.UTF8_STRING) {
-
-        @Override
-        public String read(ByteBuf buffer) {
-            byte[] bytes = new byte[buffer.readShort()];
-            buffer.readBytes(bytes);
-
-            return new String(bytes, Charset.forName("UTF-8"));
-        }
-
-        @Override
-        public void write(TypeHolder typeHolder, ByteBuf buffer) {
-            String string = (String) typeHolder.getObject();
-
-            byte[] message = string.getBytes(Charset.forName("UTF-8"));
-            buffer.writeShort(message.length);
-            buffer.writeBytes(message);
-        }
-    };
-
+    // data types
+    public static final DataType INT = new IntDataType();
+    public static final DataType BYTE = new ByteDataType();
+    public static final DataType SHORT = new ShortDataType();
+    public static final DataType FLOAT = new FloatDataType();
+    public static final DataType STRING = new StringDataType();
+    protected static final DataType LONG = new LongDataType();
+    protected static final DataType DOUBLE = new DoubleDataType();
+    protected static final DataType UTF8_STRING = new UTF8StringDataType();
+    protected static final DataType SHORT_BYTE_ARRAY = new ByteArrayDataType(Type.SHORT_BYTE_ARRAY);
     protected static final DataType BYTE_BYTE_ARRAY = new ByteArrayDataType(Type.BYTE_BYTE_ARRAY);
-
     protected DataType[][] dataTypes = new DataType[256][];
 
     public abstract void registerPackets();
