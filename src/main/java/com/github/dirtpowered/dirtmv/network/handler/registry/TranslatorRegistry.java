@@ -78,7 +78,7 @@ public class TranslatorRegistry {
 
                 ServerProtocol target = protocols.get(i);
 
-                if (target != null) {
+                if (target != null && !(i <= serverProtocol)) {
                     serverProtocols.add(target);
                 }
             }
