@@ -63,7 +63,7 @@ public class Client {
 
                 @Override
                 protected void initChannel(SocketChannel ch) {
-                    ch.pipeline().addLast("mc_pipeline", new PipelineFactory(PacketDirection.SERVER_TO_CLIENT));
+                    ch.pipeline().addLast("mc_pipeline", new PipelineFactory(serverSession.getUserData(), PacketDirection.SERVER_TO_CLIENT));
                     ch.pipeline().addLast("client_session", new ClientSession(key, serverSession, ch, callback));
                 }
             });

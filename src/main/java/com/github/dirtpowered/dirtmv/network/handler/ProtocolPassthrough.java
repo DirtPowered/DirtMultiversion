@@ -20,15 +20,19 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.metadata;
+package com.github.dirtpowered.dirtmv.network.handler;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
 
-@Data
-@AllArgsConstructor
-class WatchableObject {
-    private MetadataType type;
-    private int index;
-    private Object value;
+public class ProtocolPassthrough extends ServerProtocol {
+
+    public ProtocolPassthrough(MinecraftVersion from, MinecraftVersion to) {
+        super(from, to);
+    }
+
+    @Override
+    public void registerTranslators() {
+        // none
+    }
 }

@@ -28,6 +28,7 @@ import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.V1_7BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.BlockLocation;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;

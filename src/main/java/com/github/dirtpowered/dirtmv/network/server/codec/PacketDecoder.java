@@ -23,6 +23,8 @@
 package com.github.dirtpowered.dirtmv.network.server.codec;
 
 import com.github.dirtpowered.dirtmv.data.Constants;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.handler.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
@@ -36,15 +38,37 @@ import java.util.List;
 public class PacketDecoder extends ReplayingDecoder<PacketData> {
 
     private PacketDirection packetDirection;
+    private UserData userData;
 
-    PacketDecoder(PacketDirection packetDirection) {
+    PacketDecoder(PacketDirection packetDirection, UserData userData) {
         this.packetDirection = packetDirection;
+        this.userData = userData;
     }
 
     @Override
     protected void decode(ChannelHandlerContext context, ByteBuf buffer, List<Object> list) throws IOException {
         boolean flag = packetDirection == PacketDirection.SERVER_TO_CLIENT;
 
-        list.add(PacketUtil.readPacket(flag ? Constants.REMOTE_SERVER_VERSION : Constants.LOCAL_CLIENT_VERSION, buffer));
+        setUserProtocol(flag, buffer);
+
+        list.add(PacketUtil.readPacket(flag ? Constants.REMOTE_SERVER_VERSION : userData.getClientVersion(), buffer));
+    }
+
+    private void setUserProtocol(boolean flag, ByteBuf buffer) {
+        if (!flag) {
+            buffer.markReaderIndex();
+            int packetId = buffer.readUnsignedByte();
+
+            if (packetId == 0x01 /* login */) {
+                MinecraftVersion version = MinecraftVersion.fromProtocolVersion(buffer.readInt());
+                userData.setClientVersion(version);
+            } else if (packetId == 0xFE /* server ping request */) {
+
+                // first version with server-ping-list protocol
+                userData.setClientVersion(MinecraftVersion.B_1_8_1);
+            }
+
+            buffer.resetReaderIndex();
+        }
     }
 }

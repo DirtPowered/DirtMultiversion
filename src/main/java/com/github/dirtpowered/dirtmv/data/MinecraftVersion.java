@@ -25,15 +25,41 @@ package com.github.dirtpowered.dirtmv.data;
 import lombok.Getter;
 
 public enum MinecraftVersion {
-    B_1_6_6(13),
-    B_1_7_3(14),
-    B_1_8_1(17),
-    R1_0(22);
+    B_1_6_6(13, false),
+    B_1_7_3(14, false),
+    B_1_8_1(17, false),
+    R1_0(22, false),
+    R1_1(23, false),
+    R1_2_1(28, false),
+    R1_2_4(29, false),
+    R1_3_1(39, false),
+    R1_4_2(47, false),
+    R1_4_4(49, false),
+    R1_4_6(51, false),
+    R1_5(60, false),
+    R1_5_2(61, false),
+    R1_6_1(73, false),
+    R1_6_2(74, false),
+    R1_6_4(78, false);
 
     @Getter
-    private int protocolVersion;
+    private int protocolId;
 
-    MinecraftVersion(int protocolVersion) {
-        this.protocolVersion = protocolVersion;
+    @Getter
+    private boolean nettyProtocol;
+
+    MinecraftVersion(int protocolId, boolean nettyProtocol) {
+        this.protocolId = protocolId;
+        this.nettyProtocol = nettyProtocol;
+    }
+
+    public static MinecraftVersion fromProtocolVersion(int protocolVersion) {
+        for (MinecraftVersion version : MinecraftVersion.values()) {
+            if (version.protocolId == protocolVersion) {
+                return version;
+            }
+        }
+
+        return null;
     }
 }

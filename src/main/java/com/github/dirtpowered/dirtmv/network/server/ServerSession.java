@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.network.server;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.Constants;
+import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.client.Client;
 import com.github.dirtpowered.dirtmv.network.client.ClientSession;
 import com.github.dirtpowered.dirtmv.network.handler.model.PacketDirection;
@@ -58,6 +59,9 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
     @Getter
     private SocketChannel channel;
 
+    @Getter
+    private UserData userData;
+
     private Client client;
     private UUID key;
 
@@ -66,6 +70,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
     ServerSession(SocketChannel channel, DirtMultiVersion server) {
         this.key = UUID.randomUUID();
 
+        this.userData = new UserData();
         this.channel = channel;
         this.main = server;
         this.client = new Client(this);
@@ -79,10 +84,10 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
      * @param serverProtocol current protocol class
      */
     public void sendPacket(PacketData packet, PacketDirection direction, Class serverProtocol) throws IOException {
-        List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(Constants.LOCAL_CLIENT_VERSION, Constants.REMOTE_SERVER_VERSION);
+        List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(userData.getClientVersion(), Constants.REMOTE_SERVER_VERSION);
         boolean flag = direction == PacketDirection.SERVER_TO_CLIENT;
 
-        if (flag) Collections.reverse(protocols);
+        if (!flag) Collections.reverse(protocols);
 
         PacketData target = packet;
 

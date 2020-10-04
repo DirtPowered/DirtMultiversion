@@ -23,28 +23,34 @@
 package com.github.dirtpowered.dirtmv.network.handler.registry;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.network.handler.ProtocolBeta14To13;
+import com.github.dirtpowered.dirtmv.network.handler.ProtocolBeta17to14;
+import com.github.dirtpowered.dirtmv.network.handler.ProtocolPassthrough;
 import com.github.dirtpowered.dirtmv.network.handler.ProtocolRelease22To17;
 import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TranslatorRegistry {
 
     @Getter
-    private List<ServerProtocol> protocols = new CopyOnWriteArrayList<>();
+    private Map<Integer, ServerProtocol> protocols = new ConcurrentHashMap<>();
 
     public TranslatorRegistry() {
-        //registerProtocol(new ProxyProtocol());
         registerProtocol(new ProtocolRelease22To17());
-        //registerProtocol(new ProtocolBeta17to14());
-        //registerProtocol(new ProtocolBeta14To13());
+        registerProtocol(new ProtocolBeta17to14());
+        registerProtocol(new ProtocolBeta14To13());
     }
 
     private void registerProtocol(ServerProtocol serverProtocol) {
-        protocols.add(serverProtocol);
+        int clientProtocol = serverProtocol.getFrom().getProtocolId();
+
+        protocols.put(clientProtocol, serverProtocol);
     }
 
     /**
@@ -57,11 +63,25 @@ public class TranslatorRegistry {
     public List<ServerProtocol> findProtocol(MinecraftVersion from, MinecraftVersion versionTo) {
         List<ServerProtocol> serverProtocols = new LinkedList<>();
 
-        serverProtocols.add(protocols.get(0));
-        //serverProtocols.add(protocols.get(1));
-        //serverProtocols.add(protocols.get(2));
+        // check if translating is needed
+        if (from == versionTo) {
+            return Collections.singletonList(new ProtocolPassthrough(from, versionTo));
+        }
 
-        //TODO: add basic functionality
+        int clientProtocol = from.getProtocolId();
+        int serverProtocol = versionTo.getProtocolId();
+
+        for (int i = serverProtocol; i <= clientProtocol; i++) {
+            if (MinecraftVersion.fromProtocolVersion(i) != null) {
+
+                ServerProtocol target = protocols.get(i);
+
+                if (target != null) {
+                    serverProtocols.add(target);
+                }
+            }
+        }
+
         return serverProtocols;
     }
 }

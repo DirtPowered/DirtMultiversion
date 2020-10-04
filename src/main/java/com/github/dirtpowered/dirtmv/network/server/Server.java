@@ -52,8 +52,10 @@ public class Server {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel channel) {
-                        channel.pipeline().addLast("mc_pipeline", new PipelineFactory(PacketDirection.CLIENT_TO_SERVER));
-                        channel.pipeline().addLast("server_session", new ServerSession(channel, main));
+                        ServerSession serverSession = new ServerSession(channel, main);
+
+                        channel.pipeline().addLast("mc_pipeline", new PipelineFactory(serverSession.getUserData(), PacketDirection.CLIENT_TO_SERVER));
+                        channel.pipeline().addLast("server_session", serverSession);
                     }
                 })
                 .childOption(ChannelOption.SO_KEEPALIVE, true);

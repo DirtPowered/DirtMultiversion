@@ -20,14 +20,16 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data;
+package com.github.dirtpowered.dirtmv.data.user;
 
-public class Constants {
-    public static final MinecraftVersion REMOTE_SERVER_VERSION = MinecraftVersion.B_1_6_6;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import lombok.Data;
 
-    public static final String SERVER_HOST = "localhost";
-    public static final String REMOTE_HOST = "localhost";
+@Data
+public class UserData {
+    private MinecraftVersion clientVersion;
 
-    public static final int SERVER_PORT = 25565;
-    public static final int REMOTE_PORT = 25567;
+    public UserData() {
+        this.clientVersion = MinecraftVersion.B_1_6_6;
+    }
 }

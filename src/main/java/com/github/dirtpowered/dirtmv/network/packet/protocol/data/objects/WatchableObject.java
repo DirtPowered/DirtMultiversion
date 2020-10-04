@@ -20,19 +20,16 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.handler;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects;
 
-import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.metadata.MetadataType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-public class ProxyProtocol extends ServerProtocol {
-
-    public ProxyProtocol() {
-        super(MinecraftVersion.R1_0, MinecraftVersion.R1_0);
-    }
-
-    @Override
-    public void registerTranslators() {
-
-    }
+@Data
+@AllArgsConstructor
+public class WatchableObject {
+    private MetadataType type;
+    private int index;
+    private Object value;
 }
