@@ -34,6 +34,5 @@ public class V1_2Chunk {
     private short primaryBitmap;
     private short additionalBitmap;
     private int compressedDataSize;
-    private int noop;
     private byte[] data;
 }

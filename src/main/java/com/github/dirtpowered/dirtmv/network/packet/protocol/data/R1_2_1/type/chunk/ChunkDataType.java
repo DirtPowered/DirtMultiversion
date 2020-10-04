@@ -30,7 +30,6 @@ import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 public class ChunkDataType extends DataType<V1_2Chunk> {
@@ -43,11 +42,14 @@ public class ChunkDataType extends DataType<V1_2Chunk> {
     public V1_2Chunk read(ByteBuf buffer) throws IOException {
         int chunkX = buffer.readInt();
         int chunkZ = buffer.readInt();
+
         boolean groundUp = buffer.readBoolean();
+
         short primaryBitmap = buffer.readShort();
         short additionalBitmap = buffer.readShort();
+
         int compressedDataSize = buffer.readInt();
-        int noop = buffer.readInt();
+        buffer.readInt(); // unused
 
         byte[] chunk = new byte[compressedDataSize];
         buffer.readBytes(chunk, 0, compressedDataSize);
@@ -76,34 +78,24 @@ public class ChunkDataType extends DataType<V1_2Chunk> {
             inflater.end();
         }
 
-        return new V1_2Chunk(chunkX, chunkZ, groundUp, primaryBitmap, additionalBitmap, size, noop, chunk);
+        return new V1_2Chunk(chunkX, chunkZ, groundUp, primaryBitmap, additionalBitmap, compressedDataSize, chunk);
     }
 
     @Override
     public void write(TypeHolder typeHolder, ByteBuf buffer) {
         V1_2Chunk chunk = (V1_2Chunk) typeHolder.getObject();
 
-        Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION);
-        int length;
+        buffer.writeInt(chunk.getChunkX());
+        buffer.writeInt(chunk.getChunkZ());
 
-        try {
-            byte[] data = chunk.getData();
-            deflater.setInput(data, 0, data.length);
-            deflater.finish();
+        buffer.writeBoolean(chunk.isGroundUp());
 
-            data = new byte[data.length];
-            length = deflater.deflate(data);
+        buffer.writeShort(chunk.getPrimaryBitmap() & 0xffff);
+        buffer.writeShort(chunk.getAdditionalBitmap() & 0xffff);
 
-            buffer.writeInt(chunk.getChunkX());
-            buffer.writeInt(chunk.getChunkZ());
-            buffer.writeBoolean(chunk.isGroundUp());
-            buffer.writeShort(chunk.getPrimaryBitmap() & 0xffff);
-            buffer.writeShort(chunk.getAdditionalBitmap() & 0xffff);
-            buffer.writeInt(length);
-            buffer.writeInt(chunk.getNoop());
-            buffer.writeBytes(data, 0, length);
-        } finally {
-            deflater.end();
-        }
+        buffer.writeInt(chunk.getCompressedDataSize());
+        buffer.writeInt(0);
+
+        buffer.writeBytes(chunk.getData(), 0, chunk.getCompressedDataSize());
     }
 }
