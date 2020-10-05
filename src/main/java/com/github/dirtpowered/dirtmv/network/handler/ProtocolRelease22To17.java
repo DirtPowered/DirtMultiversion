@@ -130,7 +130,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 ItemStack item = (ItemStack) data.read(2).getObject();
 
-                if (item != null && LegacyItemList.ITEM_LIST.get(item.getItemId()))
+                if (item != null && LegacyItemList.isEnchantable(item.getItemId()))
                     item.setCompoundTag(new CompoundTag("tag"));
 
                 return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x67, new TypeHolder[]{
@@ -148,7 +148,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 ItemStack[] items = (ItemStack[]) data.read(1).getObject();
 
                 for (ItemStack item : items) {
-                    if (item != null && LegacyItemList.ITEM_LIST.get(item.getItemId())) {
+                    if (item != null && LegacyItemList.isEnchantable(item.getItemId())) {
                         item.setCompoundTag(new CompoundTag("tag"));
                     }
                 }

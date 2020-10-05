@@ -47,7 +47,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
                     return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x01, new TypeHolder[]{
-                            data.read(0),
+                            new TypeHolder(Type.INT, 22), // protocol version
                             data.read(1),
                             data.read(2),
                             data.read(4),

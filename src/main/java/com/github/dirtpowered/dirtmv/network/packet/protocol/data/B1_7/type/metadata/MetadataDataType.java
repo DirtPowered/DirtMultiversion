@@ -94,6 +94,11 @@ public class MetadataDataType extends DataType<List<WatchableObject>> {
     public void write(TypeHolder typeHolder, ByteBuf buffer) throws IOException {
         List<WatchableObject> watchableObjects = (List<WatchableObject>) typeHolder.getObject();
 
+        if (watchableObjects == null || watchableObjects.isEmpty()) {
+            buffer.writeByte(127);
+            return;
+        }
+
         for (WatchableObject watchableObject : watchableObjects) {
             int header = (watchableObject.getType().getType() << 5 | watchableObject.getIndex() & 31) & 255;
             buffer.writeByte(header);

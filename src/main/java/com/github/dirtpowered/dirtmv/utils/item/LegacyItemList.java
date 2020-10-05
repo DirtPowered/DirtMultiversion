@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LegacyItemList {
-    public static final Map<Integer, Boolean> ITEM_LIST = new HashMap<>();
+    private static final Map<Integer, Boolean> ITEM_LIST = new HashMap<>();
 
     static {
         ITEM_LIST.put(1, false);
@@ -294,5 +294,9 @@ public class LegacyItemList {
         ITEM_LIST.put(2264, false);
         ITEM_LIST.put(2265, false);
         ITEM_LIST.put(2266, false);
+    }
+
+    public static boolean isEnchantable(int itemId) {
+        return ITEM_LIST.get(itemId) == null ? false : ITEM_LIST.get(itemId);
     }
 }

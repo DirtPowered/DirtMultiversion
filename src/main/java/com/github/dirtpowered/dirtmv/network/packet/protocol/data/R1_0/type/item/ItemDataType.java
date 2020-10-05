@@ -47,7 +47,7 @@ public class ItemDataType extends DataType<ItemStack> {
 
             CompoundTag compoundTag = null;
 
-            if (LegacyItemList.ITEM_LIST.get(itemId))
+            if (LegacyItemList.isEnchantable(itemId))
                 compoundTag = NBTUtils.readNBT(buffer);
 
             return new ItemStack(itemId, amount, data, compoundTag);
@@ -67,7 +67,7 @@ public class ItemDataType extends DataType<ItemStack> {
             buffer.writeByte(itemStack.getAmount());
             buffer.writeShort(itemStack.getData());
 
-            if (LegacyItemList.ITEM_LIST.get(itemStack.getItemId())) {
+            if (LegacyItemList.isEnchantable(itemStack.getItemId())) {
                 NBTUtils.writeNBT(itemStack.getCompoundTag(), buffer);
             }
         }
