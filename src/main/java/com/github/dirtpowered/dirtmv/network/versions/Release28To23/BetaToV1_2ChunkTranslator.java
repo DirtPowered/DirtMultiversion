@@ -22,10 +22,16 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release28To23;
 
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
 import com.github.dirtpowered.dirtmv.network.packet.PacketData;
+import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
+import com.github.dirtpowered.dirtmv.network.packet.Type;
+import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.chunk.BetaChunkStorage;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.chunk.V1_2ChunkStorage;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_2Chunk;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_7Chunk;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
@@ -38,9 +44,10 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
         int chunkX = oldChunk.getX() / 16;
         int chunkZ = oldChunk.getZ() / 16;
 
-        boolean groundUpContinuous;
+        boolean groundUpContinuous = true;
 
         BetaChunkStorage betaChunkStorage = new BetaChunkStorage(chunkX, chunkZ);
+        V1_2ChunkStorage v1_2ChunkStorage = new V1_2ChunkStorage(chunkX, chunkZ);
 
         int startPosition = (oldChunk.getX() + oldChunk.getXSize() - 1) / 16;
         int endPosition = (oldChunk.getZ() + oldChunk.getZSize() - 1) / 16;
@@ -70,13 +77,28 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                                 groundUpContinuous = false;
                             }
 
-                            // TODO: Fill 1.2 chunk storage
+                            v1_2ChunkStorage.setBlockId(posX, posY, posZ, betaChunkStorage.getBlockId(posX, posY, posZ));
+                            v1_2ChunkStorage.setBlockMetadata(posX, posY, posZ, betaChunkStorage.getBlockData(posX, posY, posZ));
+                            v1_2ChunkStorage.setBlockLight(posX, posY, posZ, betaChunkStorage.getBlockLight(posX, posY, posZ));
+                            v1_2ChunkStorage.setSkyLight(posX, posY, posZ, betaChunkStorage.getSkyLight(posX, posY, posZ));
                         }
                     }
                 }
             }
         }
 
-        return new PacketData(-1);
+        byte[] compressedData = v1_2ChunkStorage.getCompressedData(groundUpContinuous, !groundUpContinuous ? bitmap : 0);
+
+        return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x33, new TypeHolder[]{
+                new TypeHolder(Type.V1_2_CHUNK, new V1_2Chunk(
+                        chunkX,
+                        chunkZ,
+                        groundUpContinuous,
+                        (short) v1_2ChunkStorage.getPrimaryBitmap(),
+                        (short) 0,
+                        v1_2ChunkStorage.getCompressedSize(),
+                        compressedData
+                ))
+        });
     }
 }

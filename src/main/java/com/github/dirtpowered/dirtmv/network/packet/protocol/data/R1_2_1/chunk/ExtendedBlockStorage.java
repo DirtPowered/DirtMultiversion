@@ -22,5 +22,63 @@
 
 package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.chunk;
 
-public class ExtendedBlockStorage {
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.chunk.data.NibbleArray;
+import lombok.Getter;
+
+class ExtendedBlockStorage {
+
+    @Getter
+    private byte[] blockLSBArray;
+
+    @Getter
+    private NibbleArray blockMetadataArray;
+
+    @Getter
+    private NibbleArray blockLightArray;
+
+    @Getter
+    private NibbleArray skylightArray;
+
+    ExtendedBlockStorage() {
+        this.blockLSBArray = new byte[4096];
+        this.blockMetadataArray = new NibbleArray(this.blockLSBArray.length, 4);
+        this.blockLightArray = new NibbleArray(this.blockLSBArray.length, 4);
+        this.skylightArray = new NibbleArray(this.blockLSBArray.length, 4);
+    }
+
+    int getTypeAt(int x, int y, int z) {
+        return this.blockLSBArray[y << 8 | z << 4 | x] & 255;
+    }
+
+    void setTypeAt(int x, int y, int z, int value) {
+        this.blockLSBArray[y << 8 | z << 4 | x] = (byte) (value & 255);
+    }
+
+    int getBlockMetadata(int x, int y, int z) {
+        return this.blockMetadataArray.getNibble(x, y, z);
+    }
+
+    void setBlockMetadata(int x, int y, int z, int value) {
+        this.blockMetadataArray.setNibble(x, y, z, value);
+    }
+
+    void setSkylightValue(int x, int y, int z, int value) {
+        this.skylightArray.setNibble(x, y, z, value);
+    }
+
+    int getSkylightValue(int x, int y, int z) {
+        return this.skylightArray.getNibble(x, y, z);
+    }
+
+    void setBlockLightValue(int x, int y, int z, int value) {
+        this.blockLightArray.setNibble(x, y, z, value);
+    }
+
+    int getBlockLightValue(int x, int y, int z) {
+        return this.blockLightArray.getNibble(x, y, z);
+    }
+
+    boolean isEmpty() {
+        return false;
+    }
 }
