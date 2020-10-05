@@ -25,7 +25,7 @@ package com.github.dirtpowered.dirtmv.network.server.codec;
 import com.github.dirtpowered.dirtmv.data.Constants;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
-import com.github.dirtpowered.dirtmv.network.handler.model.PacketDirection;
+import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import io.netty.buffer.ByteBuf;

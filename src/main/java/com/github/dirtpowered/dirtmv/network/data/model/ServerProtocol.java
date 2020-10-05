@@ -20,28 +20,34 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.server.codec;
+package com.github.dirtpowered.dirtmv.network.data.model;
 
-import com.github.dirtpowered.dirtmv.data.user.UserData;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.handler.timeout.ReadTimeoutHandler;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import lombok.Getter;
 
-public class PipelineFactory extends ChannelInitializer {
+import java.util.HashMap;
+import java.util.Map;
 
-    private PacketDirection packetDirection;
-    private UserData userData;
+@Getter
+public abstract class ServerProtocol {
+    private Map<Integer, PacketTranslator> registeredTranslators = new HashMap<>();
+    private MinecraftVersion from;
+    private MinecraftVersion to;
 
-    public PipelineFactory(UserData userData, PacketDirection packetDirection) {
-        this.packetDirection = packetDirection;
-        this.userData = userData;
+    public ServerProtocol(MinecraftVersion from, MinecraftVersion to) {
+        this.from = from;
+        this.to = to;
+
+        registerTranslators();
     }
 
-    @Override
-    protected void initChannel(Channel channel) {
-        channel.pipeline().addLast("decoder", new PacketDecoder(packetDirection, userData));
-        channel.pipeline().addLast("encoder", new PacketEncoder());
-        channel.pipeline().addLast("timeout", new ReadTimeoutHandler(10));
+    public abstract void registerTranslators();
+
+    protected void addTranslator(int opCode, PacketTranslator packetTranslator) {
+        registeredTranslators.put(opCode, packetTranslator);
+    }
+
+    public PacketTranslator getTranslatorFor(int opCode) {
+        return registeredTranslators.get(opCode);
     }
 }

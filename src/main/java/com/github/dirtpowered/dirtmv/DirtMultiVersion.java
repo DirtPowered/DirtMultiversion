@@ -23,7 +23,7 @@
 package com.github.dirtpowered.dirtmv;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.handler.registry.TranslatorRegistry;
+import com.github.dirtpowered.dirtmv.network.data.registry.TranslatorRegistry;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.ProtocolRegistry;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.V1_7BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_8.V1_8BProtocol;

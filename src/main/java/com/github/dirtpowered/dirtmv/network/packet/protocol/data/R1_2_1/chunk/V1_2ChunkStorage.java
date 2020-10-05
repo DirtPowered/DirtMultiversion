@@ -20,8 +20,49 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.handler.model;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.chunk;
 
-public enum PacketDirection {
-    SERVER_TO_CLIENT, CLIENT_TO_SERVER
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.chunk.model.Chunk;
+
+public class V1_2ChunkStorage implements Chunk {
+
+    @Override
+    public int getBlockId(int x, int y, int z) {
+        return 0;
+    }
+
+    @Override
+    public void setBlockId(int x, int y, int z, int value) {
+
+    }
+
+    @Override
+    public int getBlockData(int x, int y, int z) {
+        return 0;
+    }
+
+    @Override
+    public void setBlockMetadata(int x, int y, int z, int value) {
+
+    }
+
+    @Override
+    public int getBlockLight(int x, int y, int z) {
+        return 0;
+    }
+
+    @Override
+    public void setBlockLight(int x, int y, int z, int value) {
+
+    }
+
+    @Override
+    public int getSkyLight(int x, int y, int z) {
+        return 0;
+    }
+
+    @Override
+    public void setSkyLight(int x, int y, int z, int value) {
+
+    }
 }

@@ -20,12 +20,12 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.handler;
+package com.github.dirtpowered.dirtmv.network.versions.Release28To23;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.handler.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.handler.model.PacketTranslator;
-import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
+import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
+import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
+import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
@@ -64,6 +64,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                             data.read(7)
                     });
                 } else {
+
                     return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x01, new TypeHolder[]{
                             data.read(0),
                             data.read(1),
@@ -78,13 +79,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x33 /* CHUNK */, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                return new PacketData(-1);
-            }
-        });
+        addTranslator(0x33 /* CHUNK */, new BetaToV1_2ChunkTranslator());
 
         addTranslator(0x34 /* MULTI BLOCK CHANGE */, new PacketTranslator() {
 
@@ -123,6 +118,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
                 return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x18, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
@@ -152,6 +148,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                             data.read(4),
                     });
                 } else {
+
                     return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x09, new TypeHolder[]{
                             new TypeHolder(Type.INT, ((Byte) data.read(0).getObject()).intValue()),
                             data.read(1),

@@ -24,7 +24,7 @@ package com.github.dirtpowered.dirtmv.network.server;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.Constants;
-import com.github.dirtpowered.dirtmv.network.handler.model.PacketDirection;
+import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.server.codec.PipelineFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

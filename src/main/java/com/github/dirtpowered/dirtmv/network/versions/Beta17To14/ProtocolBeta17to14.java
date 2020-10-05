@@ -20,12 +20,12 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.handler;
+package com.github.dirtpowered.dirtmv.network.versions.Beta17To14;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.handler.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.handler.model.PacketTranslator;
-import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
+import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
+import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
+import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;

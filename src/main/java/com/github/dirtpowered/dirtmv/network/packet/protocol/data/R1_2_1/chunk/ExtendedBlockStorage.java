@@ -20,28 +20,7 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.server.codec;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.chunk;
 
-import com.github.dirtpowered.dirtmv.data.user.UserData;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-
-public class PipelineFactory extends ChannelInitializer {
-
-    private PacketDirection packetDirection;
-    private UserData userData;
-
-    public PipelineFactory(UserData userData, PacketDirection packetDirection) {
-        this.packetDirection = packetDirection;
-        this.userData = userData;
-    }
-
-    @Override
-    protected void initChannel(Channel channel) {
-        channel.pipeline().addLast("decoder", new PacketDecoder(packetDirection, userData));
-        channel.pipeline().addLast("encoder", new PacketEncoder());
-        channel.pipeline().addLast("timeout", new ReadTimeoutHandler(10));
-    }
+public class ExtendedBlockStorage {
 }

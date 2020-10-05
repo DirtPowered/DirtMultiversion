@@ -20,34 +20,14 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.handler.model;
+package com.github.dirtpowered.dirtmv.network.data.model;
 
-import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import lombok.Getter;
+import com.github.dirtpowered.dirtmv.network.packet.PacketData;
+import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
-@Getter
-public abstract class ServerProtocol {
-    private Map<Integer, PacketTranslator> registeredTranslators = new HashMap<>();
-    private MinecraftVersion from;
-    private MinecraftVersion to;
+public abstract class PacketTranslator {
 
-    public ServerProtocol(MinecraftVersion from, MinecraftVersion to) {
-        this.from = from;
-        this.to = to;
-
-        registerTranslators();
-    }
-
-    public abstract void registerTranslators();
-
-    protected void addTranslator(int opCode, PacketTranslator packetTranslator) {
-        registeredTranslators.put(opCode, packetTranslator);
-    }
-
-    public PacketTranslator getTranslatorFor(int opCode) {
-        return registeredTranslators.get(opCode);
-    }
+    public abstract PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException;
 }

@@ -23,7 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.client;
 
 import com.github.dirtpowered.dirtmv.data.Constants;
-import com.github.dirtpowered.dirtmv.network.handler.model.PacketDirection;
+import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.server.codec.PipelineFactory;
 import com.github.dirtpowered.dirtmv.utils.Callback;

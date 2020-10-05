@@ -20,28 +20,19 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.server.codec;
+package com.github.dirtpowered.dirtmv.network.versions;
 
-import com.github.dirtpowered.dirtmv.data.user.UserData;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.handler.timeout.ReadTimeoutHandler;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
 
-public class PipelineFactory extends ChannelInitializer {
+public class ProtocolPassthrough extends ServerProtocol {
 
-    private PacketDirection packetDirection;
-    private UserData userData;
-
-    public PipelineFactory(UserData userData, PacketDirection packetDirection) {
-        this.packetDirection = packetDirection;
-        this.userData = userData;
+    public ProtocolPassthrough(MinecraftVersion from, MinecraftVersion to) {
+        super(from, to);
     }
 
     @Override
-    protected void initChannel(Channel channel) {
-        channel.pipeline().addLast("decoder", new PacketDecoder(packetDirection, userData));
-        channel.pipeline().addLast("encoder", new PacketEncoder());
-        channel.pipeline().addLast("timeout", new ReadTimeoutHandler(10));
+    public void registerTranslators() {
+        // none
     }
 }

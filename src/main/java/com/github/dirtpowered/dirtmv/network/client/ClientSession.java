@@ -22,7 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.client;
 
-import com.github.dirtpowered.dirtmv.network.handler.model.PacketDirection;
+import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.session.MultiSession;

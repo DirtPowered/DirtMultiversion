@@ -20,19 +20,23 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.handler;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.chunk.model;
 
-import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
+public interface Chunk {
 
-public class ProtocolPassthrough extends ServerProtocol {
+    int getBlockId(int x, int y, int z);
 
-    public ProtocolPassthrough(MinecraftVersion from, MinecraftVersion to) {
-        super(from, to);
-    }
+    void setBlockId(int x, int y, int z, int value);
 
-    @Override
-    public void registerTranslators() {
-        // none
-    }
+    int getBlockData(int x, int y, int z);
+
+    void setBlockMetadata(int x, int y, int z, int value);
+
+    int getBlockLight(int x, int y, int z);
+
+    void setBlockLight(int x, int y, int z, int value);
+
+    int getSkyLight(int x, int y, int z);
+
+    void setSkyLight(int x, int y, int z, int value);
 }

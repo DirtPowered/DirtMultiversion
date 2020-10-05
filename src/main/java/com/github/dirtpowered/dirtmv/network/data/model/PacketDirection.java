@@ -20,14 +20,8 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.handler.model;
+package com.github.dirtpowered.dirtmv.network.data.model;
 
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import com.github.dirtpowered.dirtmv.network.server.ServerSession;
-
-import java.io.IOException;
-
-public abstract class PacketTranslator {
-
-    public abstract PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException;
+public enum PacketDirection {
+    SERVER_TO_CLIENT, CLIENT_TO_SERVER
 }

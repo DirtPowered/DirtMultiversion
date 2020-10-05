@@ -20,16 +20,16 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.handler.registry;
+package com.github.dirtpowered.dirtmv.network.data.registry;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.handler.ProtocolBeta14To13;
-import com.github.dirtpowered.dirtmv.network.handler.ProtocolBeta17to14;
-import com.github.dirtpowered.dirtmv.network.handler.ProtocolPassthrough;
-import com.github.dirtpowered.dirtmv.network.handler.ProtocolRelease22To17;
-import com.github.dirtpowered.dirtmv.network.handler.ProtocolRelease23To22;
-import com.github.dirtpowered.dirtmv.network.handler.ProtocolRelease28To23;
-import com.github.dirtpowered.dirtmv.network.handler.model.ServerProtocol;
+import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
+import com.github.dirtpowered.dirtmv.network.versions.Beta14To13.ProtocolBeta14To13;
+import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.ProtocolBeta17to14;
+import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthrough;
+import com.github.dirtpowered.dirtmv.network.versions.Release22To17.ProtocolRelease22To17;
+import com.github.dirtpowered.dirtmv.network.versions.Release23To22.ProtocolRelease23To22;
+import com.github.dirtpowered.dirtmv.network.versions.Release28To23.ProtocolRelease28To23;
 import lombok.Getter;
 
 import java.util.Collections;
