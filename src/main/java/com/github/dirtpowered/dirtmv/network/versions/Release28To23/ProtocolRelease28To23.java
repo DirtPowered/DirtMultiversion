@@ -159,5 +159,35 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 }
             }
         });
+
+        addTranslator(0x21, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+
+                PacketData rotationPacket = PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x23, new TypeHolder[] {
+                        data.read(0), // entityId
+                        data.read(4), // yaw
+                });
+
+                session.sendPacket(rotationPacket, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease28To23.class);
+                return data;
+            }
+        });
+
+        addTranslator(0x20, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+
+                PacketData rotationPacket = PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x23, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                });
+
+                session.sendPacket(rotationPacket, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease28To23.class);
+                return data;
+            }
+        });
     }
 }

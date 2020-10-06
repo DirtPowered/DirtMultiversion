@@ -89,7 +89,7 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
     }
 
     private String getAddress() {
-        return channel.remoteAddress().toString();
+        return channel.localAddress().toString();
     }
 
     /**

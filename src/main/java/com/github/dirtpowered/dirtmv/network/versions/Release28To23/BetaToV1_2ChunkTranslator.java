@@ -41,6 +41,11 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
     public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
         V1_7Chunk oldChunk = (V1_7Chunk) data.read(0).getObject();
 
+        if (oldChunk.getXSize() * oldChunk.getYSize() * oldChunk.getZSize() != 32768) {
+            return new PacketData(-1);
+            // TODO: Chunk cache, non-full chunks
+        }
+
         int chunkX = oldChunk.getX() / 16;
         int chunkZ = oldChunk.getZ() / 16;
 
