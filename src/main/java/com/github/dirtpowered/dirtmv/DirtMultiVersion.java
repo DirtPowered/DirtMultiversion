@@ -67,6 +67,7 @@ public class DirtMultiVersion {
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_0, v1_0RProtocol);
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_1, v1_1RProtocol);
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_2_1, v1_2_1RProtocol);
+        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_2_4, v1_2_1RProtocol);
 
         translatorRegistry = new TranslatorRegistry();
         sessionRegistry = new SessionRegistry();
