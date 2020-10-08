@@ -20,13 +20,14 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.metadata;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Protocol;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.V1_7BProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.V1_0RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
 import io.netty.buffer.ByteBuf;
@@ -38,8 +39,8 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class MetadataDataType extends DataType<List<WatchableObject>> {
 
-    public MetadataDataType() {
-        super(Type.V1_7B_METADATA);
+    public MetadataDataType(Type type) {
+        super(type);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class MetadataDataType extends DataType<List<WatchableObject>> {
             }
 
             MetadataType type = MetadataType.fromType((b & 224) >> 5);
-            int index = b & 0x1f;
+            int index = b & 31;
             WatchableObject value = null;
 
             switch (type) {
@@ -73,7 +74,13 @@ public class MetadataDataType extends DataType<List<WatchableObject>> {
                     value = new WatchableObject(type, index, Protocol.STRING.read(buffer));
                     break;
                 case ITEM:
-                    value = new WatchableObject(type, index, V1_7BProtocol.ITEM.read(buffer));
+                    if (getType() == Type.V1_7B_METADATA) {
+
+                        value = new WatchableObject(type, index, V1_7BProtocol.ITEM.read(buffer));
+                    } else if (getType() == Type.V1_0_METADATA) {
+
+                        value = new WatchableObject(type, index, V1_0RProtocol.ITEM.read(buffer));
+                    }
                     break;
                 case POSITION:
                     int x = buffer.readInt();
@@ -119,7 +126,13 @@ public class MetadataDataType extends DataType<List<WatchableObject>> {
                     Protocol.STRING.write(new TypeHolder(Type.STRING, watchableObject.getValue()), buffer);
                     break;
                 case ITEM:
-                    V1_7BProtocol.ITEM.write(new TypeHolder(Type.V1_7B_ITEM, watchableObject.getValue()), buffer);
+                    if (getType() == Type.V1_7B_METADATA) {
+
+                        V1_7BProtocol.ITEM.write(new TypeHolder(Type.V1_7B_ITEM, watchableObject.getValue()), buffer);
+                    } else if (getType() == Type.V1_0_METADATA) {
+
+                        V1_0RProtocol.ITEM.write(new TypeHolder(Type.V1_0R_ITEM, watchableObject.getValue()), buffer);
+                    }
                     break;
                 case POSITION:
                     BlockLocation location = (BlockLocation) watchableObject.getValue();

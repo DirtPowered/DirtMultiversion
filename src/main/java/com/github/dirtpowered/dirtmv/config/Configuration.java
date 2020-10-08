@@ -20,16 +20,7 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects;
+package com.github.dirtpowered.dirtmv.config;
 
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.MetadataType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
-@AllArgsConstructor
-public class WatchableObject {
-    private MetadataType type;
-    private int index;
-    private Object value;
+public class Configuration {
 }

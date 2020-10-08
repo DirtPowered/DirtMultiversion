@@ -28,16 +28,19 @@ import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.V1_7BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.type.item.ItemDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ItemArrayDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.MetadataDataType;
 
 public class V1_0RProtocol extends Protocol {
 
     public static final DataType ITEM;
     public static final DataType ITEM_ARRAY;
+    public static final DataType METADATA;
 
     static {
         // custom instructions
         ITEM = new ItemDataType();
         ITEM_ARRAY = new ItemArrayDataType(Type.V1_0R_ITEM_ARRAY, ITEM);
+        METADATA = new MetadataDataType(Type.V1_0_METADATA);
     }
 
     @Override

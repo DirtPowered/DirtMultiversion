@@ -120,6 +120,9 @@ public class PacketData {
                 case V1_2_CHUNK:
                     V1_2_1RProtocol.CHUNK.write(typeHolder, buffer);
                     break;
+                case V1_0_METADATA:
+                    V1_0RProtocol.METADATA.write(typeHolder, buffer);
+                    break;
             }
         }
 

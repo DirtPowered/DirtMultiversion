@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.metadata;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
 import lombok.Getter;
 

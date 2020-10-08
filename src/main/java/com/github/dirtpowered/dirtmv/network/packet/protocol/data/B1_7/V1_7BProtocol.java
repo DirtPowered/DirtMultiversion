@@ -29,9 +29,9 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arra
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arrays.PositionArrayDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.chunk.ChunkDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.item.ItemDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.metadata.MetadataDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.motion.MotionDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ItemArrayDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.MetadataDataType;
 
 public class V1_7BProtocol extends Protocol {
     public static final DataType METADATA;
@@ -44,7 +44,7 @@ public class V1_7BProtocol extends Protocol {
 
     static {
         // custom instructions
-        METADATA = new MetadataDataType();
+        METADATA = new MetadataDataType(Type.V1_7B_METADATA);
         CHUNK = new ChunkDataType();
         ITEM = new ItemDataType();
         ITEM_ARRAY = new ItemArrayDataType(Type.V1_7B_ITEM_ARRAY, ITEM);
