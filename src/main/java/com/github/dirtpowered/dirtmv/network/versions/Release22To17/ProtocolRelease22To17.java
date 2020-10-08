@@ -31,9 +31,12 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.utils.item.LegacyItemList;
 import com.mojang.nbt.CompoundTag;
+
+import java.util.List;
 
 public class ProtocolRelease22To17 extends ServerProtocol {
 
@@ -156,6 +159,37 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x68, new TypeHolder[]{
                         data.read(0),
                         new TypeHolder(Type.V1_0R_ITEM_ARRAY, items)
+                });
+            }
+        });
+
+        addTranslator(0x18 /* MOB_SPAWN */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                List<WatchableObject> watchableObjects = (List<WatchableObject>) data.read(7).getObject();
+
+                return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x18, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        new TypeHolder(Type.V1_0_METADATA, watchableObjects)
+                });
+            }
+        });
+
+        addTranslator(0x28, /* METADATA */ new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                List<WatchableObject> watchableObjects = (List<WatchableObject>) data.read(0).getObject();
+
+                return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x28, new TypeHolder[] {
+                        new TypeHolder(Type.V1_0_METADATA, watchableObjects)
                 });
             }
         });
