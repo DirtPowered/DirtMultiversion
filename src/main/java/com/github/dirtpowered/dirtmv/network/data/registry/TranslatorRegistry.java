@@ -27,6 +27,7 @@ import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
 import com.github.dirtpowered.dirtmv.network.versions.Beta14To13.ProtocolBeta14To13;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.ProtocolBeta17to14;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthrough;
+import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthroughEncrypted;
 import com.github.dirtpowered.dirtmv.network.versions.Release22To17.ProtocolRelease22To17;
 import com.github.dirtpowered.dirtmv.network.versions.Release23To22.ProtocolRelease23To22;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.ProtocolRelease28To23;
@@ -71,7 +72,15 @@ public class TranslatorRegistry {
 
         // check if translating is needed
         if (from == versionTo) {
-            return Collections.singletonList(new ProtocolPassthrough(from, versionTo));
+            ServerProtocol serverProtocol;
+
+            // starting from r1.3 the whole connections is encrypted
+            if (from.getProtocolId() >= 39) {
+                serverProtocol = new ProtocolPassthroughEncrypted(from, versionTo);
+            } else {
+                serverProtocol = new ProtocolPassthrough(from, versionTo);
+            }
+            return Collections.singletonList(serverProtocol);
         }
 
         int clientProtocol = from.getProtocolId();
