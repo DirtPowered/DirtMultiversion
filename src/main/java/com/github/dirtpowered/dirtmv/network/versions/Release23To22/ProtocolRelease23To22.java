@@ -100,5 +100,13 @@ public class ProtocolRelease23To22 extends ServerProtocol {
                 }
             }
         });
+
+        addTranslator(0xFA /* CUSTOM PAYLOAD */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                return new PacketData(-1); // cancel packet
+            }
+        });
     }
 }
