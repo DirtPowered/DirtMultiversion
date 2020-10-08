@@ -28,8 +28,10 @@ import lombok.Data;
 @Data
 public class UserData {
     private MinecraftVersion clientVersion;
+    private boolean protocolDetected;
 
     public UserData() {
         this.clientVersion = MinecraftVersion.B_1_6_6;
+        this.protocolDetected = false;
     }
 }

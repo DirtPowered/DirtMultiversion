@@ -55,7 +55,7 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
     }
 
     private void setUserProtocol(boolean flag, ByteBuf buffer) {
-        if (!flag) {
+        if (!flag && !userData.isProtocolDetected()) {
             buffer.markReaderIndex();
 
             MinecraftVersion clientVersion = MinecraftVersion.B_1_6_6;
@@ -63,6 +63,8 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
 
             if (packetId == 0x01 /* login */) {
                 clientVersion = MinecraftVersion.fromProtocolVersion(buffer.readInt());
+
+                userData.setProtocolDetected(true);
             } else if (packetId == 0xFE /* server ping request */) {
 
                 // first version with server-ping-list protocol
@@ -74,10 +76,12 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
 
                 if (protocol != 0) {
                     clientVersion = MinecraftVersion.fromProtocolVersion(protocol);
+                    userData.setProtocolDetected(true);
                 }
             }
 
             buffer.resetReaderIndex();
+
             userData.setClientVersion(clientVersion);
         }
     }
