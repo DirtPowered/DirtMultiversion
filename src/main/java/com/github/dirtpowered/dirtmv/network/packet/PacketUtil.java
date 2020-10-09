@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.network.packet;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.ProtocolRegistry;
+import com.github.dirtpowered.dirtmv.utils.PreNettyPacketNames;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class PacketUtil {
         DataType[] parts = protocol.dataTypes[packetId];
 
         if (parts == null)
-            throw new IOException("Unknown packet id " + packetId);
+            throw new IOException("Unknown packet id " + packetId + " (" + PreNettyPacketNames.getPacketName(packetId) + ")");
 
         TypeHolder[] typeHolders = new TypeHolder[parts.length];
 

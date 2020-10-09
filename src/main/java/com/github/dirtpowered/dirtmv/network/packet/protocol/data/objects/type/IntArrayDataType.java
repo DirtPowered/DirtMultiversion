@@ -20,35 +20,37 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
-public enum Type {
-    BYTE,
-    DOUBLE,
-    FLOAT,
-    INT,
-    LONG,
-    SHORT,
-    STRING,
-    BYTE_BYTE_ARRAY,
-    SHORT_BYTE_ARRAY,
-    UTF8_STRING,
-    V1_7B_CHUNK,
-    V1_7B_ITEM,
-    V1_7B_ITEM_ARRAY,
-    V1_7B_METADATA,
-    V1_8B_ITEM,
-    POSITION_ARRAY,
-    MOTION,
-    V1_7MULTIBLOCK_ARRAY,
-    V1_0R_ITEM,
-    V1_0R_ITEM_ARRAY,
-    V1_2MULTIBLOCK_ARRAY,
-    V1_2_CHUNK,
-    V1_0_METADATA,
-    V1_3R_ITEM,
-    V1_3R_ITEM_ARRAY,
-    V1_3_CHUNK,
-    V1_3_METADATA,
-    BYTE_INT_ARRAY
+import com.github.dirtpowered.dirtmv.network.packet.DataType;
+import com.github.dirtpowered.dirtmv.network.packet.Type;
+import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import io.netty.buffer.ByteBuf;
+
+public class IntArrayDataType extends DataType<int[]> {
+
+    public IntArrayDataType() {
+        super(Type.BYTE_INT_ARRAY);
+    }
+
+    @Override
+    public int[] read(ByteBuf buffer) {
+        int[] array = new int[buffer.readByte()];
+
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = buffer.readInt();
+        }
+        return new int[0];
+    }
+
+    @Override
+    public void write(TypeHolder typeHolder, ByteBuf buffer) {
+        int[] array = (int[]) typeHolder.getObject();
+
+        buffer.writeByte(array.length);
+
+        for (int i : array) {
+            buffer.writeInt(i);
+        }
+    }
 }

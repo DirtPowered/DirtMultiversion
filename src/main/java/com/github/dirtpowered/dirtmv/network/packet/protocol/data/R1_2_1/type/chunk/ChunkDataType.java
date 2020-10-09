@@ -34,8 +34,8 @@ import java.util.zip.Inflater;
 
 public class ChunkDataType extends DataType<V1_2Chunk> {
 
-    public ChunkDataType() {
-        super(Type.V1_2_CHUNK);
+    public ChunkDataType(Type type) {
+        super(type);
     }
 
     @Override
@@ -49,7 +49,8 @@ public class ChunkDataType extends DataType<V1_2Chunk> {
         short additionalBitmap = buffer.readShort();
 
         int compressedDataSize = buffer.readInt();
-        buffer.readInt(); // unused
+
+        if (getType() == Type.V1_2_CHUNK) buffer.readInt(); // unused
 
         byte[] chunk = new byte[compressedDataSize];
         buffer.readBytes(chunk, 0, compressedDataSize);
@@ -94,7 +95,7 @@ public class ChunkDataType extends DataType<V1_2Chunk> {
         buffer.writeShort(chunk.getAdditionalBitmap() & 0xffff);
 
         buffer.writeInt(chunk.getCompressedDataSize());
-        buffer.writeInt(0);
+        if (getType() == Type.V1_2_CHUNK) buffer.writeInt(0);
 
         buffer.writeBytes(chunk.getData(), 0, chunk.getCompressedDataSize());
     }

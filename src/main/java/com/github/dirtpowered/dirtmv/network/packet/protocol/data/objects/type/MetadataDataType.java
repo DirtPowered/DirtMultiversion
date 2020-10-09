@@ -28,6 +28,7 @@ import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.V1_7BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.V1_0RProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
 import io.netty.buffer.ByteBuf;
@@ -74,12 +75,16 @@ public class MetadataDataType extends DataType<List<WatchableObject>> {
                     value = new WatchableObject(type, index, Protocol.STRING.read(buffer));
                     break;
                 case ITEM:
-                    if (getType() == Type.V1_7B_METADATA) {
-
-                        value = new WatchableObject(type, index, V1_7BProtocol.ITEM.read(buffer));
-                    } else if (getType() == Type.V1_0_METADATA) {
-
-                        value = new WatchableObject(type, index, V1_0RProtocol.ITEM.read(buffer));
+                    switch (getType()) {
+                        case V1_7B_METADATA:
+                            value = new WatchableObject(type, index, V1_7BProtocol.ITEM.read(buffer));
+                            break;
+                        case V1_0_METADATA:
+                            value = new WatchableObject(type, index, V1_0RProtocol.ITEM.read(buffer));
+                            break;
+                        case V1_3_METADATA:
+                            value = new WatchableObject(type, index, V1_3_1RProtocol.ITEM.read(buffer));
+                            break;
                     }
                     break;
                 case POSITION:
@@ -126,12 +131,16 @@ public class MetadataDataType extends DataType<List<WatchableObject>> {
                     Protocol.STRING.write(new TypeHolder(Type.STRING, watchableObject.getValue()), buffer);
                     break;
                 case ITEM:
-                    if (getType() == Type.V1_7B_METADATA) {
-
-                        V1_7BProtocol.ITEM.write(new TypeHolder(Type.V1_7B_ITEM, watchableObject.getValue()), buffer);
-                    } else if (getType() == Type.V1_0_METADATA) {
-
-                        V1_0RProtocol.ITEM.write(new TypeHolder(Type.V1_0R_ITEM, watchableObject.getValue()), buffer);
+                    switch (getType()) {
+                        case V1_7B_METADATA:
+                            V1_7BProtocol.ITEM.write(new TypeHolder(Type.V1_7B_ITEM, watchableObject.getValue()), buffer);
+                            break;
+                        case V1_0_METADATA:
+                            V1_0RProtocol.ITEM.write(new TypeHolder(Type.V1_0R_ITEM, watchableObject.getValue()), buffer);
+                            break;
+                        case V1_3_METADATA:
+                            V1_3_1RProtocol.ITEM.write(new TypeHolder(Type.V1_0R_ITEM, watchableObject.getValue()), buffer);
+                            break;
                     }
                     break;
                 case POSITION:

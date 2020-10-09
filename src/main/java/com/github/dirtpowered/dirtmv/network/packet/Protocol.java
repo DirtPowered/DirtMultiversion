@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.B
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ByteDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.DoubleDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.FloatDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.IntArrayDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.IntDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.LongDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ShortDataType;
@@ -43,6 +44,7 @@ public abstract class Protocol {
     protected static final DataType UTF8_STRING = new UTF8StringDataType();
     protected static final DataType SHORT_BYTE_ARRAY = new ByteArrayDataType(Type.SHORT_BYTE_ARRAY);
     protected static final DataType BYTE_BYTE_ARRAY = new ByteArrayDataType(Type.BYTE_BYTE_ARRAY);
+    protected static final DataType BYTE_INT_ARRAY = new IntArrayDataType();
     protected DataType[][] dataTypes = new DataType[256][];
 
     public Protocol() {

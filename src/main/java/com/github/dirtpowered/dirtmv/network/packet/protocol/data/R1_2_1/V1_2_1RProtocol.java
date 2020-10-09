@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Protocol;
+import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.V1_7BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.V1_0RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.type.arrays.MultiBlockArrayDataType;
@@ -37,7 +38,7 @@ public class V1_2_1RProtocol extends Protocol {
     static {
         // custom instructions
         MULTIBLOCK_ARRAY = new MultiBlockArrayDataType();
-        CHUNK = new ChunkDataType();
+        CHUNK = new ChunkDataType(Type.V1_2_CHUNK);
     }
 
     @Override
