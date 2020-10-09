@@ -20,23 +20,25 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.encryption;
+package com.github.dirtpowered.dirtmv.network.server.codec.encryption;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.handler.codec.MessageToByteEncoder;
 
 import javax.crypto.Cipher;
-import java.util.List;
+import javax.crypto.ShortBufferException;
 
-public class PacketDecryptor extends MessageToMessageDecoder<ByteBuf> {
+public class PacketEncryptionCodec extends MessageToByteEncoder<ByteBuf> {
 
-    public PacketDecryptor(Cipher cipher) {
+    private EncryptionHandler encryptionHandler;
 
+    public PacketEncryptionCodec(Cipher cipher) {
+        this.encryptionHandler = new EncryptionHandler(cipher);
     }
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf buf, List<Object> list) {
-
+    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf buf, ByteBuf byteBuf) throws ShortBufferException {
+        encryptionHandler.encrypt(buf, byteBuf);
     }
 }

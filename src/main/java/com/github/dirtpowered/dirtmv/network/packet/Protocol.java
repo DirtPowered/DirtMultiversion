@@ -33,7 +33,6 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.S
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.UTF8StringDataType;
 
 public abstract class Protocol {
-    // data type
     public static final DataType INT = new IntDataType();
     public static final DataType BYTE = new ByteDataType();
     public static final DataType SHORT = new ShortDataType();
@@ -45,6 +44,10 @@ public abstract class Protocol {
     protected static final DataType SHORT_BYTE_ARRAY = new ByteArrayDataType(Type.SHORT_BYTE_ARRAY);
     protected static final DataType BYTE_BYTE_ARRAY = new ByteArrayDataType(Type.BYTE_BYTE_ARRAY);
     protected DataType[][] dataTypes = new DataType[256][];
+
+    public Protocol() {
+        registerPackets();
+    }
 
     public abstract void registerPackets();
 }

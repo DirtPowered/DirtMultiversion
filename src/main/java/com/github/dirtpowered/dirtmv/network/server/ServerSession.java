@@ -167,7 +167,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
         channel.writeAndFlush(packetData);
     }
 
-    private ClientSession getClientSession() {
+    public ClientSession getClientSession() {
         if (main.getSessionRegistry().getSession(key) == null)
             return null;
 

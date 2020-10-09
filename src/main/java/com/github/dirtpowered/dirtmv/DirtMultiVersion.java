@@ -30,6 +30,7 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_8.V1_8BProt
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.V1_0RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_1.V1_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.V1_2_1RProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.server.Server;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
 import lombok.Getter;
@@ -46,28 +47,14 @@ public class DirtMultiVersion {
     private Random sharedRandom;
 
     private DirtMultiVersion() {
-        V1_7BProtocol v1_7BProtocol = new V1_7BProtocol();
-        v1_7BProtocol.registerPackets();
-
-        V1_8BProtocol v1_8BProtocol = new V1_8BProtocol();
-        v1_8BProtocol.registerPackets();
-
-        V1_0RProtocol v1_0RProtocol = new V1_0RProtocol();
-        v1_0RProtocol.registerPackets();
-
-        V1_1RProtocol v1_1RProtocol = new V1_1RProtocol();
-        v1_1RProtocol.registerPackets();
-
-        V1_2_1RProtocol v1_2_1RProtocol = new V1_2_1RProtocol();
-        v1_2_1RProtocol.registerPackets();
-
-        ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_6_6, v1_7BProtocol);
-        ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_7_3, v1_7BProtocol);
-        ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_8_1, v1_8BProtocol);
-        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_0, v1_0RProtocol);
-        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_1, v1_1RProtocol);
-        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_2_1, v1_2_1RProtocol);
-        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_2_4, v1_2_1RProtocol);
+        ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_6_6, new V1_7BProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_7_3, new V1_7BProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_8_1, new V1_8BProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_0, new V1_0RProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_1, new V1_1RProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_2_1, new V1_2_1RProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_2_4, new V1_2_1RProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_3_1, new V1_3_1RProtocol());
 
         translatorRegistry = new TranslatorRegistry();
         sessionRegistry = new SessionRegistry();

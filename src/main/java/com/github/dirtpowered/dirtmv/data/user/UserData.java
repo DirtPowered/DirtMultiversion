@@ -23,12 +23,17 @@
 package com.github.dirtpowered.dirtmv.data.user;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import lombok.Data;
+
+import javax.crypto.SecretKey;
 
 @Data
 public class UserData {
     private MinecraftVersion clientVersion;
     private boolean protocolDetected;
+    private PacketData proxyRequest;
+    private SecretKey secretKey;
 
     public UserData() {
         this.clientVersion = MinecraftVersion.B_1_6_6;

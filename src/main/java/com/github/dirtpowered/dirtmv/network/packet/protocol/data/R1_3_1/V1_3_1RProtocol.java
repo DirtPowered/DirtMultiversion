@@ -20,21 +20,24 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.encryption;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1;
 
-import io.netty.channel.socket.SocketChannel;
+import com.github.dirtpowered.dirtmv.network.packet.DataType;
+import com.github.dirtpowered.dirtmv.network.packet.Protocol;
 
-import javax.crypto.SecretKey;
+public class V1_3_1RProtocol extends Protocol {
 
-public class EncryptionUtils {
-
-    /**
-     * Enables proxy-side connection encryption
-     *
-     * @param channel {@link io.netty.channel.socket.SocketChannel channel} netty channel
-     * @param sharedKey {@link javax.crypto.SecretKey key} shared secret key
-     */
-    public static void setEncryption(SocketChannel channel, SecretKey sharedKey) {
-
+    @Override
+    public void registerPackets() {
+        dataTypes[0] = new DataType[]{INT};
+        dataTypes[1] = new DataType[]{INT, STRING, BYTE, BYTE, BYTE, BYTE, BYTE};
+        dataTypes[2] = new DataType[]{BYTE, STRING, STRING, INT};
+        dataTypes[3] = new DataType[]{STRING};
+        dataTypes[4] = new DataType[]{LONG};
+        dataTypes[205] = new DataType[]{BYTE};
+        dataTypes[254] = new DataType[]{};
+        dataTypes[252] = new DataType[]{SHORT_BYTE_ARRAY, SHORT_BYTE_ARRAY};
+        dataTypes[253] = new DataType[]{STRING, SHORT_BYTE_ARRAY, SHORT_BYTE_ARRAY};
+        dataTypes[255] = new DataType[]{STRING};
     }
 }
