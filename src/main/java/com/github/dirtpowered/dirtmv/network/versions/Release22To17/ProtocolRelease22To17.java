@@ -52,7 +52,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
                     return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x01, new TypeHolder[]{
-                            new TypeHolder(Type.INT, 17), // protocol version
+                            set(Type.INT, 17), // protocol version
                             data.read(1),
                             data.read(2),
                             data.read(3),
@@ -77,7 +77,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                         data.read(1),
                         data.read(2),
                         data.read(3),
-                        new TypeHolder(Type.V1_7B_ITEM, data.read(4).getObject())
+                        set(Type.V1_7B_ITEM, data.read(4).getObject())
                 });
             }
         });
@@ -93,7 +93,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                         data.read(2),
                         data.read(3),
                         data.read(4),
-                        new TypeHolder(Type.V1_7B_ITEM, data.read(5).getObject())
+                        set(Type.V1_7B_ITEM, data.read(5).getObject())
                 });
             }
         });
@@ -105,7 +105,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
                 return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x6B, new TypeHolder[]{
                         data.read(0),
-                        new TypeHolder(Type.V1_0R_ITEM, data.read(1).getObject())
+                        set(Type.V1_0R_ITEM, data.read(1).getObject())
                 });
             }
         });
@@ -120,9 +120,9 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 short totalExperience = ((Byte) data.read(0).getObject()).shortValue();
 
                 return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x2B, new TypeHolder[]{
-                        new TypeHolder(Type.FLOAT, exp),
-                        new TypeHolder(Type.SHORT, level),
-                        new TypeHolder(Type.SHORT, totalExperience)
+                        set(Type.FLOAT, exp),
+                        set(Type.SHORT, level),
+                        set(Type.SHORT, totalExperience)
                 });
             }
         });
@@ -139,7 +139,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x67, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
-                        new TypeHolder(Type.V1_0R_ITEM, item)
+                        set(Type.V1_0R_ITEM, item)
                 });
             }
         });
@@ -158,7 +158,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
                 return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x68, new TypeHolder[]{
                         data.read(0),
-                        new TypeHolder(Type.V1_0R_ITEM_ARRAY, items)
+                        set(Type.V1_0R_ITEM_ARRAY, items)
                 });
             }
         });
@@ -177,7 +177,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                         data.read(4),
                         data.read(5),
                         data.read(6),
-                        new TypeHolder(Type.V1_0_METADATA, watchableObjects)
+                        set(Type.V1_0_METADATA, watchableObjects)
                 });
             }
         });
@@ -189,7 +189,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 List<WatchableObject> watchableObjects = (List<WatchableObject>) data.read(0).getObject();
 
                 return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x28, new TypeHolder[] {
-                        new TypeHolder(Type.V1_0_METADATA, watchableObjects)
+                        set(Type.V1_0_METADATA, watchableObjects)
                 });
             }
         });

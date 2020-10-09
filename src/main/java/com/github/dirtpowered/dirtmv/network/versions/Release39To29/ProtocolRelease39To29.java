@@ -30,7 +30,10 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.Motion;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_2Chunk;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.utils.encryption.EncryptionUtils;
 import lombok.SneakyThrows;
@@ -38,6 +41,7 @@ import lombok.SneakyThrows;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.security.PublicKey;
+import java.util.List;
 
 public class ProtocolRelease39To29 extends ServerProtocol {
 
@@ -112,22 +116,28 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                     String username = session.getUserData().getUsername();
 
                     PacketData login = PacketUtil.createPacket(MinecraftVersion.R1_2_4, 0x01, new TypeHolder[]{
-                            new TypeHolder(Type.INT, 29), // protocol version
-                            new TypeHolder(Type.STRING, username),
-                            new TypeHolder(Type.STRING, "NORMAL"),
-                            new TypeHolder(Type.INT, 0),
-                            new TypeHolder(Type.INT, 0),
-                            new TypeHolder(Type.BYTE, 0),
-                            new TypeHolder(Type.BYTE, 0),
-                            new TypeHolder(Type.BYTE, 0),
+                            set(Type.INT, 29), // protocol version
+                            set(Type.STRING, username),
+                            set(Type.STRING, "NORMAL"),
+                            set(Type.INT, 0),
+                            set(Type.INT, 0),
+                            set(Type.BYTE, 0),
+                            set(Type.BYTE, 0),
+                            set(Type.BYTE, 0),
                     });
 
                     session.sendPacket(login, PacketDirection.CLIENT_TO_SERVER, ProtocolRelease39To29.class);
 
                     return new PacketData(-1);
                 } else {
-                    //TODO: Respawn packet
-                    return null;
+
+                    return PacketUtil.createPacket(MinecraftVersion.R1_2_4, 0x09, new TypeHolder[]{
+                            set(Type.INT, 0),
+                            set(Type.BYTE, 0),
+                            set(Type.BYTE, 0),
+                            set(Type.SHORT, 0),
+                            set(Type.STRING, "NORMAL"),
+                    });
                 }
             }
         });
@@ -140,8 +150,8 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x01, new TypeHolder[]{
                         data.read(0),
                         data.read(2),
-                        new TypeHolder(Type.BYTE, data.read(3).getObject()),
-                        new TypeHolder(Type.BYTE, data.read(4).getObject()),
+                        set(Type.BYTE, data.read(3).getObject()),
+                        set(Type.BYTE, data.read(4).getObject()),
                         data.read(5),
                         data.read(6),
                         data.read(7),
@@ -184,7 +194,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 V1_2Chunk chunk = (V1_2Chunk) data.read(0).getObject();
 
                 return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x33, new TypeHolder[]{
-                        new TypeHolder(Type.V1_3_CHUNK, chunk)
+                        set(Type.V1_3_CHUNK, chunk)
                 });
             }
         });
@@ -198,7 +208,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         data.read(0),
                         data.read(1),
                         data.read(2),
-                        new TypeHolder(Type.SHORT, ((Byte) data.read(3).getObject()).shortValue()),
+                        set(Type.SHORT, ((Byte) data.read(3).getObject()).shortValue()),
                         data.read(4)
                 });
             }
@@ -209,7 +219,13 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return new PacketData(-1);
+                ItemStack oldItem = (ItemStack) data.read(2).getObject();
+
+                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x67, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        set(Type.V1_3R_ITEM, oldItem)
+                });
             }
         });
 
@@ -229,7 +245,77 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 int entityId = (int) data.read(0).getObject();
 
                 return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x1D, new TypeHolder[]{
-                        new TypeHolder(Type.BYTE_INT_ARRAY, new int[]{entityId})
+                        set(Type.BYTE_INT_ARRAY, new int[]{entityId})
+                });
+            }
+        });
+
+        addTranslator(0x18, /* MOB SPAWN */ new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                List<WatchableObject> watchableObjects = (List<WatchableObject>) data.read(8).getObject();
+
+                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x18, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        set(Type.SHORT, 0),
+                        set(Type.SHORT, 0),
+                        set(Type.SHORT, 0),
+                        set(Type.V1_3_METADATA, watchableObjects)
+                });
+            }
+        });
+
+        addTranslator(0x28, /* METADATA */ new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                List<WatchableObject> watchableObjects = (List<WatchableObject>) data.read(0).getObject();
+
+                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x28, new TypeHolder[]{
+                        set(Type.V1_3_METADATA, watchableObjects)
+                });
+            }
+        });
+
+        addTranslator(0x17, /* VEHICLE SPAWN */ new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                Motion motion = (Motion) data.read(5).getObject();
+
+                int throwerId = motion.getThrowerId();
+                byte type = (byte) data.read(1).getObject();
+
+                switch (type) {
+                    case 70:
+                        throwerId = 12;
+                        break;
+                    case 71:
+                        throwerId = 13;
+                        type = 70;
+                        break;
+                    case 74:
+                        throwerId = 122;
+                        break;
+                }
+
+                motion.setThrowerId(throwerId);
+
+                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x17, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.BYTE, type),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.MOTION, motion)
                 });
             }
         });

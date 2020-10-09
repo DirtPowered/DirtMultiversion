@@ -53,12 +53,12 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
                     return PacketUtil.createPacket(MinecraftVersion.R1_1, 0x01, new TypeHolder[]{
-                            new TypeHolder(Type.INT, 23),
+                            set(Type.INT, 23),
                             data.read(1),
-                            new TypeHolder(Type.LONG, 0L),
+                            set(Type.LONG, 0L),
                             data.read(2),
                             data.read(3),
-                            new TypeHolder(Type.BYTE, ((Integer) data.read(4).getObject()).byteValue()),
+                            set(Type.BYTE, ((Integer) data.read(4).getObject()).byteValue()),
                             data.read(5),
                             data.read(6),
                             data.read(7)
@@ -70,7 +70,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                             data.read(1),
                             data.read(3),
                             data.read(4),
-                            new TypeHolder(Type.INT, ((Byte) data.read(5).getObject()).intValue()),
+                            set(Type.INT, ((Byte) data.read(5).getObject()).intValue()),
                             data.read(6),
                             data.read(7),
                             data.read(8)
@@ -109,7 +109,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x34, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
-                        new TypeHolder(Type.V1_2MULTIBLOCK_ARRAY, newFormat)
+                        set(Type.V1_2MULTIBLOCK_ARRAY, newFormat)
                 });
             }
         });
@@ -127,7 +127,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                         data.read(4),
                         data.read(5),
                         data.read(6),
-                        new TypeHolder(Type.BYTE, 0), // head yaw
+                        set(Type.BYTE, 0), // head yaw
                         data.read(7),
                 });
             }
@@ -140,17 +140,17 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
                     return PacketUtil.createPacket(MinecraftVersion.R1_1, 0x09, new TypeHolder[]{
-                            new TypeHolder(Type.BYTE, data.read(0).getObject()),
+                            set(Type.BYTE, data.read(0).getObject()),
                             data.read(1),
                             data.read(2),
                             data.read(3),
-                            new TypeHolder(Type.LONG, 0L), // seed
+                            set(Type.LONG, 0L), // seed
                             data.read(4),
                     });
                 } else {
 
                     return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x09, new TypeHolder[]{
-                            new TypeHolder(Type.INT, ((Byte) data.read(0).getObject()).intValue()),
+                            set(Type.INT, ((Byte) data.read(0).getObject()).intValue()),
                             data.read(1),
                             data.read(2),
                             data.read(3),

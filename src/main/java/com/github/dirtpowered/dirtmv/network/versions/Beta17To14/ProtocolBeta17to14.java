@@ -49,7 +49,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
 
                 PacketData packetData = PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0xFF, new TypeHolder[]{
-                        new TypeHolder(Type.STRING, "A Minecraft Server§0§20")
+                        set(Type.STRING, "A Minecraft Server§0§20")
                 });
 
                 session.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, ProtocolBeta17to14.class);
@@ -64,7 +64,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
                     return PacketUtil.createPacket(MinecraftVersion.B_1_7_3, 0x01, new TypeHolder[]{
-                            new TypeHolder(Type.INT, 14), // INT
+                            set(Type.INT, 14), // INT
                             data.read(1), // STRING
                             data.read(2), // LONG
                             data.read(4) // BYTE
@@ -75,11 +75,11 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                             data.read(0), // INT - entityId
                             data.read(1), // STRING - empty
                             data.read(2), // LONG - world seed
-                            new TypeHolder(Type.INT, 0), // INT - gameMode
+                            set(Type.INT, 0), // INT - gameMode
                             data.read(3), // BYTE - dimension
-                            new TypeHolder(Type.BYTE, 0), // BYTE - difficulty
-                            new TypeHolder(Type.BYTE, -128), // BYTE - world height
-                            new TypeHolder(Type.BYTE, 20), // BYTE - maxPlayers
+                            set(Type.BYTE, 0), // BYTE - difficulty
+                            set(Type.BYTE, -128), // BYTE - world height
+                            set(Type.BYTE, 20), // BYTE - maxPlayers
                     });
                 }
             }
@@ -92,8 +92,8 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
                 return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x08, new TypeHolder[]{
                         data.read(0),
-                        new TypeHolder(Type.SHORT, 6),
-                        new TypeHolder(Type.FLOAT, 0.0F),
+                        set(Type.SHORT, 6),
+                        set(Type.FLOAT, 0.0F),
 
                 });
             }
@@ -114,10 +114,10 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 } else {
                     packetData = PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x09, new TypeHolder[]{
                             data.read(0),
-                            new TypeHolder(Type.BYTE, 0),
-                            new TypeHolder(Type.BYTE, 0),
-                            new TypeHolder(Type.SHORT, 128),
-                            new TypeHolder(Type.LONG, 0),
+                            set(Type.BYTE, 0),
+                            set(Type.BYTE, 0),
+                            set(Type.SHORT, 128),
+                            set(Type.LONG, 0),
                     });
                 }
 
@@ -133,7 +133,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x64, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
-                        new TypeHolder(Type.STRING, data.read(2).getObject()),
+                        set(Type.STRING, data.read(2).getObject()),
                         data.read(3)
                 });
             }
@@ -146,7 +146,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
                 return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x46, new TypeHolder[]{
                         data.read(0),
-                        new TypeHolder(Type.BYTE, 0)
+                        set(Type.BYTE, 0)
                 });
             }
         });

@@ -47,7 +47,7 @@ public class ProtocolBeta14To13 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
                 return PacketUtil.createPacket(MinecraftVersion.B_1_6_6, 0x01, new TypeHolder[]{
-                        dir == PacketDirection.CLIENT_TO_SERVER ? new TypeHolder(Type.INT, 13) : data.read(0),
+                        dir == PacketDirection.CLIENT_TO_SERVER ? set(Type.INT, 13) : data.read(0),
 
                         data.read(1),
                         data.read(2),

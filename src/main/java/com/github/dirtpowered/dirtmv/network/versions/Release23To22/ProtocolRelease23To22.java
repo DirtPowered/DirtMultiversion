@@ -47,7 +47,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
                     return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x01, new TypeHolder[]{
-                            new TypeHolder(Type.INT, 22), // protocol version
+                            set(Type.INT, 22), // protocol version
                             data.read(1),
                             data.read(2),
                             data.read(4),
@@ -62,7 +62,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
                             data.read(0),
                             data.read(1),
                             data.read(2),
-                            new TypeHolder(Type.STRING, "NORMAL"), // world type
+                            set(Type.STRING, "NORMAL"), // world type
                             data.read(3),
                             data.read(4),
                             data.read(5),
@@ -95,7 +95,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
                             data.read(2),
                             data.read(3),
                             data.read(4),
-                            new TypeHolder(Type.STRING, "NORMAL"), // world type
+                            set(Type.STRING, "NORMAL"), // world type
                     });
                 }
             }

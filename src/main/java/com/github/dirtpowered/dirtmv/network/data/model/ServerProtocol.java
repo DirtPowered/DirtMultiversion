@@ -23,6 +23,8 @@
 package com.github.dirtpowered.dirtmv.network.data.model;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.network.packet.Type;
+import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -49,5 +51,9 @@ public abstract class ServerProtocol {
 
     public PacketTranslator getTranslatorFor(int opCode) {
         return registeredTranslators.get(opCode);
+    }
+
+    public TypeHolder set(Type type, Object obj) {
+        return new TypeHolder(type, obj);
     }
 }

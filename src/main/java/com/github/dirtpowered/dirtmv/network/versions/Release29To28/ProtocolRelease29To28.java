@@ -48,7 +48,7 @@ public class ProtocolRelease29To28 extends ServerProtocol {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
                     return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x01, new TypeHolder[]{
-                            new TypeHolder(Type.INT, 28), // protocol version
+                            set(Type.INT, 28), // protocol version
                             data.read(1),
                             data.read(2),
                             data.read(3),
