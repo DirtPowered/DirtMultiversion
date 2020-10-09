@@ -65,6 +65,7 @@ public enum PreNettyPacketNames {
     CLEAR_ENTITY_EFFECT(42),
     SET_EXPERIENCE(43),
     UPDATE_ATTRIBUTES(44),
+    PRE_CHUNK(50),
     MAP_CHUNK(51),
     MULTI_BLOCK_CHANGE(52),
     BLOCK_CHANGE(53),

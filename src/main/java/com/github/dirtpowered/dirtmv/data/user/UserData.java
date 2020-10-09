@@ -34,6 +34,7 @@ public class UserData {
     private boolean protocolDetected;
     private PacketData proxyRequest;
     private SecretKey secretKey;
+    private String username;
 
     public UserData() {
         this.clientVersion = MinecraftVersion.B_1_6_6;
