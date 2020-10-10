@@ -133,6 +133,9 @@ public class PacketData {
                 case BYTE_INT_ARRAY:
                     Protocol.BYTE_INT_ARRAY.write(typeHolder, buffer);
                     break;
+                case INT_BYTE_ARRAY:
+                    Protocol.INT_BYTE_ARRAY.write(typeHolder, buffer);
+                    break;
             }
         }
 

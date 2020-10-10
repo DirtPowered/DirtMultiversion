@@ -48,5 +48,6 @@ public enum Type {
     V1_3R_ITEM,
     V1_3R_ITEM_ARRAY,
     V1_3_CHUNK,
-    BYTE_INT_ARRAY
+    BYTE_INT_ARRAY,
+    INT_BYTE_ARRAY
 }

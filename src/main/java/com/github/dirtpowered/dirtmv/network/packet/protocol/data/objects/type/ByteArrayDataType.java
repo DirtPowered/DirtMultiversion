@@ -49,6 +49,11 @@ public class ByteArrayDataType extends DataType<byte[]> {
 
             bytes = new byte[size];
             buffer.readBytes(bytes);
+        } else if (getType() == Type.INT_BYTE_ARRAY) {
+            int size = buffer.readInt();
+
+            bytes = new byte[size];
+            buffer.readBytes(bytes);
         }
 
         return bytes;
@@ -65,6 +70,10 @@ public class ByteArrayDataType extends DataType<byte[]> {
         } else if (getType() == Type.SHORT_BYTE_ARRAY) {
 
             buffer.writeShort(byteArray.length);
+            buffer.writeBytes(byteArray);
+        } else if (getType() == Type.INT_BYTE_ARRAY) {
+
+            buffer.writeInt(byteArray.length);
             buffer.writeBytes(byteArray);
         }
     }

@@ -184,9 +184,15 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                //TODO: Unload chunk
 
-                return new PacketData(-1);
+                return PacketUtil.createPacket(0x33, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        set(Type.BYTE, 1),
+                        set(Type.SHORT, 0),
+                        set(Type.SHORT, 0),
+                        set(Type.INT_BYTE_ARRAY, new byte[0])
+                });
             }
         });
 
