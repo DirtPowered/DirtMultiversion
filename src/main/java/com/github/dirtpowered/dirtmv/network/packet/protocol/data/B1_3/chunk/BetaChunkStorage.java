@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.chunk;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.chunk;
 
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.chunk.data.NibbleArray;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.chunk.model.Chunk;

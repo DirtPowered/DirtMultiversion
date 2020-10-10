@@ -25,6 +25,9 @@ package com.github.dirtpowered.dirtmv.data;
 import lombok.Getter;
 
 public enum MinecraftVersion {
+    B1_3(9, false),
+    B1_4(10, false),
+    B1_5(11, false),
     B_1_6_6(13, false),
     B_1_7_3(14, false),
     B_1_8_1(17, false),

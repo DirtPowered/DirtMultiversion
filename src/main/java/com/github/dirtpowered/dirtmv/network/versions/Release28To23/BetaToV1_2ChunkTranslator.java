@@ -28,17 +28,17 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.chunk.BetaChunkStorage;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.chunk.BetaChunkStorage;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.chunk.V1_2ChunkStorage;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_2Chunk;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_7Chunk;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_3BChunk;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
 public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
     @Override
     public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-        V1_7Chunk oldChunk = (V1_7Chunk) data.read(0).getObject();
+        V1_3BChunk oldChunk = (V1_3BChunk) data.read(0).getObject();
 
         if (oldChunk.getXSize() * oldChunk.getYSize() * oldChunk.getZSize() != 32768) {
             return new PacketData(-1);

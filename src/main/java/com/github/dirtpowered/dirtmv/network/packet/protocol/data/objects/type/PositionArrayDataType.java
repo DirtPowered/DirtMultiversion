@@ -20,49 +20,47 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arrays;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_7MultiBlockArray;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.BlockLocation;
 import io.netty.buffer.ByteBuf;
 
-public class MultiBlockArrayDataType extends DataType<V1_7MultiBlockArray> {
+public class PositionArrayDataType extends DataType<BlockLocation[]> {
 
-    public MultiBlockArrayDataType() {
-        super(Type.V1_7MULTIBLOCK_ARRAY);
+    public PositionArrayDataType() {
+        super(Type.POSITION_ARRAY);
     }
 
     @Override
-    public V1_7MultiBlockArray read(ByteBuf buffer) {
-        int size = buffer.readShort() & '\uffff';
+    public BlockLocation[] read(ByteBuf buffer) {
+        int blockAmount = buffer.readInt();
 
-        byte[] typeArray = new byte[size];
-        byte[] metadataArray = new byte[size];
-        short[] coordsArray = new short[size];
+        BlockLocation[] blockLocations = new BlockLocation[blockAmount];
 
-        for (int i = 0; i < size; ++i)
-            coordsArray[i] = buffer.readShort();
+        for (int i = 0; i < blockAmount; i++) {
+            int locX = buffer.readByte();
+            int locY = buffer.readByte();
+            int locZ = buffer.readByte();
 
-        buffer.readBytes(typeArray);
-        buffer.readBytes(metadataArray);
+            blockLocations[i] = new BlockLocation(locX, locY, locZ);
+        }
 
-        return new V1_7MultiBlockArray(size, coordsArray, typeArray, metadataArray);
+        return blockLocations;
     }
 
     @Override
     public void write(TypeHolder typeHolder, ByteBuf buffer) {
-        V1_7MultiBlockArray multiBlockArray = (V1_7MultiBlockArray) typeHolder.getObject();
+        BlockLocation[] blockLocations = (BlockLocation[]) typeHolder.getObject();
 
-        int size = multiBlockArray.getSize();
+        buffer.writeInt(blockLocations.length);
 
-        buffer.writeShort(size);
-
-        for (int i = 0; i < size; ++i)
-            buffer.writeShort(multiBlockArray.getCoordsArray()[i]);
-
-        buffer.writeBytes(multiBlockArray.getTypesArray());
-        buffer.writeBytes(multiBlockArray.getMetadataArray());
+        for (BlockLocation record : blockLocations) {
+            buffer.writeByte(record.getX());
+            buffer.writeByte(record.getY());
+            buffer.writeByte(record.getZ());
+        }
     }
 }

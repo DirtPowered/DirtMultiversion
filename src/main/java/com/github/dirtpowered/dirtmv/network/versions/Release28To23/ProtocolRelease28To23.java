@@ -31,7 +31,7 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_2MultiBlockArray;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_7MultiBlockArray;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_3BMultiBlockArray;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
 import java.io.ByteArrayOutputStream;
@@ -85,7 +85,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
-                V1_7MultiBlockArray blockArray = (V1_7MultiBlockArray) data.read(2).getObject();
+                V1_3BMultiBlockArray blockArray = (V1_3BMultiBlockArray) data.read(2).getObject();
 
                 int totalDataSize = 4 * blockArray.getSize();
 

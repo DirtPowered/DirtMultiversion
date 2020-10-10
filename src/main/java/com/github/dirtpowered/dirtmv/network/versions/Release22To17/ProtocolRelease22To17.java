@@ -74,7 +74,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                         data.read(1),
                         data.read(2),
                         data.read(3),
-                        set(Type.V1_7B_ITEM, data.read(4).getObject())
+                        set(Type.V1_3B_ITEM, data.read(4).getObject())
                 });
             }
         });
@@ -90,7 +90,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                         data.read(2),
                         data.read(3),
                         data.read(4),
-                        set(Type.V1_7B_ITEM, data.read(5).getObject())
+                        set(Type.V1_3B_ITEM, data.read(5).getObject())
                 });
             }
         });

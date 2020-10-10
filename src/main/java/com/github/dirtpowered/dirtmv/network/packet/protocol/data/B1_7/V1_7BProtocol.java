@@ -24,34 +24,9 @@ package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Protocol;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arrays.MultiBlockArrayDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arrays.PositionArrayDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.chunk.ChunkDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.item.ItemDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.motion.MotionDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ItemArrayDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.MetadataDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.V1_3BProtocol;
 
 public class V1_7BProtocol extends Protocol {
-    public static final DataType METADATA;
-    public static final DataType CHUNK;
-    public static final DataType ITEM;
-    public static final DataType ITEM_ARRAY;
-    public static final DataType POSITION_ARRAY;
-    public static final DataType MOTION;
-    public static final DataType MULTIBLOCK_ARRAY;
-
-    static {
-        // custom instructions
-        METADATA = new MetadataDataType(Type.V1_7B_METADATA);
-        CHUNK = new ChunkDataType();
-        ITEM = new ItemDataType();
-        ITEM_ARRAY = new ItemArrayDataType(Type.V1_7B_ITEM_ARRAY, ITEM);
-        POSITION_ARRAY = new PositionArrayDataType();
-        MOTION = new MotionDataType();
-        MULTIBLOCK_ARRAY = new MultiBlockArrayDataType();
-    }
 
     @Override
     public void registerPackets() {
@@ -70,7 +45,7 @@ public class V1_7BProtocol extends Protocol {
         dataTypes[12] = new DataType[]{FLOAT, FLOAT, BYTE};
         dataTypes[13] = new DataType[]{DOUBLE, DOUBLE, DOUBLE, DOUBLE, FLOAT, FLOAT, BYTE};
         dataTypes[14] = new DataType[]{BYTE, INT, BYTE, INT, BYTE};
-        dataTypes[15] = new DataType[]{INT, BYTE, INT, BYTE, ITEM};
+        dataTypes[15] = new DataType[]{INT, BYTE, INT, BYTE, V1_3BProtocol.ITEM};
         dataTypes[16] = new DataType[]{SHORT};
         dataTypes[17] = new DataType[]{INT, BYTE, INT, BYTE, INT};
         dataTypes[18] = new DataType[]{INT, BYTE};
@@ -78,8 +53,8 @@ public class V1_7BProtocol extends Protocol {
         dataTypes[20] = new DataType[]{INT, STRING, INT, INT, INT, BYTE, BYTE, SHORT};
         dataTypes[21] = new DataType[]{INT, SHORT, BYTE, SHORT, INT, INT, INT, BYTE, BYTE, BYTE};
         dataTypes[22] = new DataType[]{INT, INT};
-        dataTypes[23] = new DataType[]{INT, BYTE, INT, INT, INT, MOTION};
-        dataTypes[24] = new DataType[]{INT, BYTE, INT, INT, INT, BYTE, BYTE, METADATA};
+        dataTypes[23] = new DataType[]{INT, BYTE, INT, INT, INT, V1_3BProtocol.MOTION};
+        dataTypes[24] = new DataType[]{INT, BYTE, INT, INT, INT, BYTE, BYTE, V1_3BProtocol.METADATA};
         dataTypes[25] = new DataType[]{INT, STRING, INT, INT, INT, INT};
         dataTypes[27] = new DataType[]{FLOAT, FLOAT, FLOAT, FLOAT, BYTE, BYTE};
         dataTypes[28] = new DataType[]{INT, SHORT, SHORT, SHORT};
@@ -91,21 +66,21 @@ public class V1_7BProtocol extends Protocol {
         dataTypes[34] = new DataType[]{INT, INT, INT, INT, BYTE, BYTE};
         dataTypes[38] = new DataType[]{INT, BYTE};
         dataTypes[39] = new DataType[]{INT, INT};
-        dataTypes[40] = new DataType[]{METADATA};
+        dataTypes[40] = new DataType[]{V1_3BProtocol.METADATA};
         dataTypes[50] = new DataType[]{INT, INT, BYTE};
-        dataTypes[51] = new DataType[]{CHUNK};
-        dataTypes[52] = new DataType[]{INT, INT, MULTIBLOCK_ARRAY};
+        dataTypes[51] = new DataType[]{V1_3BProtocol.CHUNK};
+        dataTypes[52] = new DataType[]{INT, INT, V1_3BProtocol.MULTIBLOCK_ARRAY};
         dataTypes[53] = new DataType[]{INT, BYTE, INT, BYTE, BYTE};
         dataTypes[54] = new DataType[]{INT, SHORT, INT, BYTE, BYTE};
-        dataTypes[60] = new DataType[]{DOUBLE, DOUBLE, DOUBLE, FLOAT, POSITION_ARRAY};
+        dataTypes[60] = new DataType[]{DOUBLE, DOUBLE, DOUBLE, FLOAT, V1_3BProtocol.POSITION_ARRAY};
         dataTypes[61] = new DataType[]{INT, INT, BYTE, INT, INT};
         dataTypes[70] = new DataType[]{BYTE};
         dataTypes[71] = new DataType[]{INT, BYTE, INT, INT, INT};
         dataTypes[100] = new DataType[]{BYTE, BYTE, UTF8_STRING, BYTE};
         dataTypes[101] = new DataType[]{BYTE};
-        dataTypes[102] = new DataType[]{BYTE, SHORT, BYTE, SHORT, BYTE, ITEM};
-        dataTypes[103] = new DataType[]{BYTE, SHORT, ITEM};
-        dataTypes[104] = new DataType[]{BYTE, ITEM_ARRAY};
+        dataTypes[102] = new DataType[]{BYTE, SHORT, BYTE, SHORT, BYTE, V1_3BProtocol.ITEM};
+        dataTypes[103] = new DataType[]{BYTE, SHORT, V1_3BProtocol.ITEM};
+        dataTypes[104] = new DataType[]{BYTE, V1_3BProtocol.ITEM_ARRAY};
         dataTypes[105] = new DataType[]{BYTE, SHORT, SHORT};
         dataTypes[106] = new DataType[]{BYTE, SHORT, BYTE};
         dataTypes[130] = new DataType[]{INT, SHORT, INT, STRING, STRING, STRING, STRING};

@@ -20,26 +20,26 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.chunk;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.type.chunk;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_7Chunk;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_3BChunk;
 import io.netty.buffer.ByteBuf;
 
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-public class ChunkDataType extends DataType<V1_7Chunk> {
+public class ChunkDataType extends DataType<V1_3BChunk> {
 
     public ChunkDataType() {
-        super(Type.V1_7B_CHUNK);
+        super(Type.V1_3B_CHUNK);
     }
 
     @Override
-    public V1_7Chunk read(ByteBuf buffer) {
+    public V1_3BChunk read(ByteBuf buffer) {
         int x = buffer.readInt();
         int y = buffer.readShort();
         int z = buffer.readInt();
@@ -66,12 +66,12 @@ public class ChunkDataType extends DataType<V1_7Chunk> {
             inflater.end();
         }
 
-        return new V1_7Chunk(x, y, z, xSize, ySize, zSize, chunk);
+        return new V1_3BChunk(x, y, z, xSize, ySize, zSize, chunk);
     }
 
     @Override
     public void write(TypeHolder typeHolder, ByteBuf buffer) {
-        V1_7Chunk data1 = (V1_7Chunk) typeHolder.getObject();
+        V1_3BChunk data1 = (V1_3BChunk) typeHolder.getObject();
 
         buffer.writeInt(data1.getX());
         buffer.writeShort(data1.getY());

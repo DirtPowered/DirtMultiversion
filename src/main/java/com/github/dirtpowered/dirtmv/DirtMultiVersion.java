@@ -25,6 +25,9 @@ package com.github.dirtpowered.dirtmv;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.data.registry.TranslatorRegistry;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.ProtocolRegistry;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.V1_3BProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_4.V1_4BProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_5.V1_5BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.V1_7BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_8.V1_8BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.V1_0RProtocol;
@@ -47,6 +50,9 @@ public class DirtMultiVersion {
     private Random sharedRandom;
 
     private DirtMultiVersion() {
+        ProtocolRegistry.registerProtocol(MinecraftVersion.B1_3, new V1_3BProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.B1_4, new V1_4BProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.B1_5, new V1_5BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_6_6, new V1_7BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_7_3, new V1_7BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_8_1, new V1_8BProtocol());

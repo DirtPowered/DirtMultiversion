@@ -26,7 +26,7 @@ import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Protocol;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.V1_7BProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
 import io.netty.buffer.ByteBuf;
@@ -73,7 +73,7 @@ public class MetadataDataType extends DataType<List<WatchableObject>> {
                     value = new WatchableObject(type, index, Protocol.STRING.read(buffer));
                     break;
                 case ITEM:
-                    value = new WatchableObject(type, index, V1_7BProtocol.ITEM.read(buffer));
+                    value = new WatchableObject(type, index, V1_3BProtocol.ITEM.read(buffer));
                     break;
                 case POSITION:
                     int x = buffer.readInt();
@@ -119,7 +119,7 @@ public class MetadataDataType extends DataType<List<WatchableObject>> {
                     Protocol.STRING.write(new TypeHolder(Type.STRING, watchableObject.getValue()), buffer);
                     break;
                 case ITEM:
-                    V1_7BProtocol.ITEM.write(new TypeHolder(Type.V1_7B_ITEM, watchableObject.getValue()), buffer);
+                    V1_3BProtocol.ITEM.write(new TypeHolder(Type.V1_3B_ITEM, watchableObject.getValue()), buffer);
                     break;
                 case POSITION:
                     BlockLocation location = (BlockLocation) watchableObject.getValue();

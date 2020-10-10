@@ -20,44 +20,49 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.item;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.type.arrays;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_3BMultiBlockArray;
 import io.netty.buffer.ByteBuf;
 
-public class ItemDataType extends DataType<ItemStack> {
+public class MultiBlockArrayDataType extends DataType<V1_3BMultiBlockArray> {
 
-    public ItemDataType() {
-        super(Type.V1_7B_ITEM);
+    public MultiBlockArrayDataType() {
+        super(Type.V1_3BMULTIBLOCK_ARRAY);
     }
 
     @Override
-    public ItemStack read(ByteBuf buffer) {
-        int itemId = buffer.readShort();
+    public V1_3BMultiBlockArray read(ByteBuf buffer) {
+        int size = buffer.readShort() & '\uffff';
 
-        if (itemId >= 0) {
-            int amount = buffer.readByte();
-            int data = buffer.readShort();
+        byte[] typeArray = new byte[size];
+        byte[] metadataArray = new byte[size];
+        short[] coordsArray = new short[size];
 
-            return new ItemStack(itemId, amount, data, null);
-        }
+        for (int i = 0; i < size; ++i)
+            coordsArray[i] = buffer.readShort();
 
-        return null;
+        buffer.readBytes(typeArray);
+        buffer.readBytes(metadataArray);
+
+        return new V1_3BMultiBlockArray(size, coordsArray, typeArray, metadataArray);
     }
 
     @Override
     public void write(TypeHolder typeHolder, ByteBuf buffer) {
-        ItemStack itemStack = (ItemStack) typeHolder.getObject();
+        V1_3BMultiBlockArray multiBlockArray = (V1_3BMultiBlockArray) typeHolder.getObject();
 
-        if (itemStack == null) {
-            buffer.writeShort(-1);
-        } else {
-            buffer.writeShort(itemStack.getItemId());
-            buffer.writeByte(itemStack.getAmount());
-            buffer.writeShort(itemStack.getData());
-        }
+        int size = multiBlockArray.getSize();
+
+        buffer.writeShort(size);
+
+        for (int i = 0; i < size; ++i)
+            buffer.writeShort(multiBlockArray.getCoordsArray()[i]);
+
+        buffer.writeBytes(multiBlockArray.getTypesArray());
+        buffer.writeBytes(multiBlockArray.getMetadataArray());
     }
 }

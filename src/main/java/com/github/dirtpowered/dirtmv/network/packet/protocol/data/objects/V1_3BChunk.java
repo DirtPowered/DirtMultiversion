@@ -27,9 +27,12 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class V1_7MultiBlockArray {
-    private int size;
-    private short[] coordsArray;
-    private byte[] typesArray;
-    private byte[] metadataArray;
+public class V1_3BChunk {
+    private int x;
+    private int y;
+    private int z;
+    private int xSize;
+    private int ySize;
+    private int zSize;
+    private byte[] chunk;
 }

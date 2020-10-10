@@ -20,19 +20,14 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_5;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.github.dirtpowered.dirtmv.network.packet.Protocol;
 
-@Data
-@AllArgsConstructor
-public class V1_7Chunk {
-    private int x;
-    private int y;
-    private int z;
-    private int xSize;
-    private int ySize;
-    private int zSize;
-    private byte[] chunk;
+public class V1_5BProtocol extends Protocol {
+
+    @Override
+    public void registerPackets() {
+
+    }
 }

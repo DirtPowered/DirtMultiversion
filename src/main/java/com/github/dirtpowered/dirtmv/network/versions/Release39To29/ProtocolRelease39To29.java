@@ -180,6 +180,15 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             }
         });
 
+        addTranslator(0xCA, /* PLAYER ABILITIES */ new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return new PacketData(-1);
+            }
+        });
+
         addTranslator(0x32, /* PRE CHUNK */ new PacketTranslator() {
 
             @Override
@@ -418,7 +427,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         data.read(5),
                         data.read(6),
                         data.read(7),
-                        set(Type.V1_7B_METADATA, watchableObjects)
+                        set(Type.V1_3B_METADATA, watchableObjects)
                 });
             }
         });

@@ -22,7 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.packet;
 
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.V1_7BProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_8.V1_8BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.V1_0RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.V1_2_1RProtocol;
@@ -79,17 +79,17 @@ public class PacketData {
                 case DOUBLE:
                     Protocol.DOUBLE.write(typeHolder, buffer);
                     break;
-                case V1_7B_METADATA:
-                    V1_7BProtocol.METADATA.write(typeHolder, buffer);
+                case V1_3B_METADATA:
+                    V1_3BProtocol.METADATA.write(typeHolder, buffer);
                     break;
-                case V1_7B_ITEM:
-                    V1_7BProtocol.ITEM.write(typeHolder, buffer);
+                case V1_3B_ITEM:
+                    V1_3BProtocol.ITEM.write(typeHolder, buffer);
                     break;
-                case V1_7B_ITEM_ARRAY:
-                    V1_7BProtocol.ITEM_ARRAY.write(typeHolder, buffer);
+                case V1_3B_ITEM_ARRAY:
+                    V1_3BProtocol.ITEM_ARRAY.write(typeHolder, buffer);
                     break;
-                case V1_7B_CHUNK:
-                    V1_7BProtocol.CHUNK.write(typeHolder, buffer);
+                case V1_3B_CHUNK:
+                    V1_3BProtocol.CHUNK.write(typeHolder, buffer);
                     break;
                 case UTF8_STRING:
                     Protocol.UTF8_STRING.write(typeHolder, buffer);
@@ -104,13 +104,13 @@ public class PacketData {
                     V1_8BProtocol.ITEM.write(typeHolder, buffer);
                     break;
                 case POSITION_ARRAY:
-                    V1_7BProtocol.POSITION_ARRAY.write(typeHolder, buffer);
+                    V1_3BProtocol.POSITION_ARRAY.write(typeHolder, buffer);
                     break;
                 case MOTION:
-                    V1_7BProtocol.MOTION.write(typeHolder, buffer);
+                    V1_3BProtocol.MOTION.write(typeHolder, buffer);
                     break;
-                case V1_7MULTIBLOCK_ARRAY:
-                    V1_7BProtocol.MULTIBLOCK_ARRAY.write(typeHolder, buffer);
+                case V1_3BMULTIBLOCK_ARRAY:
+                    V1_3BProtocol.MULTIBLOCK_ARRAY.write(typeHolder, buffer);
                     break;
                 case V1_0R_ITEM:
                     V1_0RProtocol.ITEM.write(typeHolder, buffer);

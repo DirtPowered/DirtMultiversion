@@ -20,47 +20,44 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_7.type.arrays;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.type.item;
 
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.BlockLocation;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
 import io.netty.buffer.ByteBuf;
 
-public class PositionArrayDataType extends DataType<BlockLocation[]> {
+public class ItemDataType extends DataType<ItemStack> {
 
-    public PositionArrayDataType() {
-        super(Type.POSITION_ARRAY);
+    public ItemDataType() {
+        super(Type.V1_3B_ITEM);
     }
 
     @Override
-    public BlockLocation[] read(ByteBuf buffer) {
-        int blockAmount = buffer.readInt();
+    public ItemStack read(ByteBuf buffer) {
+        int itemId = buffer.readShort();
 
-        BlockLocation[] blockLocations = new BlockLocation[blockAmount];
+        if (itemId >= 0) {
+            int amount = buffer.readByte();
+            int data = buffer.readShort();
 
-        for (int i = 0; i < blockAmount; i++) {
-            int locX = buffer.readByte();
-            int locY = buffer.readByte();
-            int locZ = buffer.readByte();
-
-            blockLocations[i] = new BlockLocation(locX, locY, locZ);
+            return new ItemStack(itemId, amount, data, null);
         }
 
-        return blockLocations;
+        return null;
     }
 
     @Override
     public void write(TypeHolder typeHolder, ByteBuf buffer) {
-        BlockLocation[] blockLocations = (BlockLocation[]) typeHolder.getObject();
+        ItemStack itemStack = (ItemStack) typeHolder.getObject();
 
-        buffer.writeInt(blockLocations.length);
-
-        for (BlockLocation record : blockLocations) {
-            buffer.writeByte(record.getX());
-            buffer.writeByte(record.getY());
-            buffer.writeByte(record.getZ());
+        if (itemStack == null) {
+            buffer.writeShort(-1);
+        } else {
+            buffer.writeShort(itemStack.getItemId());
+            buffer.writeByte(itemStack.getAmount());
+            buffer.writeShort(itemStack.getData());
         }
     }
 }
