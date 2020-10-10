@@ -46,7 +46,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
-                    return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x01, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
                             set(Type.INT, 22), // protocol version
                             data.read(1),
                             data.read(2),
@@ -58,7 +58,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
                     });
                 } else {
 
-                    return PacketUtil.createPacket(MinecraftVersion.R1_1, 0x01, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
                             data.read(0),
                             data.read(1),
                             data.read(2),
@@ -80,7 +80,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
 
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
-                    return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x09, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x09, new TypeHolder[]{
                             data.read(0),
                             data.read(1),
                             data.read(2),
@@ -89,7 +89,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
                     });
                 } else {
 
-                    return PacketUtil.createPacket(MinecraftVersion.R1_1, 0x09, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x09, new TypeHolder[]{
                             data.read(0),
                             data.read(1),
                             data.read(2),

@@ -22,7 +22,6 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release28To23;
 
-import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
 import com.github.dirtpowered.dirtmv.network.packet.PacketData;
@@ -94,7 +93,7 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
         byte[] compressedData = v1_2ChunkStorage.getCompressedData(groundUpContinuous, !groundUpContinuous ? bitmap : 0);
 
-        return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x33, new TypeHolder[]{
+        return PacketUtil.createPacket(0x33, new TypeHolder[]{
                 new TypeHolder(Type.V1_2_CHUNK, new V1_2Chunk(
                         chunkX,
                         chunkZ,

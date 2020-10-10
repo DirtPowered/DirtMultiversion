@@ -45,10 +45,8 @@ public enum Type {
     V1_0R_ITEM_ARRAY,
     V1_2MULTIBLOCK_ARRAY,
     V1_2_CHUNK,
-    V1_0_METADATA,
     V1_3R_ITEM,
     V1_3R_ITEM_ARRAY,
     V1_3_CHUNK,
-    V1_3_METADATA,
     BYTE_INT_ARRAY
 }

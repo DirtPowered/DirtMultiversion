@@ -179,7 +179,6 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
             channel.close();
         } else {
             sendPacket(PacketUtil.createPacket(
-                    Constants.REMOTE_SERVER_VERSION,
                     0xFF,
 
                     new TypeHolder[]{

@@ -52,7 +52,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
-                    return PacketUtil.createPacket(MinecraftVersion.R1_1, 0x01, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
                             set(Type.INT, 23),
                             data.read(1),
                             set(Type.LONG, 0L),
@@ -65,7 +65,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                     });
                 } else {
 
-                    return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x01, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
                             data.read(0),
                             data.read(1),
                             data.read(3),
@@ -106,7 +106,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
                 V1_2MultiBlockArray newFormat = new V1_2MultiBlockArray(blockArray.getSize(), b.length, b);
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x34, new TypeHolder[]{
+                return PacketUtil.createPacket(0x34, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.V1_2MULTIBLOCK_ARRAY, newFormat)
@@ -119,7 +119,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x18, new TypeHolder[]{
+                return PacketUtil.createPacket(0x18, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -139,7 +139,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
-                    return PacketUtil.createPacket(MinecraftVersion.R1_1, 0x09, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x09, new TypeHolder[]{
                             set(Type.BYTE, data.read(0).getObject()),
                             data.read(1),
                             data.read(2),
@@ -149,7 +149,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                     });
                 } else {
 
-                    return PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x09, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x09, new TypeHolder[]{
                             set(Type.INT, ((Byte) data.read(0).getObject()).intValue()),
                             data.read(1),
                             data.read(2),
@@ -165,7 +165,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
 
-                PacketData rotationPacket = PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x23, new TypeHolder[] {
+                PacketData rotationPacket = PacketUtil.createPacket(0x23, new TypeHolder[]{
                         data.read(0), // entityId
                         data.read(4), // yaw
                 });
@@ -180,7 +180,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
 
-                PacketData rotationPacket = PacketUtil.createPacket(MinecraftVersion.R1_2_1, 0x23, new TypeHolder[] {
+                PacketData rotationPacket = PacketUtil.createPacket(0x23, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                 });

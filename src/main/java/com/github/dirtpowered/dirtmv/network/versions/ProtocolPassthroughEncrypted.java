@@ -60,7 +60,7 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
 
                 session.getMain().getSharedRandom().nextBytes(verify);
 
-                PacketData encryptRequest = PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0xFD, new TypeHolder[]{
+                PacketData encryptRequest = PacketUtil.createPacket(0xFD, new TypeHolder[]{
                         new TypeHolder(Type.STRING, "-"),
                         new TypeHolder(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
                         new TypeHolder(Type.SHORT_BYTE_ARRAY, verify)
@@ -87,7 +87,7 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
                     byte[] sharedKey = EncryptionUtils.getSharedKey(secretKey, publicKey);
                     byte[] encryptedData = EncryptionUtils.encrypt(publicKey, token);
 
-                    PacketData response = PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0xFC, new TypeHolder[]{
+                    PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
                             new TypeHolder(Type.SHORT_BYTE_ARRAY, sharedKey),
                             new TypeHolder(Type.SHORT_BYTE_ARRAY, encryptedData)
                     });
@@ -110,7 +110,7 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
                     SecretKey shared = EncryptionUtils.getSecret(data, session.getUserData().getProxyRequest());
 
                     // server -> client
-                    PacketData response = PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0xFC, new TypeHolder[]{
+                    PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
                             new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0]),
                             new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0])
                     });

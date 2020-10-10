@@ -70,7 +70,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 session.getMain().getSharedRandom().nextBytes(verify);
 
-                PacketData encryptRequest = PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0xFD, new TypeHolder[]{
+                PacketData encryptRequest = PacketUtil.createPacket(0xFD, new TypeHolder[]{
                         new TypeHolder(Type.STRING, "-"),
                         new TypeHolder(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
                         new TypeHolder(Type.SHORT_BYTE_ARRAY, verify)
@@ -81,7 +81,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 // server -> client
                 session.sendPacket(encryptRequest, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease39To29.class);
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_2_4, 0x02, new TypeHolder[]{
+                return PacketUtil.createPacket(0x02, new TypeHolder[]{
                         new TypeHolder(Type.STRING, username)
                 });
             }
@@ -96,7 +96,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 SecretKey sharedKey = EncryptionUtils.getSecret(data, request);
 
                 // server -> client
-                PacketData response = PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0xFC, new TypeHolder[]{
+                PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
                         new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0]),
                         new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0])
                 });
@@ -118,7 +118,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 if (command == 0x00) {
                     String username = session.getUserData().getUsername();
 
-                    PacketData login = PacketUtil.createPacket(MinecraftVersion.R1_2_4, 0x01, new TypeHolder[]{
+                    PacketData login = PacketUtil.createPacket(0x01, new TypeHolder[]{
                             set(Type.INT, 29), // protocol version
                             set(Type.STRING, username),
                             set(Type.STRING, "NORMAL"),
@@ -134,7 +134,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                     return new PacketData(-1);
                 } else {
 
-                    return PacketUtil.createPacket(MinecraftVersion.R1_2_4, 0x09, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x09, new TypeHolder[]{
                             set(Type.INT, 0),
                             set(Type.BYTE, 0),
                             set(Type.BYTE, 0),
@@ -150,7 +150,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x01, new TypeHolder[]{
+                return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0),
                         data.read(2),
                         set(Type.BYTE, data.read(3).getObject()),
@@ -196,7 +196,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 V1_2Chunk chunk = (V1_2Chunk) data.read(0).getObject();
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x33, new TypeHolder[]{
+                return PacketUtil.createPacket(0x33, new TypeHolder[]{
                         set(Type.V1_3_CHUNK, chunk)
                 });
             }
@@ -207,12 +207,30 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x35, new TypeHolder[]{
+                return PacketUtil.createPacket(0x35, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
                         set(Type.SHORT, ((Byte) data.read(3).getObject()).shortValue()),
                         data.read(4)
+                });
+            }
+        });
+
+        addTranslator(0x66 /* WINDOW CLICK */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                ItemStack newItem = (ItemStack) data.read(5).getObject();
+
+                return PacketUtil.createPacket(0x66, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.V1_0R_ITEM, newItem)
                 });
             }
         });
@@ -224,7 +242,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 ItemStack oldItem = (ItemStack) data.read(2).getObject();
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x67, new TypeHolder[]{
+                return PacketUtil.createPacket(0x67, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.V1_3R_ITEM, oldItem)
@@ -240,13 +258,13 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 ItemStack[] items = (ItemStack[]) data.read(1).getObject();
 
                 for (ItemStack item : items) {
-                    if (item.getCompoundTag() == null) {
+                    if (item != null && item.getCompoundTag() == null) {
                         // since 1.3 all items contains NBT data
                         item.setCompoundTag(new CompoundTag("tag"));
                     }
                 }
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x68, new TypeHolder[] {
+                return PacketUtil.createPacket(0x68, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_3R_ITEM_ARRAY, items)
                 });
@@ -259,7 +277,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 int entityId = (int) data.read(0).getObject();
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x1D, new TypeHolder[]{
+                return PacketUtil.createPacket(0x1D, new TypeHolder[]{
                         set(Type.BYTE_INT_ARRAY, new int[]{entityId})
                 });
             }
@@ -269,9 +287,8 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                List<WatchableObject> watchableObjects = (List<WatchableObject>) data.read(8).getObject();
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x18, new TypeHolder[]{
+                return PacketUtil.createPacket(0x18, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -283,19 +300,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         set(Type.SHORT, 0),
                         set(Type.SHORT, 0),
                         set(Type.SHORT, 0),
-                        set(Type.V1_3_METADATA, watchableObjects)
-                });
-            }
-        });
-
-        addTranslator(0x28, /* METADATA */ new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                List<WatchableObject> watchableObjects = (List<WatchableObject>) data.read(0).getObject();
-
-                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x28, new TypeHolder[]{
-                        set(Type.V1_3_METADATA, watchableObjects)
+                        data.read(8)
                 });
             }
         });
@@ -324,7 +329,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 motion.setThrowerId(throwerId);
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x17, new TypeHolder[]{
+                return PacketUtil.createPacket(0x17, new TypeHolder[]{
                         data.read(0),
                         set(Type.BYTE, type),
                         data.read(2),
@@ -342,7 +347,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 ItemStack newItem = (ItemStack) data.read(4).getObject();
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_2_4, 0x0F, new TypeHolder[] {
+                return PacketUtil.createPacket(0x0F, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -359,7 +364,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 ItemStack newItem = (ItemStack) data.read(1).getObject();
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_2_4, 0x6B, new TypeHolder[] {
+                return PacketUtil.createPacket(0x6B, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_0R_ITEM, newItem)
                 });
@@ -398,7 +403,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         new WatchableObject(MetadataType.INT,8, 0)
                 );
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x14, new TypeHolder[] {
+                return PacketUtil.createPacket(0x14, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -407,7 +412,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         data.read(5),
                         data.read(6),
                         data.read(7),
-                        set(Type.V1_3_METADATA, watchableObjects)
+                        set(Type.V1_7B_METADATA, watchableObjects)
                 });
             }
         });
@@ -417,7 +422,16 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return new PacketData(-1);
+                return PacketUtil.createPacket(0x3C, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.FLOAT, 0.0F),
+                        set(Type.FLOAT, 0.0F),
+                        set(Type.FLOAT, 0.0F)
+                });
             }
         });
     }

@@ -38,7 +38,10 @@ public class PacketUtil {
         DataType[] parts = protocol.dataTypes[packetId];
 
         if (parts == null)
-            throw new IOException("Unknown packet id " + packetId + " (" + PreNettyPacketNames.getPacketName(packetId) + ")");
+            throw new IOException(
+                    "Unknown packet id " + packetId + " (" + PreNettyPacketNames.getPacketName(packetId) + ")" +
+                            " in protocol " + protocol.getClass().getSimpleName()
+            );
 
         TypeHolder[] typeHolders = new TypeHolder[parts.length];
 
@@ -53,21 +56,7 @@ public class PacketUtil {
         return new PacketData(packetId, typeHolders);
     }
 
-    public static PacketData createPacket(MinecraftVersion version, int packetId, TypeHolder[] packetData) {
-        Protocol protocol = ProtocolRegistry.getProtocolFromVersion(version);
-
-        DataType[] parts = protocol.dataTypes[packetId];
-
-        for (int i = 0; i < parts.length; i++) {
-            DataType dataType = parts[i];
-            TypeHolder holder = packetData[i];
-
-            if (!dataType.getType().equals(holder.getType())) {
-                String err = "[" + packetId + "] " + "Wrong data type " + holder.getType() + " at index '" + i + "', expected " + dataType.getType();
-                return new PacketData(0xFF, new TypeHolder(Type.STRING, err));
-            }
-        }
-
+    public static PacketData createPacket(int packetId, TypeHolder[] packetData) {
         return new PacketData(packetId, packetData);
     }
 }

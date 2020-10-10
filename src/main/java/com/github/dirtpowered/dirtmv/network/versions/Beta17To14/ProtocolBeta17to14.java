@@ -48,7 +48,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
 
-                PacketData packetData = PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0xFF, new TypeHolder[]{
+                PacketData packetData = PacketUtil.createPacket(0xFF, new TypeHolder[]{
                         set(Type.STRING, "A Minecraft Server§0§20")
                 });
 
@@ -63,7 +63,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
 
-                    return PacketUtil.createPacket(MinecraftVersion.B_1_7_3, 0x01, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
                             set(Type.INT, 14), // INT
                             data.read(1), // STRING
                             data.read(2), // LONG
@@ -71,7 +71,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                     });
                 } else {
 
-                    return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x01, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
                             data.read(0), // INT - entityId
                             data.read(1), // STRING - empty
                             data.read(2), // LONG - world seed
@@ -90,7 +90,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x08, new TypeHolder[]{
+                return PacketUtil.createPacket(0x08, new TypeHolder[]{
                         data.read(0),
                         set(Type.SHORT, 6),
                         set(Type.FLOAT, 0.0F),
@@ -107,12 +107,12 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 PacketData packetData;
 
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
-                    packetData = PacketUtil.createPacket(MinecraftVersion.B_1_7_3, 0x09, new TypeHolder[]{
+                    packetData = PacketUtil.createPacket(0x09, new TypeHolder[]{
                             data.read(0),
 
                     });
                 } else {
-                    packetData = PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x09, new TypeHolder[]{
+                    packetData = PacketUtil.createPacket(0x09, new TypeHolder[]{
                             data.read(0),
                             set(Type.BYTE, 0),
                             set(Type.BYTE, 0),
@@ -130,7 +130,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x64, new TypeHolder[]{
+                return PacketUtil.createPacket(0x64, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.STRING, data.read(2).getObject()),
@@ -144,7 +144,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x46, new TypeHolder[]{
+                return PacketUtil.createPacket(0x46, new TypeHolder[]{
                         data.read(0),
                         set(Type.BYTE, 0)
                 });

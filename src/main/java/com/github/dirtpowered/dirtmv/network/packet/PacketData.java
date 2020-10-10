@@ -121,9 +121,6 @@ public class PacketData {
                 case V1_2_CHUNK:
                     V1_2_1RProtocol.CHUNK.write(typeHolder, buffer);
                     break;
-                case V1_0_METADATA:
-                    V1_0RProtocol.METADATA.write(typeHolder, buffer);
-                    break;
                 case V1_3R_ITEM:
                     V1_3_1RProtocol.ITEM.write(typeHolder, buffer);
                     break;
@@ -132,9 +129,6 @@ public class PacketData {
                     break;
                 case V1_3_CHUNK:
                     V1_3_1RProtocol.CHUNK.write(typeHolder, buffer);
-                    break;
-                case V1_3_METADATA:
-                    V1_3_1RProtocol.METADATA.write(typeHolder, buffer);
                     break;
                 case BYTE_INT_ARRAY:
                     Protocol.BYTE_INT_ARRAY.write(typeHolder, buffer);

@@ -67,7 +67,7 @@ public class V1_2_1RProtocol extends Protocol {
         dataTypes[21] = new DataType[]{INT, SHORT, BYTE, SHORT, INT, INT, INT, BYTE, BYTE, BYTE};
         dataTypes[22] = new DataType[]{INT, INT};
         dataTypes[23] = new DataType[]{INT, BYTE, INT, INT, INT, V1_7BProtocol.MOTION};
-        dataTypes[24] = new DataType[]{INT, BYTE, INT, INT, INT, BYTE, BYTE, BYTE, V1_0RProtocol.METADATA};
+        dataTypes[24] = new DataType[]{INT, BYTE, INT, INT, INT, BYTE, BYTE, BYTE, V1_7BProtocol.METADATA};
         dataTypes[25] = new DataType[]{INT, STRING, INT, INT, INT, INT};
         dataTypes[26] = new DataType[]{INT, INT, INT, INT, SHORT};
         dataTypes[28] = new DataType[]{INT, SHORT, SHORT, SHORT};
@@ -80,7 +80,7 @@ public class V1_2_1RProtocol extends Protocol {
         dataTypes[35] = new DataType[]{INT, BYTE};
         dataTypes[38] = new DataType[]{INT, BYTE};
         dataTypes[39] = new DataType[]{INT, INT};
-        dataTypes[40] = new DataType[]{V1_0RProtocol.METADATA};
+        dataTypes[40] = new DataType[]{V1_7BProtocol.METADATA};
         dataTypes[41] = new DataType[]{INT, BYTE, BYTE, SHORT};
         dataTypes[42] = new DataType[]{INT, BYTE};
         dataTypes[43] = new DataType[]{FLOAT, SHORT, SHORT};
@@ -107,6 +107,7 @@ public class V1_2_1RProtocol extends Protocol {
         dataTypes[132] = new DataType[]{INT, SHORT, INT, BYTE, INT, INT, INT};
         dataTypes[200] = new DataType[]{INT, BYTE};
         dataTypes[201] = new DataType[]{STRING, BYTE, SHORT};
+        dataTypes[202] = new DataType[]{BYTE, BYTE, BYTE};
         dataTypes[250] = new DataType[]{STRING, SHORT_BYTE_ARRAY};
         dataTypes[254] = new DataType[]{};
         dataTypes[255] = new DataType[]{STRING};

@@ -31,12 +31,9 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.utils.item.LegacyItemList;
 import com.mojang.nbt.CompoundTag;
-
-import java.util.List;
 
 public class ProtocolRelease22To17 extends ServerProtocol {
 
@@ -51,7 +48,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
-                    return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x01, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
                             set(Type.INT, 17), // protocol version
                             data.read(1),
                             data.read(2),
@@ -72,7 +69,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x0F, new TypeHolder[]{
+                return PacketUtil.createPacket(0x0F, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -87,7 +84,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x66, new TypeHolder[]{
+                return PacketUtil.createPacket(0x66, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -103,7 +100,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return PacketUtil.createPacket(MinecraftVersion.B_1_8_1, 0x6B, new TypeHolder[]{
+                return PacketUtil.createPacket(0x6B, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_0R_ITEM, data.read(1).getObject())
                 });
@@ -119,7 +116,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 short level = ((Byte) data.read(1).getObject()).shortValue();
                 short totalExperience = ((Byte) data.read(0).getObject()).shortValue();
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x2B, new TypeHolder[]{
+                return PacketUtil.createPacket(0x2B, new TypeHolder[]{
                         set(Type.FLOAT, exp),
                         set(Type.SHORT, level),
                         set(Type.SHORT, totalExperience)
@@ -136,7 +133,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 if (item != null && LegacyItemList.isEnchantable(item.getItemId()))
                     item.setCompoundTag(new CompoundTag("tag"));
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x67, new TypeHolder[]{
+                return PacketUtil.createPacket(0x67, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.V1_0R_ITEM, item)
@@ -156,40 +153,9 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                     }
                 }
 
-                return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x68, new TypeHolder[]{
+                return PacketUtil.createPacket(0x68, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_0R_ITEM_ARRAY, items)
-                });
-            }
-        });
-
-        addTranslator(0x18 /* MOB_SPAWN */, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                List<WatchableObject> watchableObjects = (List<WatchableObject>) data.read(7).getObject();
-
-                return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x18, new TypeHolder[] {
-                        data.read(0),
-                        data.read(1),
-                        data.read(2),
-                        data.read(3),
-                        data.read(4),
-                        data.read(5),
-                        data.read(6),
-                        set(Type.V1_0_METADATA, watchableObjects)
-                });
-            }
-        });
-
-        addTranslator(0x28, /* METADATA */ new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                List<WatchableObject> watchableObjects = (List<WatchableObject>) data.read(0).getObject();
-
-                return PacketUtil.createPacket(MinecraftVersion.R1_0, 0x28, new TypeHolder[] {
-                        set(Type.V1_0_METADATA, watchableObjects)
                 });
             }
         });

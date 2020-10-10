@@ -22,5 +22,14 @@
 
 package com.github.dirtpowered.dirtmv.config;
 
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import lombok.Getter;
+
+@Getter
 public class Configuration {
+    private String serverAddress;
+    private int serverPort;
+    private String proxyLocalAddress;
+    private int proxyLocalPort;
+    private MinecraftVersion serverVersion;
 }

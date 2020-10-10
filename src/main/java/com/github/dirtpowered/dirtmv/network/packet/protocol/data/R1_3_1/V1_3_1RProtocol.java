@@ -30,20 +30,17 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.V1_2_1R
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.type.chunk.ChunkDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.type.item.ItemDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ItemArrayDataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.MetadataDataType;
 
 public class V1_3_1RProtocol extends Protocol {
 
     public static final DataType ITEM;
     public static final DataType ITEM_ARRAY;
     public final static DataType CHUNK;
-    public static final DataType METADATA;
 
     static {
         ITEM = new ItemDataType();
         ITEM_ARRAY = new ItemArrayDataType(Type.V1_3R_ITEM, ITEM);
         CHUNK = new ChunkDataType(Type.V1_3_CHUNK);
-        METADATA = new MetadataDataType(Type.V1_3_METADATA);
     }
 
     @Override
@@ -68,11 +65,11 @@ public class V1_3_1RProtocol extends Protocol {
         dataTypes[17] = new DataType[]{INT, BYTE, INT, BYTE, INT};
         dataTypes[18] = new DataType[]{INT, BYTE};
         dataTypes[19] = new DataType[]{INT, BYTE};
-        dataTypes[20] = new DataType[]{INT, STRING, INT, INT, INT, BYTE, BYTE, SHORT, METADATA};
+        dataTypes[20] = new DataType[]{INT, STRING, INT, INT, INT, BYTE, BYTE, SHORT, V1_7BProtocol.METADATA};
         dataTypes[21] = new DataType[]{INT, SHORT, BYTE, SHORT, INT, INT, INT, BYTE, BYTE, BYTE};
         dataTypes[22] = new DataType[]{INT, INT};
         dataTypes[23] = new DataType[]{INT, BYTE, INT, INT, INT, V1_7BProtocol.MOTION};
-        dataTypes[24] = new DataType[]{INT, BYTE, INT, INT, INT, BYTE, BYTE, BYTE, SHORT, SHORT, SHORT, METADATA};
+        dataTypes[24] = new DataType[]{INT, BYTE, INT, INT, INT, BYTE, BYTE, BYTE, SHORT, SHORT, SHORT, V1_7BProtocol.METADATA};
         dataTypes[25] = new DataType[]{INT, STRING, INT, INT, INT, INT};
         dataTypes[26] = new DataType[]{INT, INT, INT, INT, SHORT};
         dataTypes[28] = new DataType[]{INT, SHORT, SHORT, SHORT};
@@ -85,7 +82,7 @@ public class V1_3_1RProtocol extends Protocol {
         dataTypes[35] = new DataType[]{INT, BYTE};
         dataTypes[38] = new DataType[]{INT, BYTE};
         dataTypes[39] = new DataType[]{INT, INT};
-        dataTypes[40] = new DataType[]{METADATA};
+        dataTypes[40] = new DataType[]{V1_7BProtocol.METADATA};
         dataTypes[41] = new DataType[]{INT, BYTE, BYTE, SHORT};
         dataTypes[42] = new DataType[]{INT, BYTE};
         dataTypes[43] = new DataType[]{FLOAT, SHORT, SHORT};
