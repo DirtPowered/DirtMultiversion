@@ -34,13 +34,16 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemSt
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.Motion;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_2Chunk;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.MetadataType;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.utils.encryption.EncryptionUtils;
+import com.mojang.nbt.CompoundTag;
 import lombok.SneakyThrows;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.List;
 
 public class ProtocolRelease39To29 extends ServerProtocol {
@@ -234,7 +237,19 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                return new PacketData(-1);
+                ItemStack[] items = (ItemStack[]) data.read(1).getObject();
+
+                for (ItemStack item : items) {
+                    if (item.getCompoundTag() == null) {
+                        // since 1.3 all items contains NBT data
+                        item.setCompoundTag(new CompoundTag("tag"));
+                    }
+                }
+
+                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x68, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.V1_3R_ITEM_ARRAY, items)
+                });
             }
         });
 
@@ -317,6 +332,92 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         data.read(4),
                         set(Type.MOTION, motion)
                 });
+            }
+        });
+
+        addTranslator(0x0F /* BLOCK PLACE */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                ItemStack newItem = (ItemStack) data.read(4).getObject();
+
+                return PacketUtil.createPacket(MinecraftVersion.R1_2_4, 0x0F, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        set(Type.V1_0R_ITEM, newItem)
+                });
+            }
+        });
+
+        addTranslator(0x6B /* CREATIVE SET SLOT */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                ItemStack newItem = (ItemStack) data.read(1).getObject();
+
+                return PacketUtil.createPacket(MinecraftVersion.R1_2_4, 0x6B, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.V1_0R_ITEM, newItem)
+                });
+            }
+        });
+
+        addTranslator(0x36 /* PLAY NOTEBLOCK */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(0x84 /* UPDATE TILE ENTITY */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(0x14, /* NAMED ENTITY SPAWN */ new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                /* default 1.3.x metadata */
+                List<WatchableObject> watchableObjects = Arrays.asList(
+                        new WatchableObject(MetadataType.BYTE, 0, 0),
+                        new WatchableObject(MetadataType.BYTE,16, 0),
+                        new WatchableObject(MetadataType.SHORT, 1, 300),
+                        new WatchableObject(MetadataType.BYTE,17, 0),
+                        new WatchableObject(MetadataType.INT,8, 0)
+                );
+
+                return PacketUtil.createPacket(MinecraftVersion.R1_3_1, 0x14, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        set(Type.V1_3_METADATA, watchableObjects)
+                });
+            }
+        });
+
+        addTranslator(0x3C, /* EXPLOSION */ new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return new PacketData(-1);
             }
         });
     }
