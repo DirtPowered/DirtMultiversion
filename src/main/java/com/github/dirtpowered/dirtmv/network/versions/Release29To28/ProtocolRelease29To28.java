@@ -63,5 +63,15 @@ public class ProtocolRelease29To28 extends ServerProtocol {
                 }
             }
         });
+
+        addTranslator(0xCA, /* PLAYER ABILITIES */ new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                // cancel packet
+                return new PacketData(-1);
+            }
+        });
     }
 }
