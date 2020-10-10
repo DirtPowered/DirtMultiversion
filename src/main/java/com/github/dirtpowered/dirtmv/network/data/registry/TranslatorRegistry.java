@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.network.data.registry;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
+import com.github.dirtpowered.dirtmv.network.versions.Beta13To11.ProtocolBeta13To11;
 import com.github.dirtpowered.dirtmv.network.versions.Beta14To13.ProtocolBeta14To13;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.ProtocolBeta17to14;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthrough;
@@ -54,6 +55,7 @@ public class TranslatorRegistry {
         registerProtocol(new ProtocolRelease23To22());
         registerProtocol(new ProtocolBeta17to14());
         registerProtocol(new ProtocolBeta14To13());
+        registerProtocol(new ProtocolBeta13To11());
     }
 
     private void registerProtocol(ServerProtocol serverProtocol) {

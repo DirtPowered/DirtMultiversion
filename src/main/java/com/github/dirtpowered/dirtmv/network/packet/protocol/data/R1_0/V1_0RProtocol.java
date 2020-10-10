@@ -89,7 +89,7 @@ public class V1_0RProtocol extends Protocol {
         dataTypes[53] = new DataType[]{INT, BYTE, INT, BYTE, BYTE};
         dataTypes[54] = new DataType[]{INT, SHORT, INT, BYTE, BYTE};
         dataTypes[60] = new DataType[]{DOUBLE, DOUBLE, DOUBLE, FLOAT, V1_3BProtocol.POSITION_ARRAY};
-        dataTypes[61] = new DataType[]{INT, INT, BYTE, INT, INT};
+        dataTypes[61] = new DataType[]{INT, INT, UNSIGNED_BYTE, INT, INT};
         dataTypes[70] = new DataType[]{BYTE, BYTE};
         dataTypes[71] = new DataType[]{INT, BYTE, INT, INT, INT};
         dataTypes[100] = new DataType[]{BYTE, BYTE, STRING, BYTE};

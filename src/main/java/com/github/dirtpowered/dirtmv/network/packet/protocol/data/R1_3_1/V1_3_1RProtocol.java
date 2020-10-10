@@ -93,7 +93,7 @@ public class V1_3_1RProtocol extends Protocol {
         dataTypes[55] = new DataType[]{INT, INT, INT, INT, BYTE};
         dataTypes[56] = new DataType[]{}; //TODO: Chunk Bulk
         dataTypes[60] = new DataType[]{DOUBLE, DOUBLE, DOUBLE, FLOAT, V1_3BProtocol.POSITION_ARRAY, FLOAT, FLOAT, FLOAT};
-        dataTypes[61] = new DataType[]{INT, INT, BYTE, INT, INT};
+        dataTypes[61] = new DataType[]{INT, INT, UNSIGNED_BYTE, INT, INT};
         dataTypes[62] = new DataType[]{STRING, INT, INT, INT, FLOAT, UNSIGNED_BYTE};
         dataTypes[70] = new DataType[]{BYTE, BYTE};
         dataTypes[71] = new DataType[]{INT, BYTE, INT, INT, INT};

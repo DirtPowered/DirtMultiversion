@@ -44,6 +44,7 @@ public enum PreNettyPacketNames {
     ANIMATION(18),
     ENTITY_ACTION(19),
     NAMED_ENTITY_SPAWN(20),
+    PICKUP_SPAWN(21),
     ITEM_COLLECT(22),
     VEHICLE_SPAWN(23),
     MOB_SPAWN(24),
