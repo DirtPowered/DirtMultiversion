@@ -81,6 +81,7 @@ public class V1_7BProtocol extends Protocol {
         dataTypes[23] = new DataType[]{INT, BYTE, INT, INT, INT, MOTION};
         dataTypes[24] = new DataType[]{INT, BYTE, INT, INT, INT, BYTE, BYTE, METADATA};
         dataTypes[25] = new DataType[]{INT, STRING, INT, INT, INT, INT};
+        dataTypes[27] = new DataType[]{FLOAT, FLOAT, FLOAT, FLOAT, BYTE, BYTE};
         dataTypes[28] = new DataType[]{INT, SHORT, SHORT, SHORT};
         dataTypes[29] = new DataType[]{INT};
         dataTypes[30] = new DataType[]{INT};
