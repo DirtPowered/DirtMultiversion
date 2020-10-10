@@ -20,35 +20,32 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
-public enum Type {
-    BYTE,
-    UNSIGNED_BYTE,
-    DOUBLE,
-    FLOAT,
-    INT,
-    LONG,
-    SHORT,
-    STRING,
-    BYTE_BYTE_ARRAY,
-    SHORT_BYTE_ARRAY,
-    UTF8_STRING,
-    V1_7B_CHUNK,
-    V1_7B_ITEM,
-    V1_7B_ITEM_ARRAY,
-    V1_7B_METADATA,
-    V1_8B_ITEM,
-    POSITION_ARRAY,
-    MOTION,
-    V1_7MULTIBLOCK_ARRAY,
-    V1_0R_ITEM,
-    V1_0R_ITEM_ARRAY,
-    V1_2MULTIBLOCK_ARRAY,
-    V1_2_CHUNK,
-    V1_3R_ITEM,
-    V1_3R_ITEM_ARRAY,
-    V1_3_CHUNK,
-    BYTE_INT_ARRAY,
-    INT_BYTE_ARRAY
+import com.github.dirtpowered.dirtmv.network.packet.DataType;
+import com.github.dirtpowered.dirtmv.network.packet.Type;
+import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import io.netty.buffer.ByteBuf;
+
+public class UnsignedByteDataType extends DataType<Short> {
+
+    public UnsignedByteDataType() {
+        super(Type.UNSIGNED_BYTE);
+    }
+
+    @Override
+    public Short read(ByteBuf buffer) {
+        return buffer.readUnsignedByte();
+    }
+
+    @Override
+    public void write(TypeHolder typeHolder, ByteBuf buffer) {
+        if (typeHolder.getObject() instanceof Integer) {
+
+            buffer.writeByte((((Integer) typeHolder.getObject()).byteValue()));
+            return;
+        }
+
+        buffer.writeByte((Short) typeHolder.getObject());
+    }
 }

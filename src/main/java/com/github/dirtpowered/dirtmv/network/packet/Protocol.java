@@ -32,10 +32,12 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.L
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ShortDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.StringDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.UTF8StringDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.UnsignedByteDataType;
 
 public abstract class Protocol {
     public static final DataType INT = new IntDataType();
     public static final DataType BYTE = new ByteDataType();
+    public static final DataType UNSIGNED_BYTE = new UnsignedByteDataType();
     public static final DataType SHORT = new ShortDataType();
     public static final DataType FLOAT = new FloatDataType();
     public static final DataType STRING = new StringDataType();

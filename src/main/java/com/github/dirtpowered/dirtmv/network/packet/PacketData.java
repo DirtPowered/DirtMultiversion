@@ -61,6 +61,9 @@ public class PacketData {
                 case BYTE:
                     Protocol.BYTE.write(typeHolder, buffer);
                     break;
+                case UNSIGNED_BYTE:
+                    Protocol.UNSIGNED_BYTE.write(typeHolder, buffer);
+                    break;
                 case STRING:
                     Protocol.STRING.write(typeHolder, buffer);
                     break;
