@@ -84,7 +84,6 @@ public class V1_5BProtocol extends Protocol {
         dataTypes[105] = new DataType[]{BYTE, SHORT, SHORT};
         dataTypes[106] = new DataType[]{BYTE, SHORT, BYTE};
         dataTypes[130] = new DataType[]{INT, SHORT, INT, STRING, STRING, STRING, STRING};
-        dataTypes[131] = new DataType[]{SHORT, SHORT, BYTE_BYTE_ARRAY};
         dataTypes[200] = new DataType[]{INT, BYTE};
         dataTypes[255] = new DataType[]{STRING};
     }
