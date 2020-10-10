@@ -71,5 +71,21 @@ public class ProtocolBeta13To11 extends ServerProtocol {
                 }
             }
         });
+
+        addTranslator(0x17 /* VEHICLE SPAWN */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return PacketUtil.createPacket(0x17, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.INT, 0) // to indicate that there's no more data to read
+                });
+            }
+        });
     }
 }

@@ -53,7 +53,7 @@ public class V1_5BProtocol extends Protocol {
         dataTypes[20] = new DataType[]{INT, STRING, INT, INT, INT, BYTE, BYTE, SHORT};
         dataTypes[21] = new DataType[]{INT, SHORT, BYTE, SHORT, INT, INT, INT, BYTE, BYTE, BYTE};
         dataTypes[22] = new DataType[]{INT, INT};
-        dataTypes[23] = new DataType[]{INT, BYTE, INT, INT, INT, V1_3BProtocol.MOTION};
+        dataTypes[23] = new DataType[]{INT, BYTE, INT, INT, INT};
         dataTypes[24] = new DataType[]{INT, BYTE, INT, INT, INT, BYTE, BYTE, V1_3BProtocol.METADATA};
         dataTypes[25] = new DataType[]{INT, STRING, INT, INT, INT, INT};
         dataTypes[27] = new DataType[]{FLOAT, FLOAT, FLOAT, FLOAT, BYTE, BYTE};
