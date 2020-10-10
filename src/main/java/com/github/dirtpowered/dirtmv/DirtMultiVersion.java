@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv;
 
+import com.github.dirtpowered.dirtmv.data.Constants;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.data.registry.TranslatorRegistry;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.ProtocolRegistry;
@@ -62,6 +63,7 @@ public class DirtMultiVersion {
 
         sharedRandom = new Random();
 
+        System.out.println("(DirtMultiVersion) Started on IP: " + Constants.REMOTE_HOST + ":" + Constants.REMOTE_PORT);
         new Server(this);
     }
 
