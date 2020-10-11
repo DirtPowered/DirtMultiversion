@@ -30,6 +30,7 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.Motion;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
 public class ProtocolBeta13To11 extends ServerProtocol {
@@ -83,7 +84,8 @@ public class ProtocolBeta13To11 extends ServerProtocol {
                         data.read(2),
                         data.read(3),
                         data.read(4),
-                        set(Type.INT, 0) // to indicate that there's no more data to read
+                        // to indicate that there's no more data to read
+                        set(Type.MOTION, new Motion(0, (short) 0, (short) 0, (short) 0))
                 });
             }
         });
