@@ -180,15 +180,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             }
         });
 
-        addTranslator(0xCA, /* PLAYER ABILITIES */ new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-
-                return new PacketData(-1);
-            }
-        });
-
         addTranslator(0x32, /* PRE CHUNK */ new PacketTranslator() {
 
             @Override
@@ -386,24 +377,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x36 /* PLAY NOTEBLOCK */, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-
-                return new PacketData(-1);
-            }
-        });
-
-        addTranslator(0x84 /* UPDATE TILE ENTITY */, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-
-                return new PacketData(-1);
-            }
-        });
-
         addTranslator(0x14, /* NAMED ENTITY SPAWN */ new PacketTranslator() {
 
             @Override
@@ -419,15 +392,15 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 );
 
                 return PacketUtil.createPacket(0x14, new TypeHolder[]{
-                        data.read(0),
-                        data.read(1),
-                        data.read(2),
-                        data.read(3),
-                        data.read(4),
-                        data.read(5),
-                        data.read(6),
-                        data.read(7),
-                        set(Type.V1_3B_METADATA, watchableObjects)
+                        data.read(0), // entityId
+                        data.read(1), // playerName
+                        data.read(2), // x
+                        data.read(3), // y
+                        data.read(4), // z
+                        data.read(5), // yaw
+                        data.read(6), // pitch
+                        data.read(7), // item
+                        set(Type.V1_3B_METADATA, watchableObjects) // default metadata
                 });
             }
         });
@@ -447,6 +420,101 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         set(Type.FLOAT, 0.0F),
                         set(Type.FLOAT, 0.0F)
                 });
+            }
+        });
+
+        addTranslator(0xCA, /* PLAYER ABILITIES */ new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                if (dir == PacketDirection.SERVER_TO_CLIENT) {
+
+                    boolean invulnerable = ((Byte) data.read(0).getObject()) == 1;
+                    boolean flying = ((Byte) data.read(1).getObject()) == 1;
+                    boolean allowFlying = ((Byte) data.read(2).getObject()) == 1;
+                    boolean instantBreak = ((Byte) data.read(3).getObject()) == 1;
+
+                    byte mask = 0;
+
+                    if (invulnerable) {
+                        mask = (byte) (mask | 1);
+                    }
+
+                    if (flying) {
+                        mask = (byte) (mask | 2);
+                    }
+
+                    if (allowFlying) {
+                        mask = (byte) (mask | 4);
+                    }
+
+                    if (instantBreak) {
+                        mask = (byte) (mask | 8);
+                    }
+
+                    return PacketUtil.createPacket(0xCA, new TypeHolder[]{
+                            set(Type.BYTE, mask),
+                            set(Type.BYTE, (byte) (0.05f * 255)),
+                            set(Type.BYTE, (byte) (0.1f * 255)),
+                    });
+                } else {
+                    byte mask = (byte) data.read(0).getObject();
+
+                    return PacketUtil.createPacket(0xCA, new TypeHolder[]{
+                            set(Type.BYTE, ((mask & 1) > 0)),
+                            set(Type.BYTE, ((mask & 2) > 0)),
+                            set(Type.BYTE, ((mask & 4) > 0)),
+                            set(Type.BYTE, ((mask & 8) > 0)),
+                    });
+                }
+            }
+        });
+
+        addTranslator(0x84 /* UPDATE TILE ENTITY */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return PacketUtil.createPacket(0x84, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        set(Type.COMPOUND_TAG, new CompoundTag())
+                });
+            }
+        });
+
+
+        addTranslator(0x05 /* ENTITY EQUIPMENT */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                short itemId = (short) data.read(2).getObject();
+                short itemData = (short) data.read(3).getObject();
+
+                if (itemId == -1) {
+                    //TODO: Find out why tf changing it to 0 causing problems
+                    itemId = 1;
+                }
+
+                ItemStack itemStack = new ItemStack(itemId, 0, itemData, null);
+
+                return PacketUtil.createPacket(0x05, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        set(Type.V1_3R_ITEM, itemStack)
+                });
+            }
+        });
+
+        addTranslator(0x36 /* PLAY NOTEBLOCK */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return new PacketData(-1);
             }
         });
     }
