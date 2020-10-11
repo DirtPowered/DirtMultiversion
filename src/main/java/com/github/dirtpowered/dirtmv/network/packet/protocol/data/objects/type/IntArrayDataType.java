@@ -40,7 +40,8 @@ public class IntArrayDataType extends DataType<int[]> {
         for (int i = 0; i < array.length; ++i) {
             array[i] = buffer.readInt();
         }
-        return new int[0];
+
+        return array;
     }
 
     @Override
