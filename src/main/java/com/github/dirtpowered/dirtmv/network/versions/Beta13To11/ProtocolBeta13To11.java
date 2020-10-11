@@ -35,7 +35,7 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 public class ProtocolBeta13To11 extends ServerProtocol {
 
     public ProtocolBeta13To11() {
-        super(MinecraftVersion.B_1_6_6, MinecraftVersion.B1_5);
+        super(MinecraftVersion.B1_6_6, MinecraftVersion.B1_5);
     }
 
     @Override

@@ -38,7 +38,7 @@ import com.mojang.nbt.CompoundTag;
 public class ProtocolRelease22To17 extends ServerProtocol {
 
     public ProtocolRelease22To17() {
-        super(MinecraftVersion.R1_0, MinecraftVersion.B_1_8_1);
+        super(MinecraftVersion.R1_0, MinecraftVersion.B1_8_1);
     }
 
     @Override

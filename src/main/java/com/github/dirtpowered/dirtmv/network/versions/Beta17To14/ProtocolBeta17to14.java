@@ -37,7 +37,7 @@ import java.io.IOException;
 public class ProtocolBeta17to14 extends ServerProtocol {
 
     public ProtocolBeta17to14() {
-        super(MinecraftVersion.B_1_8_1, MinecraftVersion.B_1_7_3);
+        super(MinecraftVersion.B1_8_1, MinecraftVersion.B1_7_3);
     }
 
     @Override

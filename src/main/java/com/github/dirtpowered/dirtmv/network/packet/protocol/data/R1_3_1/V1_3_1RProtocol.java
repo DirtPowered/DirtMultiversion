@@ -82,7 +82,7 @@ public class V1_3_1RProtocol extends Protocol {
         dataTypes[35] = new DataType[]{INT, BYTE};
         dataTypes[38] = new DataType[]{INT, BYTE};
         dataTypes[39] = new DataType[]{INT, INT};
-        dataTypes[40] = new DataType[]{V1_3BProtocol.METADATA};
+        dataTypes[40] = new DataType[]{INT, V1_3BProtocol.METADATA};
         dataTypes[41] = new DataType[]{INT, BYTE, BYTE, SHORT};
         dataTypes[42] = new DataType[]{INT, BYTE};
         dataTypes[43] = new DataType[]{FLOAT, SHORT, SHORT};

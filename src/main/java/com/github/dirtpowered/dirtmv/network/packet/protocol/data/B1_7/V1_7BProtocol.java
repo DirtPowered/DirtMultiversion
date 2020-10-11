@@ -66,7 +66,7 @@ public class V1_7BProtocol extends Protocol {
         dataTypes[34] = new DataType[]{INT, INT, INT, INT, BYTE, BYTE};
         dataTypes[38] = new DataType[]{INT, BYTE};
         dataTypes[39] = new DataType[]{INT, INT};
-        dataTypes[40] = new DataType[]{V1_3BProtocol.METADATA};
+        dataTypes[40] = new DataType[]{INT, V1_3BProtocol.METADATA};
         dataTypes[50] = new DataType[]{INT, INT, BYTE};
         dataTypes[51] = new DataType[]{V1_3BProtocol.CHUNK};
         dataTypes[52] = new DataType[]{INT, INT, V1_3BProtocol.MULTIBLOCK_ARRAY};

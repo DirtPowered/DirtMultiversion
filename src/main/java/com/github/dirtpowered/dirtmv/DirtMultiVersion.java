@@ -53,9 +53,9 @@ public class DirtMultiVersion {
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_3, new V1_3BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_4, new V1_4BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_5, new V1_5BProtocol());
-        ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_6_6, new V1_7BProtocol());
-        ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_7_3, new V1_7BProtocol());
-        ProtocolRegistry.registerProtocol(MinecraftVersion.B_1_8_1, new V1_8BProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.B1_6_6, new V1_7BProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.B1_7_3, new V1_7BProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.B1_8_1, new V1_8BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_0, new V1_0RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_1, new V1_1RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_2_1, new V1_2_1RProtocol());

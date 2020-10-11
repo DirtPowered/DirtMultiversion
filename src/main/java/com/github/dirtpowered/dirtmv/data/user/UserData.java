@@ -37,7 +37,7 @@ public class UserData {
     private String username;
 
     public UserData() {
-        this.clientVersion = MinecraftVersion.B_1_6_6;
+        this.clientVersion = MinecraftVersion.B1_5;
         this.protocolDetected = false;
     }
 }
