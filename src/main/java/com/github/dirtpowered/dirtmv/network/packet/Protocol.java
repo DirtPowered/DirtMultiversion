@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.network.packet;
 
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ByteArrayDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ByteDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.CompoundTagDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.DoubleDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.FloatDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.IntArrayDataType;
@@ -48,6 +49,7 @@ public abstract class Protocol {
     protected static final DataType BYTE_BYTE_ARRAY = new ByteArrayDataType(Type.BYTE_BYTE_ARRAY);
     protected static final DataType INT_BYTE_ARRAY = new ByteArrayDataType(Type.INT_BYTE_ARRAY);
     protected static final DataType BYTE_INT_ARRAY = new IntArrayDataType();
+    protected static final DataType COMPOUND_TAG = new CompoundTagDataType();
     protected DataType[][] dataTypes = new DataType[256][];
 
     public Protocol() {

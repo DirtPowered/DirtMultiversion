@@ -20,37 +20,30 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
-public enum Type {
-    BYTE,
-    UNSIGNED_BYTE,
-    DOUBLE,
-    FLOAT,
-    INT,
-    LONG,
-    SHORT,
-    STRING,
-    BYTE_BYTE_ARRAY,
-    SHORT_BYTE_ARRAY,
-    UTF8_STRING,
-    V1_3B_CHUNK,
-    V1_3B_ITEM,
-    V1_3B_ITEM_ARRAY,
-    V1_3B_METADATA,
-    V1_8B_ITEM,
-    POSITION_ARRAY,
-    MOTION,
-    V1_3BMULTIBLOCK_ARRAY,
-    V1_0R_ITEM,
-    V1_0R_ITEM_ARRAY,
-    V1_2MULTIBLOCK_ARRAY,
-    V1_2_CHUNK,
-    V1_3R_ITEM,
-    V1_3R_ITEM_ARRAY,
-    V1_3_CHUNK,
-    BYTE_INT_ARRAY,
-    INT_BYTE_ARRAY,
-    COMPOUND_TAG,
-    V1_3CHUNK_BULK
+import com.github.dirtpowered.dirtmv.network.packet.DataType;
+import com.github.dirtpowered.dirtmv.network.packet.Type;
+import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import com.github.dirtpowered.dirtmv.utils.nbt.NBTUtils;
+import com.mojang.nbt.CompoundTag;
+import io.netty.buffer.ByteBuf;
+
+public class CompoundTagDataType extends DataType<CompoundTag> {
+
+    public CompoundTagDataType() {
+        super(Type.COMPOUND_TAG);
+    }
+
+    @Override
+    public CompoundTag read(ByteBuf buffer) {
+        return NBTUtils.readNBT(buffer);
+    }
+
+    @Override
+    public void write(TypeHolder typeHolder, ByteBuf buffer) {
+        CompoundTag compoundTag = (CompoundTag) typeHolder.getObject();
+
+        NBTUtils.writeNBT(compoundTag, buffer);
+    }
 }

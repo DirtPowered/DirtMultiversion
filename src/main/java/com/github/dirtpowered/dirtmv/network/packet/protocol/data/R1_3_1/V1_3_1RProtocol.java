@@ -28,6 +28,7 @@ import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.V1_2_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.type.chunk.ChunkDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.type.chunk.ChunkBulkDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.type.item.ItemDataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.ItemArrayDataType;
 
@@ -36,11 +37,13 @@ public class V1_3_1RProtocol extends Protocol {
     public static final DataType ITEM;
     public static final DataType ITEM_ARRAY;
     public final static DataType CHUNK;
+    public final static DataType CHUNK_BULK;
 
     static {
         ITEM = new ItemDataType();
         ITEM_ARRAY = new ItemArrayDataType(Type.V1_3R_ITEM, ITEM);
         CHUNK = new ChunkDataType(Type.V1_3_CHUNK);
+        CHUNK_BULK = new ChunkBulkDataType();
     }
 
     @Override
@@ -91,7 +94,7 @@ public class V1_3_1RProtocol extends Protocol {
         dataTypes[53] = new DataType[]{INT, BYTE, INT, SHORT, BYTE};
         dataTypes[54] = new DataType[]{INT, SHORT, INT, BYTE, BYTE, SHORT};
         dataTypes[55] = new DataType[]{INT, INT, INT, INT, BYTE};
-        dataTypes[56] = new DataType[]{}; //TODO: Chunk Bulk
+        dataTypes[56] = new DataType[]{CHUNK_BULK};
         dataTypes[60] = new DataType[]{DOUBLE, DOUBLE, DOUBLE, FLOAT, V1_3BProtocol.POSITION_ARRAY, FLOAT, FLOAT, FLOAT};
         dataTypes[61] = new DataType[]{INT, INT, UNSIGNED_BYTE, INT, INT};
         dataTypes[62] = new DataType[]{STRING, INT, INT, INT, FLOAT, UNSIGNED_BYTE};
@@ -108,7 +111,7 @@ public class V1_3_1RProtocol extends Protocol {
         dataTypes[108] = new DataType[]{BYTE, BYTE};
         dataTypes[130] = new DataType[]{INT, SHORT, INT, STRING, STRING, STRING, STRING};
         dataTypes[131] = new DataType[]{SHORT, SHORT, BYTE_BYTE_ARRAY};
-        dataTypes[132] = new DataType[]{}; //TODO: Tile data
+        dataTypes[132] = new DataType[]{INT, SHORT, INT, BYTE, COMPOUND_TAG};
         dataTypes[200] = new DataType[]{INT, BYTE};
         dataTypes[201] = new DataType[]{STRING, BYTE, SHORT};
         dataTypes[202] = new DataType[]{BYTE, BYTE, BYTE};

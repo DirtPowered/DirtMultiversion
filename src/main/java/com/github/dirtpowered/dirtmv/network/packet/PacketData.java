@@ -139,6 +139,12 @@ public class PacketData {
                 case INT_BYTE_ARRAY:
                     Protocol.INT_BYTE_ARRAY.write(typeHolder, buffer);
                     break;
+                case COMPOUND_TAG:
+                    Protocol.COMPOUND_TAG.write(typeHolder, buffer);
+                    break;
+                case V1_3CHUNK_BULK:
+                    V1_3_1RProtocol.CHUNK_BULK.write(typeHolder, buffer);
+                    break;
             }
         }
 

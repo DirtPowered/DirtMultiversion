@@ -20,37 +20,19 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects;
 
-public enum Type {
-    BYTE,
-    UNSIGNED_BYTE,
-    DOUBLE,
-    FLOAT,
-    INT,
-    LONG,
-    SHORT,
-    STRING,
-    BYTE_BYTE_ARRAY,
-    SHORT_BYTE_ARRAY,
-    UTF8_STRING,
-    V1_3B_CHUNK,
-    V1_3B_ITEM,
-    V1_3B_ITEM_ARRAY,
-    V1_3B_METADATA,
-    V1_8B_ITEM,
-    POSITION_ARRAY,
-    MOTION,
-    V1_3BMULTIBLOCK_ARRAY,
-    V1_0R_ITEM,
-    V1_0R_ITEM_ARRAY,
-    V1_2MULTIBLOCK_ARRAY,
-    V1_2_CHUNK,
-    V1_3R_ITEM,
-    V1_3R_ITEM_ARRAY,
-    V1_3_CHUNK,
-    BYTE_INT_ARRAY,
-    INT_BYTE_ARRAY,
-    COMPOUND_TAG,
-    V1_3CHUNK_BULK
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class V1_3ChunkBulk {
+    private int[] columnX;
+    private int[] columnZ;
+    private int[] primaryBitmaps;
+    private int[] additionalBitmaps;
+    public byte[] compressedSize;
+    public byte[][] chunks;
+    public int length;
 }
