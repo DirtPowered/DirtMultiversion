@@ -22,17 +22,31 @@
 
 package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-@AllArgsConstructor
-public class V1_3ChunkBulk {
-    private int[] columnX;
-    private int[] columnZ;
-    private int[] primaryBitmaps;
-    private int[] additionalBitmaps;
-    public byte[] compressedSize;
-    public byte[][] chunks;
-    public int length;
+public enum MetadataType {
+    BYTE(0),
+    SHORT(1),
+    INT(2),
+    FLOAT(3),
+    STRING(4),
+    ITEM(5),
+    POSITION(6);
+
+    @Getter
+    private int type;
+
+    MetadataType(int i) {
+        this.type = i;
+    }
+
+    public static MetadataType fromType(int i) {
+        for (MetadataType type : MetadataType.values()) {
+            if (type.type == i) {
+                return type;
+            }
+        }
+
+        return BYTE;
+    }
 }

@@ -43,7 +43,7 @@ public class V1_3_1RProtocol extends Protocol {
         ITEM = new ItemDataType();
         ITEM_ARRAY = new ItemArrayDataType(Type.V1_3R_ITEM, ITEM);
         CHUNK = new ChunkDataType(Type.V1_3_CHUNK);
-        CHUNK_BULK = new ChunkBulkDataType();
+        CHUNK_BULK = new ChunkBulkDataType(Type.V1_3CHUNK_BULK);
     }
 
     @Override

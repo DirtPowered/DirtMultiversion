@@ -32,7 +32,6 @@ import io.netty.buffer.ByteBuf;
 
 public class ItemDataType extends DataType<ItemStack> {
 
-
     public ItemDataType() {
         super(Type.V1_3R_ITEM);
     }

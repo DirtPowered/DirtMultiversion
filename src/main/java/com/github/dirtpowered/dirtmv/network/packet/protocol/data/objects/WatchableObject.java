@@ -22,7 +22,6 @@
 
 package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects;
 
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.MetadataType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

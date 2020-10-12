@@ -25,23 +25,28 @@ package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.type.c
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_3ChunkBulk;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_3_4ChunkBulk;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-public class ChunkBulkDataType extends DataType<V1_3ChunkBulk> {
+public class ChunkBulkDataType extends DataType<V1_3_4ChunkBulk> {
 
-    public ChunkBulkDataType() {
-        super(Type.V1_3CHUNK_BULK);
+    public ChunkBulkDataType(Type type) {
+        super(type);
     }
 
     @Override
-    public V1_3ChunkBulk read(ByteBuf buffer) throws IOException {
+    public V1_3_4ChunkBulk read(ByteBuf buffer) throws IOException {
         short columnAmount = buffer.readShort();
         int arrayLength = buffer.readInt();
+
+        boolean skylight = false;
+        if (getType() == Type.V1_4CHUNK_BULK) {
+            skylight = buffer.readBoolean();
+        }
 
         int[] columnX = new int[columnAmount];
         int[] columnZ = new int[columnAmount];
@@ -89,15 +94,18 @@ public class ChunkBulkDataType extends DataType<V1_3ChunkBulk> {
             length += dataSize;
         }
 
-        return new V1_3ChunkBulk(columnX, columnZ, primaryBitMasks, additionalBitMasks, compressedSizeArray, chunks, arrayLength);
+        return new V1_3_4ChunkBulk(columnX, columnZ, skylight, primaryBitMasks, additionalBitMasks, compressedSizeArray, chunks, arrayLength);
     }
 
     @Override
     public void write(TypeHolder typeHolder, ByteBuf buffer) {
-        V1_3ChunkBulk chunkBulk = (V1_3ChunkBulk) typeHolder.getObject();
+        V1_3_4ChunkBulk chunkBulk = (V1_3_4ChunkBulk) typeHolder.getObject();
 
         buffer.writeShort(chunkBulk.getColumnX().length);
         buffer.writeInt(chunkBulk.getLength());
+        if (getType() == Type.V1_4CHUNK_BULK) {
+            buffer.writeBoolean(chunkBulk.isSkylight());
+        }
         buffer.writeBytes(chunkBulk.getCompressedSize(), 0, chunkBulk.getLength());
 
         for(int i = 0; i < chunkBulk.getColumnX().length; i++) {

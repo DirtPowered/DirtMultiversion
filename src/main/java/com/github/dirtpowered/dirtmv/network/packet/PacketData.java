@@ -27,6 +27,7 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_8.V1_8BProt
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.V1_0RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.V1_2_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_4_6.V1_4_6RProtocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
@@ -144,6 +145,9 @@ public class PacketData {
                     break;
                 case V1_3CHUNK_BULK:
                     V1_3_1RProtocol.CHUNK_BULK.write(typeHolder, buffer);
+                    break;
+                case V1_4CHUNK_BULK:
+                    V1_4_6RProtocol.CHUNK_BULK.write(typeHolder, buffer);
                     break;
             }
         }

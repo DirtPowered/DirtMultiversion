@@ -20,39 +20,26 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_4_6;
 
-public enum Type {
-    BYTE,
-    UNSIGNED_BYTE,
-    DOUBLE,
-    FLOAT,
-    INT,
-    LONG,
-    SHORT,
-    STRING,
-    BYTE_BYTE_ARRAY,
-    SHORT_BYTE_ARRAY,
-    UTF8_STRING,
-    V1_3B_CHUNK,
-    V1_3B_ITEM,
-    V1_3B_ITEM_ARRAY,
-    V1_3B_METADATA,
-    V1_8B_ITEM,
-    POSITION_ARRAY,
-    MOTION,
-    V1_3BMULTIBLOCK_ARRAY,
-    V1_0R_ITEM,
-    V1_0R_ITEM_ARRAY,
-    V1_2MULTIBLOCK_ARRAY,
-    V1_2_CHUNK,
-    V1_3R_ITEM,
-    V1_3R_ITEM_ARRAY,
-    V1_3_CHUNK,
-    BYTE_INT_ARRAY,
-    INT_BYTE_ARRAY,
-    COMPOUND_TAG,
-    V1_3CHUNK_BULK,
-    V1_4CHUNK_BULK,
-    V1_4R_METADATA,
+import com.github.dirtpowered.dirtmv.network.packet.DataType;
+import com.github.dirtpowered.dirtmv.network.packet.Protocol;
+import com.github.dirtpowered.dirtmv.network.packet.Type;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.type.chunk.ChunkBulkDataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type.MetadataDataType;
+
+public class V1_4_6RProtocol extends Protocol {
+
+    public final static DataType CHUNK_BULK;
+    public final static DataType METADATA;
+
+    static {
+        CHUNK_BULK = new ChunkBulkDataType(Type.V1_4CHUNK_BULK);
+        METADATA = new MetadataDataType(Type.V1_4R_METADATA);
+    }
+
+    @Override
+    public void registerPackets() {
+
+    }
 }

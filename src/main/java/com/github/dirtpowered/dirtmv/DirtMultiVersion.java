@@ -34,6 +34,7 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_0.V1_0RProt
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_1.V1_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.V1_2_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_4_6.V1_4_6RProtocol;
 import com.github.dirtpowered.dirtmv.network.server.Server;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
 import lombok.Getter;
@@ -61,6 +62,7 @@ public class DirtMultiVersion {
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_2_1, new V1_2_1RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_2_4, new V1_2_1RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_3_1, new V1_3_1RProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_4_6, new V1_4_6RProtocol());
 
         translatorRegistry = new TranslatorRegistry();
         sessionRegistry = new SessionRegistry();
