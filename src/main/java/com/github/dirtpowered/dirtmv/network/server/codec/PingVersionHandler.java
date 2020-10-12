@@ -22,27 +22,36 @@
 
 package com.github.dirtpowered.dirtmv.network.server.codec;
 
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class PipelineFactory extends ChannelInitializer {
+public class PingVersionHandler extends ChannelInboundHandlerAdapter {
 
-    private PacketDirection packetDirection;
     private UserData userData;
 
-    public PipelineFactory(UserData userData, PacketDirection packetDirection) {
-        this.packetDirection = packetDirection;
+    PingVersionHandler(UserData userData) {
         this.userData = userData;
     }
 
     @Override
-    protected void initChannel(Channel channel) {
-        channel.pipeline().addLast("ping", new PingVersionHandler(userData));
-        channel.pipeline().addLast("decoder", new PacketDecoder(packetDirection, userData));
-        channel.pipeline().addLast("encoder", new PacketEncoder());
-        channel.pipeline().addLast("timeout", new ReadTimeoutHandler(10));
+    public void channelRead(ChannelHandlerContext ctx, Object object) {
+        ByteBuf buffer = (ByteBuf) object;
+        int startIndex = buffer.readerIndex();
+
+        int packetId = buffer.readUnsignedByte();
+
+        if (packetId == 0xFE && !buffer.isReadable()) {
+            userData.setClientVersion(MinecraftVersion.B1_8_1);
+        } else if (packetId == 0xFE && buffer.readUnsignedByte() == 1 && !buffer.isReadable()) {
+            userData.setClientVersion(MinecraftVersion.R1_4_6);
+        }
+
+        buffer.readerIndex(startIndex);
+
+        ctx.pipeline().remove(this);
+        ctx.fireChannelRead(buffer);
     }
 }
