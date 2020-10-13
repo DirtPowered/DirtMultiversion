@@ -34,6 +34,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Release23To22.ProtocolRele
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.ProtocolRelease28To23;
 import com.github.dirtpowered.dirtmv.network.versions.Release29To28.ProtocolRelease29To28;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.ProtocolRelease39To29;
+import com.github.dirtpowered.dirtmv.network.versions.Release51To39.ProtocolRelease51To39;
 import lombok.Getter;
 
 import java.util.Collections;
@@ -48,6 +49,7 @@ public class TranslatorRegistry {
     private Map<Integer, ServerProtocol> protocols = new ConcurrentHashMap<>();
 
     public TranslatorRegistry() {
+        registerProtocol(new ProtocolRelease51To39());
         registerProtocol(new ProtocolRelease39To29());
         registerProtocol(new ProtocolRelease29To28());
         registerProtocol(new ProtocolRelease28To23());
