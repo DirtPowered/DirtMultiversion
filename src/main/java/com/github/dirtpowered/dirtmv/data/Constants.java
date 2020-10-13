@@ -27,8 +27,8 @@ import com.github.dirtpowered.dirtmv.config.Configuration;
 public class Constants {
     public static final MinecraftVersion REMOTE_SERVER_VERSION = Configuration.serverVersion;
 
-    public static final String SERVER_HOST = Configuration.serverAddress;
-    public static final String REMOTE_HOST = Configuration.proxyLocalAddress;
+    public static final String SERVER_HOST = Configuration.proxyLocalAddress;
+    public static final String REMOTE_HOST = Configuration.serverAddress;
 
     public static final int SERVER_PORT = Configuration.serverPort;
     public static final int REMOTE_PORT = Configuration.proxyLocalPort;
