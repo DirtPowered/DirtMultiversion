@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv;
 
+import com.github.dirtpowered.dirtmv.config.Configuration;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.data.registry.TranslatorRegistry;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.ProtocolRegistry;
@@ -38,7 +39,9 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_4_6.V1_4_6R
 import com.github.dirtpowered.dirtmv.network.server.Server;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
 import lombok.Getter;
+import sun.security.krb5.Config;
 
+import java.net.URISyntaxException;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,7 +53,18 @@ public class DirtMultiVersion {
     private TranslatorRegistry translatorRegistry;
     private Random sharedRandom;
 
+    private String getConfigPath() throws URISyntaxException {
+        return this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+    }
+
     private DirtMultiVersion() {
+        try {
+            new Configuration(this).loadConfiguration(this.getConfigPath());
+        } catch (URISyntaxException err) {
+            System.out.println("Couldnt find config."); // note: after looking in
+            // Configuration::loadConfiguartion, this probably will never be a issue.
+        }
+
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_3, new V1_3BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_4, new V1_4BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_5, new V1_5BProtocol());
