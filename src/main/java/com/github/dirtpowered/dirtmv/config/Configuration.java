@@ -22,14 +22,66 @@
 
 package com.github.dirtpowered.dirtmv.config;
 
+import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import lombok.Getter;
+import org.simpleyaml.configuration.file.YamlFile;
+
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Getter
 public class Configuration {
-    private String serverAddress;
-    private int serverPort;
-    private String proxyLocalAddress;
-    private int proxyLocalPort;
-    private MinecraftVersion serverVersion;
+    public static String serverAddress;
+    public static int serverPort;
+    public static String proxyLocalAddress;
+    public static int proxyLocalPort;
+    public static MinecraftVersion serverVersion;
+
+    private DirtMultiVersion main;
+
+    public Configuration(DirtMultiVersion main) {
+        this.main = main;
+    }
+
+    private String fixPath(String path) {
+        return path.isEmpty() ? "" : path + "/";
+    }
+
+    public void loadConfiguration(String path) {
+        YamlFile config = new YamlFile(fixPath(path) + "config.yml");
+        try {
+            if (config.exists()) {
+                System.out.println("Loading configuration file");
+                config.load();
+            } else {
+                Path p = Paths.get("src/main/resources/config.yml");
+                if (Files.exists(p)) {
+                    Files.copy(p, Paths.get(fixPath(path) + "config.yml"));
+                } else {
+                    InputStream inputStream = getClass().getResourceAsStream("/config.yml");
+                    Files.copy(inputStream, Paths.get(fixPath(path) + "config.yml"));
+                }
+                config.load();
+            }
+
+            try {
+                serverVersion = MinecraftVersion.valueOf(config.getString("general.serverVersion"));
+            } catch (Exception e) {
+                System.out.println("'serverVersion' is wrong, defaulting to B1_6_6");
+                serverVersion = MinecraftVersion.B1_6_6;
+            }
+
+            serverAddress = config.getString("general.serverAddress");
+            serverPort = config.getInt("general.serverPort");
+            proxyLocalAddress = config.getString("general.proxyLocalAddress");
+            proxyLocalPort = config.getInt("general.proxyLocalPort");
+
+            System.out.println("Finished loading configuration!");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
 }
