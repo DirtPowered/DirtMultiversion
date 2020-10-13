@@ -43,10 +43,14 @@ public class PingVersionHandler extends ChannelInboundHandlerAdapter {
 
         int packetId = buffer.readUnsignedByte();
 
-        if (packetId == 0xFE && !buffer.isReadable()) {
-            userData.setClientVersion(MinecraftVersion.B1_8_1);
-        } else if (packetId == 0xFE && buffer.readUnsignedByte() == 1 && !buffer.isReadable()) {
-            userData.setClientVersion(MinecraftVersion.R1_4_6);
+        if (packetId == 0xFE) {
+            if (!buffer.isReadable()) {
+
+                userData.setClientVersion(MinecraftVersion.B1_8_1);
+            } else if (buffer.readUnsignedByte() == 1 && !buffer.isReadable()) {
+
+                userData.setClientVersion(MinecraftVersion.R1_4_6);
+            }
         }
 
         buffer.readerIndex(startIndex);

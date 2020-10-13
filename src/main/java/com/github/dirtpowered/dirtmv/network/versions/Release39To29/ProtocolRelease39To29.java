@@ -513,7 +513,13 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                // 0 - x (int)
+                // 1 - y (short)
+                // 2 - z (int)
+                // 3 - instrument (byte)
+                // 4 - pitch (byte)
 
+                // TODO: Chunk cache
                 return new PacketData(-1);
             }
         });

@@ -149,6 +149,9 @@ public class PacketData {
                 case V1_4CHUNK_BULK:
                     V1_4_6RProtocol.CHUNK_BULK.write(typeHolder, buffer);
                     break;
+                case V1_4R_METADATA:
+                    V1_4_6RProtocol.METADATA.write(typeHolder, buffer);
+                    break;
             }
         }
 

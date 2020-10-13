@@ -79,7 +79,7 @@ public class TranslatorRegistry {
             ServerProtocol serverProtocol;
 
             // starting from r1.3 the whole connections is encrypted
-            if (from.getProtocolId() >= 39) {
+            if (from.getProtocolId() >= MinecraftVersion.R1_3_1.getProtocolId()) {
                 serverProtocol = new ProtocolPassthroughEncrypted(from, versionTo);
             } else {
                 serverProtocol = new ProtocolPassthrough(from, versionTo);
