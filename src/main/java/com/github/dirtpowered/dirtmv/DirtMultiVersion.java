@@ -63,7 +63,7 @@ public class DirtMultiVersion {
 
         sharedRandom = new Random();
 
-        System.out.println("(DirtMultiVersion) Started on IP: " + Constants.REMOTE_HOST + ":" + Constants.REMOTE_PORT);
+        System.out.println("(DirtMultiVersion) Started on IP: " + Configuration.proxyLocalAddress + ":" + Configuration.proxyLocalPort);
         new Server(this);
     }
 
