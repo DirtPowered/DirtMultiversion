@@ -39,7 +39,6 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_4_6.V1_4_6R
 import com.github.dirtpowered.dirtmv.network.server.Server;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
 import lombok.Getter;
-import sun.security.krb5.Config;
 
 import java.net.URISyntaxException;
 import java.util.Random;
@@ -61,8 +60,7 @@ public class DirtMultiVersion {
         try {
             new Configuration(this).loadConfiguration(this.getConfigPath());
         } catch (URISyntaxException err) {
-            System.out.println("Couldnt find config."); // note: after looking in
-            // Configuration::loadConfiguartion, this probably will never be a issue.
+            System.out.println("Couldn't find config.");
         }
 
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_3, new V1_3BProtocol());

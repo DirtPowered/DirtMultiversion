@@ -70,8 +70,8 @@ public class Configuration {
             try {
                 serverVersion = MinecraftVersion.valueOf(config.getString("general.serverVersion"));
             } catch (Exception e) {
-                System.out.println("'serverVersion' is wrong, defaulting to B1_6_6");
-                serverVersion = MinecraftVersion.B1_6_6;
+                System.out.println("'serverVersion' is wrong, defaulting to B1_5");
+                serverVersion = MinecraftVersion.B1_5;
             }
 
             serverAddress = config.getString("general.serverAddress");

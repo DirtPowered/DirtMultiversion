@@ -71,9 +71,9 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 session.getMain().getSharedRandom().nextBytes(verify);
 
                 PacketData encryptRequest = PacketUtil.createPacket(0xFD, new TypeHolder[]{
-                        new TypeHolder(Type.STRING, "-"),
-                        new TypeHolder(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
-                        new TypeHolder(Type.SHORT_BYTE_ARRAY, verify)
+                        set(Type.STRING, "-"),
+                        set(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
+                        set(Type.SHORT_BYTE_ARRAY, verify)
                 });
 
                 session.getUserData().setProxyRequest(encryptRequest);
@@ -82,7 +82,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 session.sendPacket(encryptRequest, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease39To29.class);
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
-                        new TypeHolder(Type.STRING, username)
+                        set(Type.STRING, username)
                 });
             }
         });
@@ -97,8 +97,8 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 // server -> client
                 PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
-                        new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0]),
-                        new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0])
+                        set(Type.SHORT_BYTE_ARRAY, new byte[0]),
+                        set(Type.SHORT_BYTE_ARRAY, new byte[0])
                 });
 
                 session.sendPacket(response, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease39To29.class);

@@ -61,9 +61,9 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
                 session.getMain().getSharedRandom().nextBytes(verify);
 
                 PacketData encryptRequest = PacketUtil.createPacket(0xFD, new TypeHolder[]{
-                        new TypeHolder(Type.STRING, "-"),
-                        new TypeHolder(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
-                        new TypeHolder(Type.SHORT_BYTE_ARRAY, verify)
+                        set(Type.STRING, "-"),
+                        set(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
+                        set(Type.SHORT_BYTE_ARRAY, verify)
                 });
 
                 SecretKey secretKey = EncryptionUtils.getSecretKey();
@@ -88,8 +88,8 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
                     byte[] encryptedData = EncryptionUtils.encrypt(publicKey, token);
 
                     PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
-                            new TypeHolder(Type.SHORT_BYTE_ARRAY, sharedKey),
-                            new TypeHolder(Type.SHORT_BYTE_ARRAY, encryptedData)
+                            set(Type.SHORT_BYTE_ARRAY, sharedKey),
+                            set(Type.SHORT_BYTE_ARRAY, encryptedData)
                     });
 
                     session.sendPacket(response, PacketDirection.CLIENT_TO_SERVER, ProtocolPassthroughEncrypted.class);
@@ -111,8 +111,8 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
 
                     // server -> client
                     PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
-                            new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0]),
-                            new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0])
+                            set(Type.SHORT_BYTE_ARRAY, new byte[0]),
+                            set(Type.SHORT_BYTE_ARRAY, new byte[0])
                     });
 
                     session.sendPacket(response, PacketDirection.SERVER_TO_CLIENT, ProtocolPassthroughEncrypted.class);
