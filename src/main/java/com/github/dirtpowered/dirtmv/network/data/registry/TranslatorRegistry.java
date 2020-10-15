@@ -68,13 +68,22 @@ public class TranslatorRegistry {
 
     /**
      * Returns all protocols between client and server version
-     *
+     * @param cProtocol Protocol class to start from
      * @param from      Client version
      * @param versionTo Server version
      * @return {@link List<ServerProtocol> List} with ordered protocol pipeline classes
      */
-    public List<ServerProtocol> findProtocol(MinecraftVersion from, MinecraftVersion versionTo) {
+    public List<ServerProtocol> findProtocol(Class cProtocol, MinecraftVersion from, MinecraftVersion versionTo) {
         List<ServerProtocol> serverProtocols = new LinkedList<>();
+
+        if (cProtocol != null) {
+            try {
+                serverProtocols.add((ServerProtocol) cProtocol.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            return serverProtocols;
+        }
 
         // check if translating is needed
         if (from == versionTo) {

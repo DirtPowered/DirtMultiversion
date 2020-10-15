@@ -30,7 +30,16 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.MetadataType;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.Motion;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.mojang.nbt.CompoundTag;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 public class ProtocolRelease51To39 extends ServerProtocol {
 
@@ -91,6 +100,88 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         data.read(2),
                         data.read(3)
                 });
+            }
+        });
+
+        addTranslator(0xCC /* CLIENT SETTINGS */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return PacketUtil.createPacket(0xCC, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                });
+            }
+        });
+
+        addTranslator(0x04 /* UPDATE TIME */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return PacketUtil.createPacket(0x04, new TypeHolder[] {
+                        data.read(0),
+                        data.read(0)
+                });
+            }
+        });
+
+        addTranslator(0x17 /* VEHICLE SPAWN */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(0x3E /* SOUND LEVEL */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(0x15 /* PICKUP SPAWN */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+
+                PacketData vehicleSpawn = PacketUtil.createPacket(0x17, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.BYTE, 2),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        data.read(8),
+                        set(Type.MOTION, new Motion(1, (short) 0, (short) 0, (short) 0))
+                });
+
+                short itemId = (short) data.read(1).getObject();
+                byte amount = (byte) data.read(2).getObject();
+                short itemData = (short) data.read(3).getObject();
+
+                ItemStack itemStack = new ItemStack(itemId, amount, itemData, new CompoundTag());
+
+                List<WatchableObject> metadata = Collections.singletonList(new WatchableObject(
+                        MetadataType.ITEM,
+                        10,
+                        itemStack
+                ));
+
+                PacketData itemMetadata = PacketUtil.createPacket(0x28, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.V1_4R_METADATA, metadata)
+                });
+
+                session.sendPacket(vehicleSpawn, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
+                session.sendPacket(itemMetadata, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
+
+                return new PacketData(-1);
             }
         });
     }
