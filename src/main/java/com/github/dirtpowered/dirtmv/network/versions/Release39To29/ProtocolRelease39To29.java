@@ -486,7 +486,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             }
         });
 
-
         addTranslator(0x05 /* ENTITY EQUIPMENT */, new PacketTranslator() {
 
             @Override
@@ -494,12 +493,13 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 short itemId = (short) data.read(2).getObject();
                 short itemData = (short) data.read(3).getObject();
 
-                if (itemId == -1) {
-                    //TODO: Find out why tf changing it to 0 causing problems
-                    itemId = 1;
-                }
+                ItemStack itemStack;
 
-                ItemStack itemStack = new ItemStack(itemId, 0, itemData, null);
+                if (itemId == -1) {
+                    itemStack = null;
+                } else {
+                    itemStack = new ItemStack(itemId, 0, itemData, null);
+                }
 
                 return PacketUtil.createPacket(0x05, new TypeHolder[] {
                         data.read(0),
