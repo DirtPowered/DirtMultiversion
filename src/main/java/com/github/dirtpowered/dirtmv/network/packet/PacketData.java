@@ -101,6 +101,9 @@ public class PacketData {
                 case SHORT_BYTE_ARRAY:
                     Protocol.SHORT_BYTE_ARRAY.write(typeHolder, buffer);
                     break;
+                case UNSIGNED_SHORT_BYTE_ARRAY:
+                    Protocol.UNSIGNED_SHORT_BYTE_ARRAY.write(typeHolder, buffer);
+                    break;
                 case V1_8B_ITEM:
                     V1_8BProtocol.ITEM.write(typeHolder, buffer);
                     break;

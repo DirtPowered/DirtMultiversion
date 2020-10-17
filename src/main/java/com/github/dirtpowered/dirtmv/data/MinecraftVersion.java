@@ -41,7 +41,8 @@ public enum MinecraftVersion {
     R1_5_2(61, false),
     R1_6_1(73, false),
     R1_6_2(74, false),
-    R1_6_4(78, false);
+    R1_6_4(78, false),
+    R1_7_2(4, true);
 
     @Getter
     private int protocolId;

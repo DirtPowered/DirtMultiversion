@@ -28,11 +28,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class PingVersionHandler extends ChannelInboundHandlerAdapter {
+public class LegacyPingVersionHandler extends ChannelInboundHandlerAdapter {
 
     private UserData userData;
 
-    PingVersionHandler(UserData userData) {
+    LegacyPingVersionHandler(UserData userData) {
         this.userData = userData;
     }
 

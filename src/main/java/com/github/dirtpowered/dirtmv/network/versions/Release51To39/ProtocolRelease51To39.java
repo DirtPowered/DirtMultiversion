@@ -141,11 +141,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
                 byte[] mapData = (byte[]) data.read(2).getObject();
 
-                return new PacketData(-1);
-
-                /*return PacketUtil.createPacket(0x83, new TypeHolder[] {
-                        set(Type.SHORT_BYTE_ARRAY, mapData)
-                });*/
+                return PacketUtil.createPacket(0x83, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        set(Type.UNSIGNED_SHORT_BYTE_ARRAY, mapData)
+                });
             }
         });
 

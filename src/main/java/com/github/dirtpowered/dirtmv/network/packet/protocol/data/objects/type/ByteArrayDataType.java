@@ -39,13 +39,19 @@ public class ByteArrayDataType extends DataType<byte[]> {
         byte[] bytes = new byte[0];
 
         if (getType() == Type.BYTE_BYTE_ARRAY) {
-            bytes = new byte[buffer.readByte() & 255];
+            int size = buffer.readByte() & 255;
 
+            bytes = new byte[size];
             buffer.readBytes(bytes);
         } else if (getType() == Type.SHORT_BYTE_ARRAY) {
             int size = buffer.readShort();
 
             Preconditions.checkArgument(size < 32767, "Payload too big");
+
+            bytes = new byte[size];
+            buffer.readBytes(bytes);
+        } else if (getType() == Type.UNSIGNED_SHORT_BYTE_ARRAY) {
+            int size = buffer.readUnsignedShort();
 
             bytes = new byte[size];
             buffer.readBytes(bytes);
@@ -67,7 +73,7 @@ public class ByteArrayDataType extends DataType<byte[]> {
 
             buffer.writeByte(byteArray.length);
             buffer.writeBytes(byteArray);
-        } else if (getType() == Type.SHORT_BYTE_ARRAY) {
+        } else if (getType() == Type.SHORT_BYTE_ARRAY || getType() == Type.UNSIGNED_SHORT_BYTE_ARRAY) {
 
             buffer.writeShort(byteArray.length);
             buffer.writeBytes(byteArray);

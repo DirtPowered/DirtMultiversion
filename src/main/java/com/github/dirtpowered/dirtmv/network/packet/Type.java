@@ -33,6 +33,7 @@ public enum Type {
     STRING,
     BYTE_BYTE_ARRAY,
     SHORT_BYTE_ARRAY,
+    UNSIGNED_SHORT_BYTE_ARRAY,
     UTF8_STRING,
     V1_3B_CHUNK,
     V1_3B_ITEM,

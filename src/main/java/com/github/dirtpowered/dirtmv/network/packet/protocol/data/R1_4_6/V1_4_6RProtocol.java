@@ -104,7 +104,7 @@ public class V1_4_6RProtocol extends Protocol {
         dataTypes[107] = new DataType[]{SHORT, V1_3_1RProtocol.ITEM};
         dataTypes[108] = new DataType[]{BYTE, BYTE};
         dataTypes[130] = new DataType[]{INT, SHORT, INT, STRING, STRING, STRING, STRING};
-        dataTypes[131] = new DataType[]{SHORT, SHORT, SHORT_BYTE_ARRAY};
+        dataTypes[131] = new DataType[]{SHORT, SHORT, UNSIGNED_SHORT_BYTE_ARRAY};
         dataTypes[132] = new DataType[]{INT, SHORT, INT, BYTE, COMPOUND_TAG};
         dataTypes[200] = new DataType[]{INT, BYTE};
         dataTypes[201] = new DataType[]{STRING, BYTE, SHORT};
