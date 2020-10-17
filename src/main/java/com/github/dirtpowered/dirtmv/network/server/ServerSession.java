@@ -84,7 +84,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
      * @param serverProtocol current protocol class
      */
     public void sendPacket(PacketData packet, PacketDirection direction, Class serverProtocol) throws IOException {
-        List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(serverProtocol, userData.getClientVersion(), Constants.REMOTE_SERVER_VERSION);
+        List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(userData.getClientVersion(), Constants.REMOTE_SERVER_VERSION);
         boolean flag = direction == PacketDirection.SERVER_TO_CLIENT;
 
         if (!flag) Collections.reverse(protocols);

@@ -25,6 +25,7 @@ package com.github.dirtpowered.dirtmv.network.packet;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.ProtocolRegistry;
 import com.github.dirtpowered.dirtmv.utils.PreNettyPacketNames;
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
@@ -32,16 +33,17 @@ import java.io.IOException;
 public class PacketUtil {
 
     public static PacketData readPacket(MinecraftVersion version, ByteBuf buffer) throws IOException {
-        int packetId = buffer.readUnsignedByte();
+        short packetId = buffer.readUnsignedByte();
 
         Protocol protocol = ProtocolRegistry.getProtocolFromVersion(version);
+        Preconditions.checkNotNull(protocol, "Protocol %s is not registered", version);
+
         DataType[] parts = protocol.dataTypes[packetId];
 
-        if (parts == null)
-            throw new IOException(
-                    "Unknown packet id " + packetId + " (" + PreNettyPacketNames.getPacketName(packetId) + ")" +
-                            " in protocol " + protocol.getClass().getSimpleName()
-            );
+        String packetMapping = PreNettyPacketNames.getPacketName(packetId);
+        String protocolName = protocol.getClass().getSimpleName();
+
+        Preconditions.checkNotNull(parts, "Unknown packet id %s (%s) in protocol %s", packetId, packetMapping, protocolName);
 
         TypeHolder[] typeHolders = new TypeHolder[parts.length];
 

@@ -40,6 +40,9 @@ import com.mojang.nbt.CompoundTag;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.WeakHashMap;
 
 public class ProtocolRelease51To39 extends ServerProtocol {
 
@@ -53,9 +56,20 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
         String[] oldParts = oldMessage.split(colorChar);
 
+        Map<Integer, String> versionMap = new WeakHashMap<>();
+
+        versionMap.put(51, "1.4.7");
+        versionMap.put(60, "1.5.1");
+        versionMap.put(61, "1.5.2");
+
+        Object[] keyArray = versionMap.keySet().toArray();
+
+        Integer selectedVersion = (Integer) keyArray[new Random().nextInt(keyArray.length)];
+        String versionName = versionMap.get(selectedVersion);
+
         return colorChar + "1"
-                + splitChar + 51 // 1.4.7 protocol
-                + splitChar + "1.4.7"
+                + splitChar + selectedVersion
+                + splitChar + versionName
                 + splitChar + oldParts[0]
                 + splitChar + oldParts[1]
                 + splitChar + oldParts[2];
@@ -93,6 +107,9 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                if (data.getObjects().length < 3) {
+                    return new PacketData(-1);
+                }
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[] {
                         set(Type.BYTE, 39),
@@ -117,6 +134,21 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
+        addTranslator(0x83 /* MAP DATA */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                byte[] mapData = (byte[]) data.read(2).getObject();
+
+                return new PacketData(-1);
+
+                /*return PacketUtil.createPacket(0x83, new TypeHolder[] {
+                        set(Type.SHORT_BYTE_ARRAY, mapData)
+                });*/
+            }
+        });
+
         addTranslator(0x04 /* UPDATE TIME */, new PacketTranslator() {
 
             @Override
@@ -133,7 +165,17 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                return new PacketData(-1);
+
+                return PacketUtil.createPacket(0x17, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.BYTE, 0), // yaw
+                        set(Type.BYTE, 0), // pitch
+                        data.read(5)
+                });
             }
         });
 
@@ -178,10 +220,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         set(Type.V1_4R_METADATA, metadata)
                 });
 
-                session.sendPacket(vehicleSpawn, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
-                session.sendPacket(itemMetadata, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
+                //session.sendPacket(vehicleSpawn, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
+                //session.sendPacket(itemMetadata, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
 
-                return new PacketData(-1);
+                //TODO: Fix transformers with multiple packets
+                return vehicleSpawn;
             }
         });
     }

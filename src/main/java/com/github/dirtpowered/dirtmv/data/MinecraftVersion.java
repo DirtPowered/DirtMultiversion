@@ -37,7 +37,7 @@ public enum MinecraftVersion {
     R1_2_4(29, false),
     R1_3_1(39, false),
     R1_4_6(51, false),
-    R1_5(60, false),
+    R1_5_1(60, false),
     R1_5_2(61, false),
     R1_6_1(73, false),
     R1_6_2(74, false),
