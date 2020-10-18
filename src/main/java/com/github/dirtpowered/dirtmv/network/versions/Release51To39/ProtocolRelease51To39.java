@@ -179,14 +179,6 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x3E /* SOUND LEVEL */, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                return new PacketData(-1);
-            }
-        });
-
         addTranslator(0x15 /* PICKUP SPAWN */, new PacketTranslator() {
 
             @Override
