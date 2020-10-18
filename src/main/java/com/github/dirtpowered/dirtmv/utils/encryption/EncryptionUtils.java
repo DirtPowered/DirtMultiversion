@@ -22,7 +22,12 @@
 
 package com.github.dirtpowered.dirtmv.utils.encryption;
 
+import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.packet.PacketData;
+import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
+import com.github.dirtpowered.dirtmv.network.packet.Type;
+import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.server.codec.encryption.PacketDecryptionCodec;
 import com.github.dirtpowered.dirtmv.network.server.codec.encryption.PacketEncryptionCodec;
 import io.netty.channel.socket.SocketChannel;
@@ -31,6 +36,7 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -41,7 +47,7 @@ import java.util.Arrays;
 
 public class EncryptionUtils {
 
-    public static KeyPair keyPair;
+    private static KeyPair keyPair;
 
     static {
         // generate key pair
@@ -53,6 +59,43 @@ public class EncryptionUtils {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException();
         }
+    }
+
+    /**
+     * Creates encryption request packet
+     *
+     * @param session Server session
+     * @return Encryption request packet {@link PacketData packet}
+     */
+    public static PacketData createEncryptionRequest(ServerSession session) {
+        PublicKey key = keyPair.getPublic();
+        byte[] verify = new byte[4];
+
+        session.getMain().getSharedRandom().nextBytes(verify);
+
+        PacketData encryptRequest = PacketUtil.createPacket(0xFD, new TypeHolder[]{
+                new TypeHolder(Type.STRING, "-"),
+                new TypeHolder(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
+                new TypeHolder(Type.SHORT_BYTE_ARRAY, verify)
+        });
+
+        session.getUserData().setProxyRequest(encryptRequest);
+        return encryptRequest;
+    }
+
+    /**
+     * Sends empty encryption response
+     *
+     * @param session       Server session
+     * @param protocolClass Protocol class
+     */
+    public static void sendEmptyEncryptionResponse(ServerSession session, Class protocolClass) throws IOException {
+        PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
+                new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0]),
+                new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0])
+        });
+
+        session.sendPacket(response, PacketDirection.SERVER_TO_CLIENT, protocolClass);
     }
 
     /**

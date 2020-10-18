@@ -55,20 +55,10 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
             @SneakyThrows
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                PublicKey key = EncryptionUtils.keyPair.getPublic();
-                byte[] verify = new byte[4];
-
-                session.getMain().getSharedRandom().nextBytes(verify);
-
-                PacketData encryptRequest = PacketUtil.createPacket(0xFD, new TypeHolder[]{
-                        set(Type.STRING, "-"),
-                        set(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
-                        set(Type.SHORT_BYTE_ARRAY, verify)
-                });
+                PacketData encryptRequest = EncryptionUtils.createEncryptionRequest(session);
 
                 SecretKey secretKey = EncryptionUtils.getSecretKey();
 
-                session.getUserData().setProxyRequest(encryptRequest); // proxy -> client request
                 session.getUserData().setSecretKey(secretKey);
 
                 byte[] publicKeyBytes = (byte[]) data.read(1).getObject();
@@ -110,12 +100,7 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
                     SecretKey shared = EncryptionUtils.getSecret(data, session.getUserData().getProxyRequest());
 
                     // server -> client
-                    PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
-                            set(Type.SHORT_BYTE_ARRAY, new byte[0]),
-                            set(Type.SHORT_BYTE_ARRAY, new byte[0])
-                    });
-
-                    session.sendPacket(response, PacketDirection.SERVER_TO_CLIENT, ProtocolPassthroughEncrypted.class);
+                    EncryptionUtils.sendEmptyEncryptionResponse(session, ProtocolPassthroughEncrypted.class);
 
                     // enable encryption
                     EncryptionUtils.setEncryption(session.getChannel(), shared);

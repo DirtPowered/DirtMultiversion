@@ -87,7 +87,8 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
     public void sendPacket(PacketData packet, PacketDirection direction, Class serverProtocol) throws IOException {
         MinecraftVersion version = Constants.REMOTE_SERVER_VERSION;
 
-        if (serverProtocol != null) {
+        // TODO: Replace 'serverProtocol' with something less ugly
+        if (serverProtocol != null && !serverProtocol.getSimpleName().contains("Encrypted")) {
             try {
                 version = ((ServerProtocol)serverProtocol.newInstance()).getFrom();
             } catch (InstantiationException | IllegalAccessException e) {
@@ -95,7 +96,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
             }
         }
 
-        List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(userData.getClientVersion(), version);
+        List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(userData, version);
 
         boolean flag = direction == PacketDirection.SERVER_TO_CLIENT;
 

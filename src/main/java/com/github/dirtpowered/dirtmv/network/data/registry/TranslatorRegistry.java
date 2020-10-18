@@ -22,7 +22,9 @@
 
 package com.github.dirtpowered.dirtmv.network.data.registry;
 
+import com.github.dirtpowered.dirtmv.data.Constants;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
 import com.github.dirtpowered.dirtmv.network.versions.Beta13To11.ProtocolBeta13To11;
 import com.github.dirtpowered.dirtmv.network.versions.Beta14To13.ProtocolBeta14To13;
@@ -68,12 +70,14 @@ public class TranslatorRegistry {
 
     /**
      * Returns all protocols between client and server version
-     * @param from      Client version
+     * @param data      User data
      * @param versionTo Server version
      * @return {@link List<ServerProtocol> List} with ordered protocol pipeline classes
      */
-    public List<ServerProtocol> findProtocol(MinecraftVersion from, MinecraftVersion versionTo) {
+    public List<ServerProtocol> findProtocol(UserData data, MinecraftVersion versionTo) {
         List<ServerProtocol> serverProtocols = new LinkedList<>();
+
+        MinecraftVersion from = data.getClientVersion();
 
         // check if translating is needed
         if (from == versionTo) {
@@ -85,7 +89,13 @@ public class TranslatorRegistry {
             } else {
                 serverProtocol = new ProtocolPassthrough(from, versionTo);
             }
+
             return Collections.singletonList(serverProtocol);
+        } else {
+            if (from.getProtocolId() >= 39 && Constants.REMOTE_SERVER_VERSION.getProtocolId() >= 39) {
+                // add encryption translators to pipeline
+                serverProtocols.add(new ProtocolPassthroughEncrypted(from, versionTo));
+            }
         }
 
         int clientProtocol = from.getProtocolId();

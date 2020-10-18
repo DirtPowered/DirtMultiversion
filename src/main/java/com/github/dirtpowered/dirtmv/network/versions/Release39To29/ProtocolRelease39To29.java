@@ -42,7 +42,6 @@ import lombok.SneakyThrows;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,21 +61,10 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                     return new PacketData(-1); // since 1.3 handshake is one-way (client -> server)
                 }
 
-                PublicKey key = EncryptionUtils.keyPair.getPublic();
-                byte[] verify = new byte[4];
-
                 String username = (String) data.read(1).getObject();
                 session.getUserData().setUsername(username);
 
-                session.getMain().getSharedRandom().nextBytes(verify);
-
-                PacketData encryptRequest = PacketUtil.createPacket(0xFD, new TypeHolder[]{
-                        set(Type.STRING, "-"),
-                        set(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
-                        set(Type.SHORT_BYTE_ARRAY, verify)
-                });
-
-                session.getUserData().setProxyRequest(encryptRequest);
+                PacketData encryptRequest = EncryptionUtils.createEncryptionRequest(session);
 
                 // server -> client
                 session.sendPacket(encryptRequest, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease39To29.class);
@@ -96,12 +84,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 SecretKey sharedKey = EncryptionUtils.getSecret(data, request);
 
                 // server -> client
-                PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
-                        set(Type.SHORT_BYTE_ARRAY, new byte[0]),
-                        set(Type.SHORT_BYTE_ARRAY, new byte[0])
-                });
-
-                session.sendPacket(response, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease39To29.class);
+                EncryptionUtils.sendEmptyEncryptionResponse(session, ProtocolRelease39To29.class);
 
                 // enable encryption
                 EncryptionUtils.setEncryption(session.getChannel(), sharedKey);
