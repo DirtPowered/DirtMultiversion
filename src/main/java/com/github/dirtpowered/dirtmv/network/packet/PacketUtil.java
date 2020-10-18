@@ -33,6 +33,8 @@ import java.io.IOException;
 public class PacketUtil {
 
     public static PacketData readPacket(MinecraftVersion version, ByteBuf buffer) throws IOException {
+        Preconditions.checkNotNull(version, "Version not provided");
+
         short packetId = buffer.readUnsignedByte();
 
         Protocol protocol = ProtocolRegistry.getProtocolFromVersion(version);

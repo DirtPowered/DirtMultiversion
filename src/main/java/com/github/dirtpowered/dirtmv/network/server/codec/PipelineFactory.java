@@ -40,7 +40,7 @@ public class PipelineFactory extends ChannelInitializer {
 
     @Override
     protected void initChannel(Channel channel) {
-        channel.pipeline().addLast("ping", new LegacyPingVersionHandler(userData));
+        channel.pipeline().addLast("legacy_ping", new LegacyPingVersionHandler(userData));
         channel.pipeline().addLast("decoder", new PacketDecoder(packetDirection, userData));
         channel.pipeline().addLast("encoder", new PacketEncoder());
         channel.pipeline().addLast("timeout", new ReadTimeoutHandler(10));

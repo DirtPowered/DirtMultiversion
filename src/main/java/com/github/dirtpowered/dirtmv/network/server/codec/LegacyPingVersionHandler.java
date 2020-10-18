@@ -32,30 +32,50 @@ public class LegacyPingVersionHandler extends ChannelInboundHandlerAdapter {
 
     private UserData userData;
 
-    LegacyPingVersionHandler(UserData userData) {
-        this.userData = userData;
+    LegacyPingVersionHandler(UserData data) {
+        this.userData = data;
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object object) {
         ByteBuf buffer = (ByteBuf) object;
-        int startIndex = buffer.readerIndex();
 
-        int packetId = buffer.readUnsignedByte();
+        buffer.markReaderIndex();
 
-        if (packetId == 0xFE) {
-            if (!buffer.isReadable()) {
+        if (buffer.readUnsignedByte() == 254) {
+            int i = buffer.readableBytes();
 
+            if (i == 0) {
                 userData.setClientVersion(MinecraftVersion.B1_8_1);
-            } else if (buffer.readUnsignedByte() == 1 && !buffer.isReadable()) {
+
+                close(ctx, buffer);
+            } else if (i == 1) {
+                if (buffer.readUnsignedByte() != 1) {
+                    return;
+                }
 
                 userData.setClientVersion(MinecraftVersion.R1_4_6);
+
+                close(ctx, buffer);
+            } else {
+                if (buffer.readUnsignedByte() != 0x01 || buffer.readUnsignedByte() != 0xFA) {
+                    return;
+                }
+
+                // TODO: get protocol version
+                userData.setClientVersion(MinecraftVersion.R1_6_1);
+
+                close(ctx, buffer);
             }
+        } else {
+            close(ctx, buffer);
         }
+    }
 
-        buffer.readerIndex(startIndex);
+    private void close(ChannelHandlerContext ctx, ByteBuf object) {
+        object.resetReaderIndex();
 
-        ctx.pipeline().remove(this);
-        ctx.fireChannelRead(buffer);
+        ctx.channel().pipeline().remove(this);
+        ctx.fireChannelRead(object);
     }
 }
