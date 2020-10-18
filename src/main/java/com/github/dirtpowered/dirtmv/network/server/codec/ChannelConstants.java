@@ -22,30 +22,14 @@
 
 package com.github.dirtpowered.dirtmv.network.server.codec;
 
-import com.github.dirtpowered.dirtmv.data.user.UserData;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-
-public class PipelineFactory extends ChannelInitializer {
-
-    private static final int TIMEOUT = 30;
-
-    private PacketDirection packetDirection;
-    private UserData userData;
-
-    public PipelineFactory(UserData userData, PacketDirection packetDirection) {
-        this.packetDirection = packetDirection;
-        this.userData = userData;
-    }
-
-    @Override
-    protected void initChannel(Channel channel) {
-        channel.pipeline()
-                .addLast(ChannelConstants.LEGACY_PING, new LegacyPingVersionHandler(userData))
-                .addLast(ChannelConstants.LEGACY_DECODER, new PacketDecoder(packetDirection, userData))
-                .addLast(ChannelConstants.LEGACY_ENCODER, new PacketEncoder())
-                .addLast(ChannelConstants.TIMEOUT_HANDLER, new ReadTimeoutHandler(TIMEOUT));
-    }
+public class ChannelConstants {
+    public static final String DEFAULT_PIPELINE = "minecraft_pipeline";
+    public static final String LEGACY_PING = "legacy_ping";
+    public static final String LEGACY_ENCODER = "legacy_encoder";
+    public static final String LEGACY_DECODER = "legacy_decoder";
+    public static final String TIMEOUT_HANDLER = "timeout";
+    public static final String PACKET_ENCRYPTION = "packet_encryption";
+    public static final String PACKET_DECRYPTION = "packet_decryption";
+    public static final String SERVER_HANDLER = "server_handler";
+    public static final String CLIENT_HANDLER = "client_handler";
 }

@@ -25,6 +25,7 @@ package com.github.dirtpowered.dirtmv.network.server;
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.Constants;
 import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
+import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
 import com.github.dirtpowered.dirtmv.network.server.codec.PipelineFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -54,8 +55,8 @@ public class Server {
                     public void initChannel(SocketChannel channel) {
                         ServerSession serverSession = new ServerSession(channel, main);
 
-                        channel.pipeline().addLast("mc_pipeline", new PipelineFactory(serverSession.getUserData(), PacketDirection.CLIENT_TO_SERVER));
-                        channel.pipeline().addLast("server_session", serverSession);
+                        channel.pipeline().addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(serverSession.getUserData(), PacketDirection.CLIENT_TO_SERVER))
+                                .addLast(ChannelConstants.SERVER_HANDLER, serverSession);
                     }
                 })
                 .childOption(ChannelOption.SO_KEEPALIVE, true);

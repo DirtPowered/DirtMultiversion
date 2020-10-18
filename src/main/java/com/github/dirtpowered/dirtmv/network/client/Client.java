@@ -25,6 +25,7 @@ package com.github.dirtpowered.dirtmv.network.client;
 import com.github.dirtpowered.dirtmv.data.Constants;
 import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
 import com.github.dirtpowered.dirtmv.network.server.codec.PipelineFactory;
 import com.github.dirtpowered.dirtmv.utils.Callback;
 import io.netty.bootstrap.Bootstrap;
@@ -63,8 +64,9 @@ public class Client {
 
                 @Override
                 protected void initChannel(SocketChannel ch) {
-                    ch.pipeline().addLast("mc_pipeline", new PipelineFactory(serverSession.getUserData(), PacketDirection.SERVER_TO_CLIENT));
-                    ch.pipeline().addLast("client_session", new ClientSession(key, serverSession, ch, callback));
+                    ch.pipeline()
+                            .addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(serverSession.getUserData(), PacketDirection.SERVER_TO_CLIENT))
+                            .addLast(ChannelConstants.CLIENT_HANDLER, new ClientSession(key, serverSession, ch, callback));
                 }
             });
 

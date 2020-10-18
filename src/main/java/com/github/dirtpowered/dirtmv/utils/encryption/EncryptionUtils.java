@@ -28,6 +28,7 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
 import com.github.dirtpowered.dirtmv.network.server.codec.encryption.PacketDecryptionCodec;
 import com.github.dirtpowered.dirtmv.network.server.codec.encryption.PacketEncryptionCodec;
 import io.netty.channel.socket.SocketChannel;
@@ -106,12 +107,12 @@ public class EncryptionUtils {
      */
     public static void setEncryption(SocketChannel channel, SecretKey sharedKey) {
         channel.pipeline().addBefore(
-                "decoder", "packet_decryption",
+                ChannelConstants.LEGACY_DECODER, ChannelConstants.PACKET_DECRYPTION,
                 new PacketDecryptionCodec(getCipher(false, sharedKey))
         );
 
         channel.pipeline().addBefore(
-                "encoder", "packet_encryption",
+                ChannelConstants.LEGACY_ENCODER, ChannelConstants.PACKET_ENCRYPTION,
                 new PacketEncryptionCodec(getCipher(true, sharedKey))
         );
     }
