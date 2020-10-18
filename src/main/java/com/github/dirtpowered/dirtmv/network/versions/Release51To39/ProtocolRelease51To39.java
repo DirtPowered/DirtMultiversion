@@ -218,5 +218,30 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 return new PacketData(-1);
             }
         });
+
+        addTranslator(24 /* MOB SPAWN */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+                session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
+
+                byte type = (byte) data.read(1).getObject();
+                int itemId = 0;
+
+                if (type == 51) {
+                    itemId = 261; // bow
+                } else if (type == 57) {
+                    itemId = 283; // golden sword
+                }
+
+                ItemStack itemStack = new ItemStack(itemId, 1, 0, null);
+
+                return PacketUtil.createPacket(0x05, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.SHORT, (short) 0),
+                        set(Type.V1_3R_ITEM, itemStack)
+                });
+            }
+        });
     }
 }
