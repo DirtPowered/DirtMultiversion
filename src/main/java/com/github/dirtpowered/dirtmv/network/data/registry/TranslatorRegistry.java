@@ -82,7 +82,7 @@ public class TranslatorRegistry {
         MinecraftVersion from = data.getClientVersion();
 
         // check if translating is needed
-        if (from == versionTo) {
+        if (from == Constants.REMOTE_SERVER_VERSION) {
             ServerProtocol serverProtocol;
 
             // starting from r1.3 the whole connections is encrypted
