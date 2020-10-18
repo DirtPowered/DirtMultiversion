@@ -112,13 +112,13 @@ public class ProtocolRelease39To29 extends ServerProtocol {
         addTranslator(0xCD /* CLIENT COMMAND */, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 byte command = (byte) data.read(0).getObject();
 
                 if (command == 0x00) {
                     String username = session.getUserData().getUsername();
 
-                    PacketData login = PacketUtil.createPacket(0x01, new TypeHolder[]{
+                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
                             set(Type.INT, 29), // protocol version
                             set(Type.STRING, username),
                             set(Type.STRING, "NORMAL"),
@@ -128,10 +128,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                             set(Type.BYTE, 0),
                             set(Type.BYTE, 0),
                     });
-
-                    session.sendPacket(login, PacketDirection.CLIENT_TO_SERVER, ProtocolRelease39To29.class);
-
-                    return new PacketData(-1);
                 } else {
 
                     return PacketUtil.createPacket(0x09, new TypeHolder[]{

@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.network.server;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.Constants;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.client.Client;
 import com.github.dirtpowered.dirtmv.network.client.ClientSession;
@@ -84,7 +85,18 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
      * @param serverProtocol current protocol class
      */
     public void sendPacket(PacketData packet, PacketDirection direction, Class serverProtocol) throws IOException {
-        List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(userData.getClientVersion(), Constants.REMOTE_SERVER_VERSION);
+        MinecraftVersion version = Constants.REMOTE_SERVER_VERSION;
+
+        if (serverProtocol != null) {
+            try {
+                version = ((ServerProtocol)serverProtocol.newInstance()).getFrom();
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(userData.getClientVersion(), version);
+
         boolean flag = direction == PacketDirection.SERVER_TO_CLIENT;
 
         if (!flag) Collections.reverse(protocols);

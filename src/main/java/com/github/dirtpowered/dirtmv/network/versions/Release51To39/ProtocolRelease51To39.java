@@ -194,7 +194,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
                 PacketData vehicleSpawn = PacketUtil.createPacket(0x17, new TypeHolder[] {
                         data.read(0),
-                        set(Type.BYTE, 2),
+                        set(Type.BYTE, (byte) 2),
                         data.read(4),
                         data.read(5),
                         data.read(6),
@@ -220,11 +220,10 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         set(Type.V1_4R_METADATA, metadata)
                 });
 
-                //session.sendPacket(vehicleSpawn, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
-                //session.sendPacket(itemMetadata, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
+                session.sendPacket(vehicleSpawn, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
+                session.sendPacket(itemMetadata, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
 
-                //TODO: Fix transformers with multiple packets
-                return vehicleSpawn;
+                return new PacketData(-1);
             }
         });
     }
