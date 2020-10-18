@@ -133,7 +133,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 return PacketUtil.createPacket(0x64, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
-                        set(Type.STRING, data.read(2).getObject()),
+                        set(Type.STRING, data.read(Type.STRING, 2)),
                         data.read(3)
                 });
             }
@@ -155,7 +155,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                byte state = (byte) data.read(1).getObject();
+                byte state = data.read(Type.BYTE, 1);
 
                 if (state == 5 || state == 4) { // sprinting (stop/start)
                     return new PacketData(-1); // cancel sending

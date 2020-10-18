@@ -25,6 +25,7 @@ package com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.type.c
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import com.github.dirtpowered.dirtmv.network.packet.TypeObject;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_2Chunk;
 import io.netty.buffer.ByteBuf;
 
@@ -34,7 +35,7 @@ import java.util.zip.Inflater;
 
 public class ChunkDataType extends DataType<V1_2Chunk> {
 
-    public ChunkDataType(Type type) {
+    public ChunkDataType(TypeObject type) {
         super(type);
     }
 

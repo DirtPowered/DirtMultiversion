@@ -108,11 +108,11 @@ public class ProtocolRelease60To51 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                Motion motion = (Motion) data.read(7).getObject();
+                Motion motion = data.read(Type.MOTION, 7);
 
                 int throwerId = motion.getThrowerId();
 
-                byte vehicleType = (byte) data.read(1).getObject();
+                byte vehicleType = data.read(Type.BYTE, 1);
                 byte vehicleFixedType = vehicleType;
 
                 switch (vehicleType) {

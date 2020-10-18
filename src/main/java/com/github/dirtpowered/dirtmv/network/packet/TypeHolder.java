@@ -26,10 +26,10 @@ import lombok.Data;
 
 @Data
 public class TypeHolder {
-    private Type type;
+    private TypeObject type;
     private Object object;
 
-    public TypeHolder(Type type, Object object) {
+    public TypeHolder(TypeObject type, Object object) {
         this.type = type;
         this.object = object;
     }

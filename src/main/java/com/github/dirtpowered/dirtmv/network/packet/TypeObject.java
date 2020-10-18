@@ -22,21 +22,12 @@
 
 package com.github.dirtpowered.dirtmv.network.packet;
 
-import io.netty.buffer.ByteBuf;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-import java.io.IOException;
-
-public abstract class DataType<T> {
-
-    @Getter
-    private TypeObject type;
-
-    protected DataType(TypeObject type) {
-        this.type = type;
-    }
-
-    public abstract T read(ByteBuf buffer) throws IOException;
-
-    public abstract void write(TypeHolder typeHolder, ByteBuf buffer) throws IOException;
+@Data
+@AllArgsConstructor
+public class TypeObject<T> {
+    private Class<T> type;
+    private TypeHandler typeHandler;
 }

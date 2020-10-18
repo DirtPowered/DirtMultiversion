@@ -20,23 +20,27 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.packet;
+package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 
+import com.github.dirtpowered.dirtmv.network.packet.DataType;
+import com.github.dirtpowered.dirtmv.network.packet.Type;
+import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import io.netty.buffer.ByteBuf;
-import lombok.Getter;
 
-import java.io.IOException;
+public class BooleanDataType extends DataType<Boolean> {
 
-public abstract class DataType<T> {
-
-    @Getter
-    private TypeObject type;
-
-    protected DataType(TypeObject type) {
-        this.type = type;
+    public BooleanDataType() {
+        super(Type.BOOLEAN);
     }
 
-    public abstract T read(ByteBuf buffer) throws IOException;
+    @Override
+    public Boolean read(ByteBuf buffer) {
+        return buffer.readBoolean();
+    }
 
-    public abstract void write(TypeHolder typeHolder, ByteBuf buffer) throws IOException;
+    @Override
+    public void write(TypeHolder typeHolder, ByteBuf buffer) {
+        buffer.writeBoolean((Boolean) typeHolder.getObject());
+    }
 }
+

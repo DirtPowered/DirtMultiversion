@@ -23,20 +23,10 @@
 package com.github.dirtpowered.dirtmv.network.packet;
 
 import io.netty.buffer.ByteBuf;
-import lombok.Getter;
 
 import java.io.IOException;
 
-public abstract class DataType<T> {
+public interface TypeHandler {
 
-    @Getter
-    private TypeObject type;
-
-    protected DataType(TypeObject type) {
-        this.type = type;
-    }
-
-    public abstract T read(ByteBuf buffer) throws IOException;
-
-    public abstract void write(TypeHolder typeHolder, ByteBuf buffer) throws IOException;
+    void handle(TypeHolder holder, ByteBuf buffer) throws IOException;
 }

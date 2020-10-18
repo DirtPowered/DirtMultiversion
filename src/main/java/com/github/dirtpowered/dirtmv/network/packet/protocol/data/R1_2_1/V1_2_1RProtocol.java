@@ -107,7 +107,7 @@ public class V1_2_1RProtocol extends Protocol {
         dataTypes[132] = new DataType[]{INT, SHORT, INT, BYTE, INT, INT, INT};
         dataTypes[200] = new DataType[]{INT, BYTE};
         dataTypes[201] = new DataType[]{STRING, BYTE, SHORT};
-        dataTypes[202] = new DataType[]{BYTE, BYTE, BYTE, BYTE}; // 1.2.5 packet (I'm lazy)
+        dataTypes[202] = new DataType[]{BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN}; // 1.2.5 packet (I'm lazy)
         dataTypes[250] = new DataType[]{STRING, SHORT_BYTE_ARRAY};
         dataTypes[254] = new DataType[]{};
         dataTypes[255] = new DataType[]{STRING};

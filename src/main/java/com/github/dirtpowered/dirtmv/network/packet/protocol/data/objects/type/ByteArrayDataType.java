@@ -25,12 +25,13 @@ package com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.type;
 import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import com.github.dirtpowered.dirtmv.network.packet.TypeObject;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 
 public class ByteArrayDataType extends DataType<byte[]> {
 
-    public ByteArrayDataType(Type readDataType) {
+    public ByteArrayDataType(TypeObject readDataType) {
         super(readDataType);
     }
 

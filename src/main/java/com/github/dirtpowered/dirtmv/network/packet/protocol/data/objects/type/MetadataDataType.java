@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.network.packet.DataType;
 import com.github.dirtpowered.dirtmv.network.packet.Protocol;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import com.github.dirtpowered.dirtmv.network.packet.TypeObject;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.BlockLocation;
@@ -41,7 +42,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class MetadataDataType extends DataType<List<WatchableObject>> {
 
-    public MetadataDataType(Type type) {
+    public MetadataDataType(TypeObject type) {
         super(type);
     }
 

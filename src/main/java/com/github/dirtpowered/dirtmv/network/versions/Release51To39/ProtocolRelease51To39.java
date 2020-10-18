@@ -91,7 +91,8 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                String reason = (String) data.read(0).getObject();
+                String reason = data.read(Type.STRING, 0);
+
                 if (reason.split("\u00a7").length != 3) {
                     return data;
                 }
@@ -195,9 +196,9 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         set(Type.MOTION, new Motion(1, (short) 0, (short) 0, (short) 0))
                 });
 
-                short itemId = (short) data.read(1).getObject();
-                byte amount = (byte) data.read(2).getObject();
-                short itemData = (short) data.read(3).getObject();
+                short itemId = data.read(Type.SHORT, 1);
+                byte amount = data.read(Type.BYTE, 2);
+                short itemData = data.read(Type.SHORT, 3);
 
                 ItemStack itemStack = new ItemStack(itemId, amount, itemData, new CompoundTag());
 
@@ -225,7 +226,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
                 session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
 
-                byte type = (byte) data.read(1).getObject();
+                byte type = data.read(Type.BYTE, 1);
                 int itemId = 0;
 
                 if (type == 51) {

@@ -61,7 +61,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                     return new PacketData(-1); // since 1.3 handshake is one-way (client -> server)
                 }
 
-                String username = (String) data.read(1).getObject();
+                String username = data.read(Type.STRING, 1);
                 session.getUserData().setUsername(username);
 
                 PacketData encryptRequest = EncryptionUtils.createEncryptionRequest(session);
@@ -96,7 +96,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                byte command = (byte) data.read(0).getObject();
+                byte command = data.read(Type.BYTE, 0);
 
                 if (command == 0x00) {
                     String username = session.getUserData().getUsername();
@@ -179,7 +179,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                V1_2Chunk chunk = (V1_2Chunk) data.read(0).getObject();
+                V1_2Chunk chunk = data.read(Type.V1_2_CHUNK, 0);
 
                 return PacketUtil.createPacket(0x33, new TypeHolder[]{
                         set(Type.V1_3_CHUNK, chunk)
@@ -225,7 +225,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                ItemStack oldItem = (ItemStack) data.read(2).getObject();
+                ItemStack oldItem = data.read(Type.V1_0R_ITEM, 2);
 
                 return PacketUtil.createPacket(0x67, new TypeHolder[]{
                         data.read(0),
@@ -240,7 +240,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                ItemStack[] items = (ItemStack[]) data.read(1).getObject();
+                ItemStack[] items = data.read(Type.V1_0R_ITEM_ARRAY, 1);
 
                 for (ItemStack item : items) {
                     if (item != null && item.getCompoundTag() == null) {
@@ -260,7 +260,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                int entityId = (int) data.read(0).getObject();
+                int entityId = data.read(Type.INT, 0);
 
                 return PacketUtil.createPacket(0x1D, new TypeHolder[]{
                         set(Type.BYTE_INT_ARRAY, new int[]{entityId})
@@ -294,10 +294,10 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                Motion motion = (Motion) data.read(5).getObject();
+                Motion motion = data.read(Type.MOTION, 5);
 
                 int throwerId = motion.getThrowerId();
-                byte type = (byte) data.read(1).getObject();
+                byte type = data.read(Type.BYTE, 1);
 
                 switch (type) {
                     case 70:
@@ -409,10 +409,10 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 if (dir == PacketDirection.SERVER_TO_CLIENT) {
 
-                    boolean invulnerable = ((Byte) data.read(0).getObject()) == 1;
-                    boolean flying = ((Byte) data.read(1).getObject()) == 1;
-                    boolean allowFlying = ((Byte) data.read(2).getObject()) == 1;
-                    boolean instantBreak = ((Byte) data.read(3).getObject()) == 1;
+                    boolean invulnerable = data.read(Type.BOOLEAN, 0);
+                    boolean flying = data.read(Type.BOOLEAN, 1);
+                    boolean allowFlying = data.read(Type.BOOLEAN, 2);
+                    boolean instantBreak = data.read(Type.BOOLEAN, 3);
 
                     byte mask = 0;
 
@@ -438,13 +438,13 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                             set(Type.BYTE, (byte) (0.1f * 255)),
                     });
                 } else {
-                    byte mask = (byte) data.read(0).getObject();
+                    byte mask = data.read(Type.BYTE, 0);
 
                     return PacketUtil.createPacket(0xCA, new TypeHolder[]{
-                            set(Type.BYTE, ((mask & 1) > 0)),
-                            set(Type.BYTE, ((mask & 2) > 0)),
-                            set(Type.BYTE, ((mask & 4) > 0)),
-                            set(Type.BYTE, ((mask & 8) > 0)),
+                            set(Type.BOOLEAN, ((mask & 1) > 0)),
+                            set(Type.BOOLEAN, ((mask & 2) > 0)),
+                            set(Type.BOOLEAN, ((mask & 4) > 0)),
+                            set(Type.BOOLEAN, ((mask & 8) > 0)),
                     });
                 }
             }
@@ -469,8 +469,8 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                short itemId = (short) data.read(2).getObject();
-                short itemData = (short) data.read(3).getObject();
+                short itemId = data.read(Type.SHORT, 2);
+                short itemData = data.read(Type.SHORT, 3);
 
                 ItemStack itemStack;
 
