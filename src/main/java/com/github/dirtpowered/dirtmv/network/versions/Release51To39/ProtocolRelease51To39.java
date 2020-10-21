@@ -30,12 +30,16 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.Motion;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release51To39.sound.SoundMappings;
 import com.mojang.nbt.CompoundTag;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -241,6 +245,74 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         data.read(0),
                         set(Type.SHORT, (short) 0),
                         set(Type.V1_3R_ITEM, itemStack)
+                });
+            }
+        });
+
+        addTranslator(0xFA /* CUSTOM PAYLOAD */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+                String channel = data.read(Type.STRING, 0);
+                byte[] payload = data.read(Type.SHORT_BYTE_ARRAY, 1);
+
+                if (channel.equals("MC|TrList")) {
+                    ByteBuf buf = Unpooled.wrappedBuffer(payload);
+                    ByteBuf fixedPayload = Unpooled.buffer();
+
+                    fixedPayload.writeInt(buf.readInt());
+                    short size = buf.readUnsignedByte();
+
+                    fixedPayload.writeByte(size);
+
+                    for (int i = 0; i < size; i++) {
+                        V1_3_1RProtocol.ITEM.write(set(Type.V1_3R_ITEM, V1_3_1RProtocol.ITEM.read(buf)), fixedPayload);
+                        V1_3_1RProtocol.ITEM.write(set(Type.V1_3R_ITEM, V1_3_1RProtocol.ITEM.read(buf)), fixedPayload);
+
+                        boolean b = buf.readBoolean();
+                        fixedPayload.writeBoolean(b);
+
+                        if (b) {
+                            V1_3_1RProtocol.ITEM.write(set(Type.V1_3R_ITEM, V1_3_1RProtocol.ITEM.read(buf)), fixedPayload);
+                        }
+
+                        fixedPayload.writeBoolean(false);
+                    }
+
+                    return PacketUtil.createPacket(0xFA, new TypeHolder[]{
+                            data.read(0),
+                            set(Type.SHORT_BYTE_ARRAY, fixedPayload.array())
+                    });
+                }
+
+                return data;
+            }
+        });
+
+        addTranslator(0x3E /* SOUND LEVEL */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                String soundName = data.read(Type.STRING, 0);
+                String newSoundName = SoundMappings.getNewSoundName(soundName);
+
+                if (newSoundName.isEmpty()) {
+
+                    return new PacketData(-1);
+                } else if (newSoundName.equals("-")) {
+
+                    System.err.printf("Missing sound mapping for '%s'%n", soundName);
+
+                    return new PacketData(-1);
+                }
+
+                return PacketUtil.createPacket(0x3E, new TypeHolder[]{
+                        set(Type.STRING, newSoundName),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
                 });
             }
         });
