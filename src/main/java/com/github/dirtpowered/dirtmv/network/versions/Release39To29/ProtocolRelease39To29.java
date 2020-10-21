@@ -196,7 +196,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         data.read(0),
                         data.read(1),
                         data.read(2),
-                        set(Type.SHORT, ((Byte) data.read(3).getObject()).shortValue()),
+                        set(Type.SHORT, data.read(Type.BYTE, 3).shortValue()),
                         data.read(4)
                 });
             }
@@ -207,7 +207,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                ItemStack newItem = (ItemStack) data.read(5).getObject();
+                ItemStack newItem = data.read(Type.V1_3R_ITEM, 5);
 
                 return PacketUtil.createPacket(0x66, new TypeHolder[]{
                         data.read(0),
@@ -488,7 +488,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x36 /* PLAY NOTEBLOCK */, new PacketTranslator() {
+        addTranslator(0x36 /* IN_GAME NOTEBLOCK */, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {

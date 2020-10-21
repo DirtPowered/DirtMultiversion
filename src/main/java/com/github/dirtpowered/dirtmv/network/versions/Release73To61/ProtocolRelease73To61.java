@@ -25,6 +25,7 @@ package com.github.dirtpowered.dirtmv.network.versions.Release73To61;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
+import com.github.dirtpowered.dirtmv.network.data.model.ProtocolState;
 import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
@@ -64,6 +65,9 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                if (session.getUserData().getProtocolState() != ProtocolState.PING)
+                    return data;
+
                 String reason = data.read(Type.STRING, 0);
                 if (reason.split("\00").length != 6) {
                     return data;

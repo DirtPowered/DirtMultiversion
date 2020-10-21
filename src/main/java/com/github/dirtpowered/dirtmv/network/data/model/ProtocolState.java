@@ -20,28 +20,8 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.user;
+package com.github.dirtpowered.dirtmv.network.data.model;
 
-import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.data.model.ProtocolState;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import lombok.Data;
-
-import javax.crypto.SecretKey;
-
-@Data
-public class UserData {
-    private MinecraftVersion clientVersion;
-    private boolean protocolDetected;
-    private PacketData proxyRequest;
-    private SecretKey secretKey;
-    private String username;
-    private ProtocolState protocolState;
-    private int dimension;
-
-    public UserData() {
-        this.clientVersion = MinecraftVersion.B1_5;
-        this.protocolDetected = false;
-        this.protocolState = ProtocolState.PING;
-    }
+public enum ProtocolState {
+    PING, IN_GAME
 }

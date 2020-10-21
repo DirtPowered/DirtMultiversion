@@ -25,6 +25,7 @@ package com.github.dirtpowered.dirtmv.network.versions.Release51To39;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
+import com.github.dirtpowered.dirtmv.network.data.model.ProtocolState;
 import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.PacketData;
 import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
@@ -34,6 +35,7 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.V1_3_1R
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.Motion;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_3_4ChunkBulk;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release51To39.sound.SoundMappings;
@@ -82,6 +84,30 @@ public class ProtocolRelease51To39 extends ServerProtocol {
     @Override
     public void registerTranslators() {
 
+        addTranslator(0x01 /* LOGIN */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                if (dir == PacketDirection.SERVER_TO_CLIENT)
+                    session.getUserData().setDimension(data.read(Type.BYTE, 3));
+
+                // switch state
+                session.getUserData().setProtocolState(ProtocolState.IN_GAME);
+                return data;
+            }
+        });
+
+        addTranslator(0x09 /* RESPAWN */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                if (dir == PacketDirection.SERVER_TO_CLIENT)
+                    session.getUserData().setDimension(data.read(Type.INT, 0));
+
+                return data;
+            }
+        });
+
         addTranslator(0xFE /* SERVER PING REQUEST */, new PacketTranslator() {
 
             @Override
@@ -95,11 +121,10 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                String reason = data.read(Type.STRING, 0);
-
-                if (reason.split("\u00a7").length != 3) {
+                if (session.getUserData().getProtocolState() != ProtocolState.PING)
                     return data;
-                }
+
+                String reason = data.read(Type.STRING, 0);
 
                 // old to new format
                 return PacketUtil.createPacket(0xFF, new TypeHolder[] {
@@ -313,6 +338,36 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         data.read(3),
                         data.read(4),
                         data.read(5),
+                });
+            }
+        });
+
+        addTranslator(0x3D /* DOOR CHANGE */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return PacketUtil.createPacket(0x3D, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.BOOLEAN, false)
+                });
+            }
+        });
+
+        addTranslator(0x38 /* CHUNK BULK */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                V1_3_4ChunkBulk oldChunk = data.read(Type.V1_3CHUNK_BULK, 0);
+
+                oldChunk.setSkylight(session.getUserData().getDimension() == 0);
+
+                return PacketUtil.createPacket(0x38, new TypeHolder[]{
+                        set(Type.V1_4CHUNK_BULK, oldChunk)
                 });
             }
         });
