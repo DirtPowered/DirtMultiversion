@@ -330,7 +330,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                ItemStack newItem = (ItemStack) data.read(4).getObject();
+                ItemStack newItem = data.read(Type.V1_3R_ITEM, 4);
 
                 return PacketUtil.createPacket(0x0F, new TypeHolder[]{
                         data.read(0),
@@ -347,7 +347,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                ItemStack newItem = (ItemStack) data.read(1).getObject();
+                ItemStack newItem = data.read(Type.V1_3R_ITEM, 1);
 
                 return PacketUtil.createPacket(0x6B, new TypeHolder[]{
                         data.read(0),

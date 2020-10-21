@@ -36,6 +36,7 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.utils.PreNettyPacketNames;
+import com.google.common.base.Preconditions;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
@@ -106,21 +107,23 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
 
         for (ServerProtocol protocol : protocols) {
             PacketTranslator translator = protocol.getTranslatorFor(target.getOpCode());
+            String protocolName = protocol.getClass().getSimpleName();
 
             if (translator != null) {
                 if (serverProtocol == null || serverProtocol != protocol.getClass()) {
                     target = translator.translate(this, direction, target);
 
                     String namedOpCode = PreNettyPacketNames.getPacketName(packet.getOpCode());
+                    Preconditions.checkNotNull(target, "%s returned null while translating %s", protocolName, namedOpCode);
 
                     if (target.getOpCode() == -1) {
                         System.out.println("cancelling " + namedOpCode + " " +
-                                "| direction: " + direction.name() + " | through " + protocol.getClass().getSimpleName());
+                                "| direction: " + direction.name() + " | through " + protocolName);
                         return;
                     }
 
                     System.out.println("translating " + namedOpCode + " " +
-                            "| direction: " + direction.name() + " | through " + protocol.getClass().getSimpleName());
+                            "| direction: " + direction.name() + " | through " + protocolName);
                 }
             }
         }

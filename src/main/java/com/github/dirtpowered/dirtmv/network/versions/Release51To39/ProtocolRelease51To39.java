@@ -140,7 +140,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
-                byte[] mapData = (byte[]) data.read(2).getObject();
+                byte[] mapData = data.read(Type.BYTE_BYTE_ARRAY, 2);
 
                 return PacketUtil.createPacket(0x83, new TypeHolder[] {
                         data.read(0),
