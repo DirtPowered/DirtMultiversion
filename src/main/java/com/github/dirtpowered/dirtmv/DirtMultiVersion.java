@@ -39,6 +39,7 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_4_6.V1_4_6R
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_5.V1_5RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_6.V1_6RProtocol;
 import com.github.dirtpowered.dirtmv.network.server.Server;
+import com.github.dirtpowered.dirtmv.session.MultiSession;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
 import lombok.Getter;
 
@@ -46,9 +47,10 @@ import java.net.URISyntaxException;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Getter
-public class DirtMultiVersion {
+public class DirtMultiVersion implements Runnable {
     private final ScheduledExecutorService scheduledExecutorService;
     private SessionRegistry sessionRegistry;
     private TranslatorRegistry translatorRegistry;
@@ -89,10 +91,24 @@ public class DirtMultiVersion {
 
         sharedRandom = new Random();
 
+        setupGlobalTask();
+
         new Server(this);
+    }
+
+    private void setupGlobalTask() {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "Main Thread"));
+        executor.scheduleAtFixedRate(this, 0L, 50L, TimeUnit.MILLISECONDS);
     }
 
     public static void main(String... args) {
         new DirtMultiVersion();
+    }
+
+    @Override
+    public void run() {
+        for (MultiSession val : sessionRegistry.getSessions().values()) {
+            val.getServerSession().tick();
+        }
     }
 }

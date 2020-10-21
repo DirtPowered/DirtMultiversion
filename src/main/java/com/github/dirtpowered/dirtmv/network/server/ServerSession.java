@@ -36,6 +36,7 @@ import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.packet.Type;
 import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
 import com.github.dirtpowered.dirtmv.utils.PreNettyPacketNames;
+import com.github.dirtpowered.dirtmv.utils.interfaces.Tickable;
 import com.google.common.base.Preconditions;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -53,7 +54,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Server to Client connection session
  */
-public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
+public class ServerSession extends SimpleChannelInboundHandler<PacketData> implements Tickable {
 
     @Getter
     private DirtMultiVersion main;
@@ -117,13 +118,13 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
                     Preconditions.checkNotNull(target, "%s returned null while translating %s", protocolName, namedOpCode);
 
                     if (target.getOpCode() == -1) {
-                        System.out.println("cancelling " + namedOpCode + " " +
-                                "| direction: " + direction.name() + " | through " + protocolName);
+                        /*System.out.println("cancelling " + namedOpCode + " " +
+                                "| direction: " + direction.name() + " | through " + protocolName);*/
                         return;
                     }
 
-                    System.out.println("translating " + namedOpCode + " " +
-                            "| direction: " + direction.name() + " | through " + protocolName);
+                    /* System.out.println("translating " + namedOpCode + " " +
+                            "| direction: " + direction.name() + " | through " + protocolName); */
                 }
             }
         }
@@ -140,6 +141,11 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> {
 
             initialPacketQueue.add(target);
         }
+    }
+
+    @Override
+    public void tick() {
+
     }
 
     @Override

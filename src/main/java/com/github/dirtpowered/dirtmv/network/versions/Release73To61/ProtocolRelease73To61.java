@@ -69,9 +69,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                     return data;
 
                 String reason = data.read(Type.STRING, 0);
-                if (reason.split("\00").length != 6) {
-                    return data;
-                }
 
                 ServerMotd pingMessage = ServerMotd.deserialize(reason);
                 pingMessage.setProtocol(session.getUserData().getClientVersion().getProtocolId());

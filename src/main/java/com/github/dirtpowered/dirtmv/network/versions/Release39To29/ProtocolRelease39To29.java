@@ -488,7 +488,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x36 /* IN_GAME NOTEBLOCK */, new PacketTranslator() {
+        addTranslator(0x36 /* PLAY NOTEBLOCK */, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
