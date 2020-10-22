@@ -28,8 +28,15 @@ import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.V1_3BProt
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.V1_2_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_4_6.V1_4_6RProtocol;
+import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_5.type.scoreboard.TeamDataType;
 
 public class V1_5RProtocol extends Protocol {
+
+    public static final DataType TEAM;
+
+    static {
+        TEAM = new TeamDataType();
+    }
 
     @Override
     public void registerPackets() {
@@ -103,9 +110,9 @@ public class V1_5RProtocol extends Protocol {
         dataTypes[204] = new DataType[]{STRING, BYTE, BYTE, BYTE, BYTE};
         dataTypes[205] = new DataType[]{BYTE};
         dataTypes[206] = new DataType[]{STRING, STRING, BYTE};
-        dataTypes[207] = new DataType[]{STRING, BYTE, STRING, INT};
+        dataTypes[207] = new DataType[]{STRING, BYTE, STRING, INT}; // FIXME: something is wrong here
         dataTypes[208] = new DataType[]{BYTE, STRING};
-        dataTypes[209] = new DataType[]{}; // TODO: Teams packet
+        dataTypes[209] = new DataType[]{TEAM};
         dataTypes[250] = new DataType[]{STRING, SHORT_BYTE_ARRAY};
         dataTypes[254] = new DataType[]{BYTE};
         dataTypes[252] = new DataType[]{SHORT_BYTE_ARRAY, SHORT_BYTE_ARRAY};
