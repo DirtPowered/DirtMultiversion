@@ -34,6 +34,7 @@ import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
+import com.github.dirtpowered.dirtmv.network.versions.Release73To61.sound.SoundMappings;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -158,6 +159,34 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 return PacketUtil.createPacket(0xC8, new TypeHolder[] {
                         data.read(0),
                         set(Type.INT, data.read(Type.BYTE, 1).intValue())
+                });
+            }
+        });
+
+        addTranslator(0x3E /* SOUND LEVEL */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                String soundName = data.read(Type.STRING, 0);
+                String newSoundName = SoundMappings.getNewSoundName(soundName);
+
+                if (newSoundName.isEmpty()) {
+
+                    return new PacketData(-1);
+                } else if (newSoundName.equals("-")) {
+
+                    System.err.printf("Missing sound mapping for '%s'%n", soundName);
+
+                    return new PacketData(-1);
+                }
+
+                return PacketUtil.createPacket(0x3E, new TypeHolder[]{
+                        set(Type.STRING, newSoundName),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
                 });
             }
         });
