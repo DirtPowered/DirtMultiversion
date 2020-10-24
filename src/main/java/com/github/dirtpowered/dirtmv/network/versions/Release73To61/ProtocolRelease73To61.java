@@ -34,7 +34,6 @@ import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
-import com.github.dirtpowered.dirtmv.network.versions.Release73To61.sound.SoundMappings;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -46,6 +45,16 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
+
+        addTranslator(0x01 /* LOGIN */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                session.getUserData().setProtocolState(ProtocolState.IN_GAME);
+                return data;
+            }
+        });
+
         addTranslator(0x02 /* HANDSHAKE */, new PacketTranslator() {
 
             @Override
@@ -172,34 +181,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                             set(Type.FLOAT, (data.read(Type.BYTE, 2) / 255F))
                     });
                 }
-            }
-        });
-
-        addTranslator(0x3E /* SOUND LEVEL */, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                String soundName = data.read(Type.STRING, 0);
-                String newSoundName = SoundMappings.getNewSoundName(soundName);
-
-                if (newSoundName.isEmpty()) {
-
-                    return new PacketData(-1);
-                } else if (newSoundName.equals("-")) {
-
-                    System.err.printf("Missing sound mapping for '%s'%n", soundName);
-
-                    return new PacketData(-1);
-                }
-
-                return PacketUtil.createPacket(0x3E, new TypeHolder[]{
-                        set(Type.STRING, newSoundName),
-                        data.read(1),
-                        data.read(2),
-                        data.read(3),
-                        data.read(4),
-                        data.read(5),
-                });
             }
         });
 
