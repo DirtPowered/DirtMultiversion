@@ -170,7 +170,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                         data.read(4), // yaw
                 });
 
-                session.sendPacket(rotationPacket, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease28To23.class);
+                session.sendPacket(rotationPacket, PacketDirection.SERVER_TO_CLIENT, getFrom());
                 return data;
             }
         });
@@ -185,7 +185,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                         data.read(1),
                 });
 
-                session.sendPacket(rotationPacket, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease28To23.class);
+                session.sendPacket(rotationPacket, PacketDirection.SERVER_TO_CLIENT, getFrom());
                 return data;
             }
         });

@@ -42,6 +42,8 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
     public ProtocolRelease73To61() {
         super(MinecraftVersion.R1_6_1, MinecraftVersion.R1_5_2);
+
+        new SoundMappings(); // load sound mappings
     }
 
     @Override
@@ -170,15 +172,8 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 String soundName = data.read(Type.STRING, 0);
                 String newSoundName = SoundMappings.getNewSoundName(soundName);
 
-                if (newSoundName.isEmpty()) {
-
+                if (newSoundName.isEmpty())
                     return new PacketData(-1);
-                } else if (newSoundName.equals("-")) {
-
-                    System.err.printf("Missing sound mapping for '%s'%n", soundName);
-
-                    return new PacketData(-1);
-                }
 
                 return PacketUtil.createPacket(0x3E, new TypeHolder[]{
                         set(Type.STRING, newSoundName),

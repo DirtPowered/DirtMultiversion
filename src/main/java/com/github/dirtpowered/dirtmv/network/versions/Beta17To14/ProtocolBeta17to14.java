@@ -52,7 +52,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                         set(Type.STRING, "A Minecraft Server§0§20")
                 });
 
-                session.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, ProtocolBeta17to14.class);
+                session.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, getFrom());
                 return new PacketData(-1); // cancel sending
             }
         });

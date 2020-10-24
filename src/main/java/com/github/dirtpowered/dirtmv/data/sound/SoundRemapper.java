@@ -35,11 +35,11 @@ public abstract class SoundRemapper {
 
     public abstract void initialize();
 
-    protected void remap(String from, String to) {
-        SOUND_MAPPINGS.put(from, to);
+    public static String getNewSoundName(String oldSoundName) {
+        return SOUND_MAPPINGS.getOrDefault(oldSoundName, oldSoundName);
     }
 
-    public static String getNewSoundName(String oldSoundName) {
-        return SOUND_MAPPINGS.getOrDefault(oldSoundName, "-");
+    protected void remap(String from, String to) {
+        SOUND_MAPPINGS.put(from, to);
     }
 }

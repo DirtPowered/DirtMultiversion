@@ -67,7 +67,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 PacketData encryptRequest = EncryptionUtils.createEncryptionRequest(session);
 
                 // server -> client
-                session.sendPacket(encryptRequest, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease39To29.class);
+                session.sendPacket(encryptRequest, PacketDirection.SERVER_TO_CLIENT, getFrom());
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
                         set(Type.STRING, username)
@@ -84,7 +84,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 SecretKey sharedKey = EncryptionUtils.getSecret(data, request);
 
                 // server -> client
-                EncryptionUtils.sendEmptyEncryptionResponse(session, ProtocolRelease39To29.class);
+                EncryptionUtils.sendEmptyEncryptionResponse(session, getFrom());
 
                 // enable encryption
                 EncryptionUtils.setEncryption(session.getChannel(), sharedKey);
@@ -132,8 +132,8 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0),
                         data.read(2),
-                        set(Type.BYTE, data.read(3).getObject()),
-                        set(Type.BYTE, data.read(4).getObject()),
+                        set(Type.BYTE, data.read(Type.INT, 4).byteValue()),
+                        set(Type.BYTE, data.read(Type.INT, 4).byteValue()),
                         data.read(5),
                         data.read(6),
                         data.read(7),

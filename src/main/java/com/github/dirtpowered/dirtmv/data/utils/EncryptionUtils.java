@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.data.utils;
 
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
@@ -87,15 +88,15 @@ public class EncryptionUtils {
      * Sends empty encryption response
      *
      * @param session       Server session
-     * @param protocolClass Protocol class
+     * @param from Version to start from
      */
-    public static void sendEmptyEncryptionResponse(ServerSession session, Class protocolClass) throws IOException {
+    public static void sendEmptyEncryptionResponse(ServerSession session, MinecraftVersion from) throws IOException {
         PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
                 new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0]),
                 new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0])
         });
 
-        session.sendPacket(response, PacketDirection.SERVER_TO_CLIENT, protocolClass);
+        session.sendPacket(response, PacketDirection.SERVER_TO_CLIENT, from);
     }
 
     /**

@@ -55,6 +55,8 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
     public ProtocolRelease51To39() {
         super(MinecraftVersion.R1_4_6, MinecraftVersion.R1_3_1);
+
+        new SoundMappings(); // load sound mappings
     }
 
     private String transformMotd(String oldMessage) {
@@ -243,8 +245,8 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         set(Type.V1_4R_METADATA, metadata)
                 });
 
-                session.sendPacket(vehicleSpawn, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
-                session.sendPacket(itemMetadata, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
+                session.sendPacket(vehicleSpawn, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(itemMetadata, PacketDirection.SERVER_TO_CLIENT, getFrom());
 
                 return new PacketData(-1);
             }
@@ -254,7 +256,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
-                session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, ProtocolRelease51To39.class);
+                session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());
 
                 byte type = data.read(Type.BYTE, 1);
                 int itemId = 0;
@@ -323,15 +325,8 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 String soundName = data.read(Type.STRING, 0);
                 String newSoundName = SoundMappings.getNewSoundName(soundName);
 
-                if (newSoundName.isEmpty()) {
-
+                if (newSoundName.isEmpty())
                     return new PacketData(-1);
-                } else if (newSoundName.equals("-")) {
-
-                    System.err.printf("Missing sound mapping for '%s'%n", soundName);
-
-                    return new PacketData(-1);
-                }
 
                 return PacketUtil.createPacket(0x3E, new TypeHolder[]{
                         set(Type.STRING, newSoundName),

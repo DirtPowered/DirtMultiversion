@@ -81,21 +81,14 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     /**
      * Translates and sends packet to server
-     *
-     * @param packet         {@link PacketData} Packet
+     *  @param packet         {@link PacketData} Packet
      * @param direction      {@link PacketDirection} sending direction (client/server)
-     * @param serverProtocol current protocol class
+     * @param from Version to start from
      */
-    public void sendPacket(PacketData packet, PacketDirection direction, Class serverProtocol) throws IOException {
+    public void sendPacket(PacketData packet, PacketDirection direction, MinecraftVersion from) throws IOException {
         MinecraftVersion version = Constants.REMOTE_SERVER_VERSION;
-
-        // TODO: Replace 'serverProtocol' with something less ugly
-        if (serverProtocol != null && !serverProtocol.getSimpleName().contains("Encrypted")) {
-            try {
-                version = ((ServerProtocol)serverProtocol.newInstance()).getFrom();
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
+        if (from != null && from != version) {
+            version = from;
         }
 
         List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(userData, version);
@@ -111,7 +104,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
             String protocolName = protocol.getClass().getSimpleName();
 
             if (translator != null) {
-                if (serverProtocol == null || serverProtocol != protocol.getClass()) {
+                if (from == null || from != protocol.getFrom()) {
                     target = translator.translate(this, direction, target);
 
                     String namedOpCode = PreNettyPacketNames.getPacketName(packet.getOpCode());

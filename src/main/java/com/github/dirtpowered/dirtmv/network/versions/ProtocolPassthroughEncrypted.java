@@ -82,7 +82,7 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
                             set(Type.SHORT_BYTE_ARRAY, encryptedData)
                     });
 
-                    session.sendPacket(response, PacketDirection.CLIENT_TO_SERVER, ProtocolPassthroughEncrypted.class);
+                    session.sendPacket(response, PacketDirection.CLIENT_TO_SERVER, getFrom());
                 } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
                     e.printStackTrace();
                 }
@@ -100,7 +100,7 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
                     SecretKey shared = EncryptionUtils.getSecret(data, session.getUserData().getProxyRequest());
 
                     // server -> client
-                    EncryptionUtils.sendEmptyEncryptionResponse(session, ProtocolPassthroughEncrypted.class);
+                    EncryptionUtils.sendEmptyEncryptionResponse(session, getFrom());
 
                     // enable encryption
                     EncryptionUtils.setEncryption(session.getChannel(), shared);
