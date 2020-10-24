@@ -140,6 +140,40 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             }
         });
 
+        addTranslator(0xC8 /* STATISTICS */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return PacketUtil.createPacket(0xC8, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.INT, data.read(Type.BYTE, 1).intValue())
+                });
+            }
+        });
+
+        addTranslator(0xCA /* PLAYER ABILITIES */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                if (dir == PacketDirection.CLIENT_TO_SERVER) {
+
+                    return PacketUtil.createPacket(0xCA, new TypeHolder[] {
+                            data.read(0),
+                            set(Type.BYTE, (byte) (data.read(Type.FLOAT, 1) * 255F)),
+                            set(Type.BYTE, (byte) (data.read(Type.FLOAT, 2) * 255F))
+                    });
+                } else {
+
+                    return PacketUtil.createPacket(0xCA, new TypeHolder[] {
+                            data.read(0),
+                            set(Type.FLOAT, (data.read(Type.BYTE, 1) / 255F)),
+                            set(Type.FLOAT, (data.read(Type.BYTE, 2) / 255F))
+                    });
+                }
+            }
+        });
+
         addTranslator(19, new PacketTranslator() {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
@@ -148,20 +182,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
         });
 
         addTranslator(39, new PacketTranslator() {
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                return new PacketData(-1);
-            }
-        });
-
-        addTranslator(200, new PacketTranslator() {
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                return new PacketData(-1);
-            }
-        });
-
-        addTranslator(202, new PacketTranslator() {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 return new PacketData(-1);
