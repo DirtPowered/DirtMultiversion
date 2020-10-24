@@ -23,24 +23,25 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release51To39;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
-import com.github.dirtpowered.dirtmv.network.data.model.ProtocolState;
-import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_3_1.V1_3_1RProtocol;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.MetadataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.Motion;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_3_4ChunkBulk;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3_1.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
+import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release51To39.sound.SoundMappings;
 import com.mojang.nbt.CompoundTag;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
@@ -282,8 +283,9 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 byte[] payload = data.read(Type.SHORT_BYTE_ARRAY, 1);
 
                 if (channel.equals("MC|TrList")) {
-                    ByteBuf buf = Unpooled.wrappedBuffer(payload);
-                    ByteBuf fixedPayload = Unpooled.buffer();
+                    // TODO: Custom Payload reader
+                    NettyInputWrapper buf = new NettyInputWrapper(Unpooled.wrappedBuffer(payload));
+                    NettyOutputWrapper fixedPayload = new NettyOutputWrapper(Unpooled.buffer());
 
                     fixedPayload.writeInt(buf.readInt());
                     short size = buf.readUnsignedByte();

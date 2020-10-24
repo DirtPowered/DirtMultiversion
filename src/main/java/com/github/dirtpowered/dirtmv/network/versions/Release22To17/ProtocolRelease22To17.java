@@ -23,16 +23,16 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release22To17;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
-import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
-import com.github.dirtpowered.dirtmv.utils.item.LegacyItemList;
+import com.github.dirtpowered.dirtmv.network.versions.Release22To17.item.LegacyItemList;
 import com.mojang.nbt.CompoundTag;
 
 public class ProtocolRelease22To17 extends ServerProtocol {
@@ -74,7 +74,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                         data.read(1),
                         data.read(2),
                         data.read(3),
-                        set(Type.V1_3B_ITEM, data.read(4).getObject())
+                        set(Type.V1_3B_ITEM, data.read(Type.V1_0R_ITEM, 4))
                 });
             }
         });
@@ -90,7 +90,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                         data.read(2),
                         data.read(3),
                         data.read(4),
-                        set(Type.V1_3B_ITEM, data.read(5).getObject())
+                        set(Type.V1_3B_ITEM, data.read(Type.V1_0R_ITEM, 5))
                 });
             }
         });
@@ -102,7 +102,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x6B, new TypeHolder[]{
                         data.read(0),
-                        set(Type.V1_0R_ITEM, data.read(1).getObject())
+                        set(Type.V1_0R_ITEM, data.read(Type.V1_8B_ITEM, 1))
                 });
             }
         });
@@ -113,8 +113,8 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 float exp = 0.0F; // TODO convert progress
 
-                short level = ((Byte) data.read(1).getObject()).shortValue();
-                short totalExperience = ((Byte) data.read(0).getObject()).shortValue();
+                short level = data.read(Type.BYTE, 1).shortValue();
+                short totalExperience = data.read(Type.BYTE, 0).shortValue();
 
                 return PacketUtil.createPacket(0x2B, new TypeHolder[]{
                         set(Type.FLOAT, exp),
@@ -128,7 +128,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                ItemStack item = (ItemStack) data.read(2).getObject();
+                ItemStack item = data.read(Type.V1_3B_ITEM, 2);
 
                 if (item != null && LegacyItemList.isEnchantable(item.getItemId()))
                     item.setCompoundTag(new CompoundTag("tag"));
@@ -145,7 +145,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                ItemStack[] items = (ItemStack[]) data.read(1).getObject();
+                ItemStack[] items = data.read(Type.V1_3B_ITEM_ARRAY, 1);
 
                 for (ItemStack item : items) {
                     if (item != null && LegacyItemList.isEnchantable(item.getItemId())) {

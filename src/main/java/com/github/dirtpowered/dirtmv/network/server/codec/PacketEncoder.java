@@ -22,7 +22,8 @@
 
 package com.github.dirtpowered.dirtmv.network.server.codec;
 
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,6 +38,6 @@ public class PacketEncoder extends MessageToMessageEncoder<PacketData> {
         ByteBuf packetId = Unpooled.buffer(1);
         packetId.writeByte(packetData.getOpCode()); // packet ID
 
-        list.add(Unpooled.wrappedBuffer(packetId, packetData.toMessage()));
+        list.add(Unpooled.wrappedBuffer(packetId, ((NettyOutputWrapper) packetData.toMessage()).getBuffer()));
     }
 }

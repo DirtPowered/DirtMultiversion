@@ -23,8 +23,8 @@
 package com.github.dirtpowered.dirtmv.data.user;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.data.model.ProtocolState;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import lombok.Data;
 
 import javax.crypto.SecretKey;

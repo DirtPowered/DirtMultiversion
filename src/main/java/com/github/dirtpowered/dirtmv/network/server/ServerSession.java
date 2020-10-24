@@ -25,18 +25,18 @@ package com.github.dirtpowered.dirtmv.network.server;
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.Constants;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.interfaces.Tickable;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
+import com.github.dirtpowered.dirtmv.data.utils.other.PreNettyPacketNames;
 import com.github.dirtpowered.dirtmv.network.client.Client;
 import com.github.dirtpowered.dirtmv.network.client.ClientSession;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
-import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.utils.PreNettyPacketNames;
-import com.github.dirtpowered.dirtmv.utils.interfaces.Tickable;
 import com.google.common.base.Preconditions;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -118,13 +118,13 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
                     Preconditions.checkNotNull(target, "%s returned null while translating %s", protocolName, namedOpCode);
 
                     if (target.getOpCode() == -1) {
-                        /*System.out.println("cancelling " + namedOpCode + " " +
-                                "| direction: " + direction.name() + " | through " + protocolName);*/
+                        System.out.println("cancelling " + namedOpCode + " " +
+                                "| direction: " + direction.name() + " | through " + protocolName);
                         return;
                     }
 
-                    /* System.out.println("translating " + namedOpCode + " " +
-                            "| direction: " + direction.name() + " | through " + protocolName); */
+                    System.out.println("translating " + namedOpCode + " " +
+                            "| direction: " + direction.name() + " | through " + protocolName);
                 }
             }
         }

@@ -22,14 +22,12 @@
 
 package com.github.dirtpowered.dirtmv.data;
 
-import com.github.dirtpowered.dirtmv.config.Configuration;
-
 public class Constants {
-    public static final MinecraftVersion REMOTE_SERVER_VERSION = Configuration.serverVersion;
+    public static final MinecraftVersion REMOTE_SERVER_VERSION = MinecraftVersion.B1_7_3;
 
-    public static final String SERVER_HOST = Configuration.proxyLocalAddress;
-    public static final String REMOTE_HOST = Configuration.serverAddress;
+    public static final String SERVER_HOST = "localhost";
+    public static final String REMOTE_HOST = "localhost";
 
-    public static final int SERVER_PORT = Configuration.serverPort;
-    public static final int REMOTE_PORT = Configuration.proxyLocalPort;
+    public static final int SERVER_PORT = 25565;
+    public static final int REMOTE_PORT = 25567;
 }

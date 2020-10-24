@@ -23,7 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.versions;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 
 public class ProtocolPassthrough extends ServerProtocol {
 

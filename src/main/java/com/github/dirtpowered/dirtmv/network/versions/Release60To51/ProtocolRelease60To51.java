@@ -23,15 +23,15 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release60To51;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
-import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.Motion;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
 public class ProtocolRelease60To51 extends ServerProtocol {
@@ -102,7 +102,6 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                 return data;
             }
         });
-
 
         addTranslator(0x17 /* VEHICLE SPAWN */, new PacketTranslator() {
 

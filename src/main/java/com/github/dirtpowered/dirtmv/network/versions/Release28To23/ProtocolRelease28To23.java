@@ -23,15 +23,15 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release28To23;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
-import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_2MultiBlockArray;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_3BMultiBlockArray;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BMultiBlockArray;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
 import java.io.ByteArrayOutputStream;
@@ -58,7 +58,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                             set(Type.LONG, 0L),
                             data.read(2),
                             data.read(3),
-                            set(Type.BYTE, ((Integer) data.read(4).getObject()).byteValue()),
+                            set(Type.BYTE, data.read(Type.INT, 4).byteValue()),
                             data.read(5),
                             data.read(6),
                             data.read(7)
@@ -70,7 +70,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                             data.read(1),
                             data.read(3),
                             data.read(4),
-                            set(Type.INT, ((Byte) data.read(5).getObject()).intValue()),
+                            set(Type.INT, data.read(Type.BYTE, 5).intValue()),
                             data.read(6),
                             data.read(7),
                             data.read(8)
@@ -150,7 +150,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 } else {
 
                     return PacketUtil.createPacket(0x09, new TypeHolder[]{
-                            set(Type.INT, ((Byte) data.read(0).getObject()).intValue()),
+                            set(Type.INT, data.read(Type.BYTE, 0).intValue()),
                             data.read(1),
                             data.read(2),
                             data.read(3),

@@ -24,10 +24,12 @@ package com.github.dirtpowered.dirtmv.network.server.codec;
 
 import com.github.dirtpowered.dirtmv.data.Constants;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
@@ -51,7 +53,9 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
 
         setUserProtocol(flag, buffer);
 
-        list.add(PacketUtil.readPacket(flag ? Constants.REMOTE_SERVER_VERSION : userData.getClientVersion(), buffer));
+        PacketInput inputBuffer = new NettyInputWrapper(buffer);
+
+        list.add(PacketUtil.readPacket(flag ? Constants.REMOTE_SERVER_VERSION : userData.getClientVersion(), inputBuffer));
     }
 
     private void setUserProtocol(boolean flag, ByteBuf buffer) {

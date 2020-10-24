@@ -22,16 +22,16 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release28To23;
 
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.B1_3.chunk.BetaChunkStorage;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.R1_2_1.chunk.V1_2ChunkStorage;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_2Chunk;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_3BChunk;
+import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_2RChunkStorage;
+import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_3BChunkStorage;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BChunk;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
 public class BetaToV1_2ChunkTranslator extends PacketTranslator {
@@ -50,8 +50,8 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
         boolean groundUpContinuous = true;
 
-        BetaChunkStorage betaChunkStorage = new BetaChunkStorage(chunkX, chunkZ);
-        V1_2ChunkStorage v1_2ChunkStorage = new V1_2ChunkStorage(chunkX, chunkZ);
+        V1_3BChunkStorage betaChunkStorage = new V1_3BChunkStorage(chunkX, chunkZ);
+        V1_2RChunkStorage v1_2ChunkStorage = new V1_2RChunkStorage(chunkX, chunkZ);
 
         int startPosition = (oldChunk.getX() + oldChunk.getXSize() - 1) / 16;
         int endPosition = (oldChunk.getZ() + oldChunk.getZSize() - 1) / 16;

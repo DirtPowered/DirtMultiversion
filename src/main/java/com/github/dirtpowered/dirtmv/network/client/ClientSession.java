@@ -22,11 +22,11 @@
 
 package com.github.dirtpowered.dirtmv.network.client;
 
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
+import com.github.dirtpowered.dirtmv.data.interfaces.Callback;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
-import com.github.dirtpowered.dirtmv.utils.Callback;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;

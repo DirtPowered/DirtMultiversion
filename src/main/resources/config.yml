@@ -1,6 +1,0 @@
-general:
-  serverVersion: B1_6_6
-  serverAddress: "localhost"
-  serverPort: 25567
-  proxyLocalAddress: "localhost"
-  proxyLocalPort: 25565

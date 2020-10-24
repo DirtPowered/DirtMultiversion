@@ -23,20 +23,20 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release39To29;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
-import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.ItemStack;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.MetadataType;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.Motion;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.V1_2Chunk;
-import com.github.dirtpowered.dirtmv.network.packet.protocol.data.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.utils.EncryptionUtils;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
-import com.github.dirtpowered.dirtmv.utils.encryption.EncryptionUtils;
 import com.mojang.nbt.CompoundTag;
 import lombok.SneakyThrows;
 

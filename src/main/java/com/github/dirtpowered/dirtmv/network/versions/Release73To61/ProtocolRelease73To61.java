@@ -23,14 +23,15 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release73To61;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketDirection;
-import com.github.dirtpowered.dirtmv.network.data.model.PacketTranslator;
-import com.github.dirtpowered.dirtmv.network.data.model.ProtocolState;
-import com.github.dirtpowered.dirtmv.network.data.model.ServerProtocol;
-import com.github.dirtpowered.dirtmv.network.packet.PacketData;
-import com.github.dirtpowered.dirtmv.network.packet.PacketUtil;
-import com.github.dirtpowered.dirtmv.network.packet.Type;
-import com.github.dirtpowered.dirtmv.network.packet.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import io.netty.buffer.ByteBuf;
@@ -44,6 +45,23 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
+        addTranslator(0x02 /* HANDSHAKE */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                if (data.getObjects().length < 3) {
+                    return new PacketData(-1);
+                }
+
+                return PacketUtil.createPacket(0x02, new TypeHolder[]{
+                        set(Type.BYTE, 61),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3)
+                });
+            }
+        });
+
         addTranslator(0xFA /* CUSTOM PAYLOAD */, new PacketTranslator() {
 
             @Override
@@ -76,6 +94,84 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 return PacketUtil.createPacket(0xFF, new TypeHolder[] {
                         set(Type.STRING, ServerMotd.serialize(pingMessage))
                 });
+            }
+        });
+
+        addTranslator(0x03 /* CHAT */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                if (dir == PacketDirection.SERVER_TO_CLIENT) {
+                    String message = data.read(Type.STRING, 0);
+
+                    return PacketUtil.createPacket(0x03, new TypeHolder[]{
+                            set(Type.STRING, ChatUtils.legacyToJsonString(message))
+                    });
+                }
+                return data;
+            }
+        });
+
+        addTranslator(0x08 /* UPDATE HEALTH */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                return PacketUtil.createPacket(0x08, new TypeHolder[]{
+                        set(Type.FLOAT, data.read(Type.SHORT, 0).floatValue()),
+                        data.read(1),
+                        data.read(2)
+                });
+            }
+        });
+
+        addTranslator(0x18 /* MOB SPAWN */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(0x28 /* ENTITY METADATA */, new PacketTranslator() {
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(19, new PacketTranslator() {
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(39, new PacketTranslator() {
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(200, new PacketTranslator() {
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(202, new PacketTranslator() {
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(100, new PacketTranslator() {
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                return new PacketData(-1);
             }
         });
     }
