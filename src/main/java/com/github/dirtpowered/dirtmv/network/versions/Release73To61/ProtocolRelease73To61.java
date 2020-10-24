@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
@@ -37,6 +38,10 @@ import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerM
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.sound.SoundMappings;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProtocolRelease73To61 extends ServerProtocol {
 
@@ -52,9 +57,26 @@ public class ProtocolRelease73To61 extends ServerProtocol {
         addTranslator(0x01 /* LOGIN */, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
                 session.getUserData().setProtocolState(ProtocolState.IN_GAME);
-                return data;
+
+                int entityId = data.read(Type.INT, 0);
+
+                Map<String, Double> map = new HashMap<>();
+                map.put("generic.movementSpeed", 0.1D);
+                // TODO: Add more default values
+
+                V1_6_1EntityAttributes attrObj = new V1_6_1EntityAttributes(entityId, map);
+
+                PacketData entityAttributes = PacketUtil.createPacket(0x2C, new TypeHolder[] {
+                        set(Type.V1_6_1_ENTITY_ATTRIBUTES, attrObj)
+                });
+
+                // send entity attributes (fixes fast movement)
+                session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(entityAttributes, PacketDirection.SERVER_TO_CLIENT, getFrom());
+
+                return new PacketData(-1);
             }
         });
 

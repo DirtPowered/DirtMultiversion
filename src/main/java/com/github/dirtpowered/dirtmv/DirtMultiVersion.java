@@ -83,8 +83,6 @@ public class DirtMultiVersion implements Runnable {
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_5_1, new V1_5RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_5_2, new V1_5RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_6_1, new V1_6RProtocol());
-        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_6_2, new V1_6RProtocol());
-        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_6_4, new V1_6RProtocol());
 
         translatorRegistry.registerProtocol(new ProtocolRelease73To61());
         translatorRegistry.registerProtocol(new ProtocolRelease60To51());

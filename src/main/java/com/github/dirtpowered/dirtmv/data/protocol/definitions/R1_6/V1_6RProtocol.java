@@ -29,8 +29,15 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2_1.V1_2_1RPro
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3_1.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4_6.V1_4_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_5.V1_5RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.types.entity.V1_6_1REntityAttributesDataType;
 
 public class V1_6RProtocol extends BaseProtocol {
+
+    public static final DataType ENTITY_ATTRIBUTES;
+
+    static {
+        ENTITY_ATTRIBUTES = new V1_6_1REntityAttributesDataType();
+    }
 
     @Override
     public void registerPackets() {
@@ -75,7 +82,7 @@ public class V1_6RProtocol extends BaseProtocol {
         dataTypes[41] = new DataType[]{INT, BYTE, BYTE, SHORT};
         dataTypes[42] = new DataType[]{INT, BYTE};
         dataTypes[43] = new DataType[]{FLOAT, SHORT, SHORT};
-        dataTypes[44] = new DataType[]{}; //TODO: entity properties?
+        dataTypes[44] = new DataType[]{ENTITY_ATTRIBUTES};
         dataTypes[51] = new DataType[]{V1_3_1RProtocol.CHUNK};
         dataTypes[52] = new DataType[]{INT, INT, V1_2_1RProtocol.MULTIBLOCK_ARRAY};
         dataTypes[53] = new DataType[]{INT, BYTE, INT, SHORT, BYTE};

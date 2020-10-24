@@ -40,8 +40,6 @@ public class LegacyPingVersionHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object object) {
         ByteBuf buffer = (ByteBuf) object;
 
-        buffer.markReaderIndex();
-
         if (buffer.readUnsignedByte() == 254) {
             int i = buffer.readableBytes();
 

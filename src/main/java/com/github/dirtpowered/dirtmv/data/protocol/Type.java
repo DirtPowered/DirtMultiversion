@@ -29,6 +29,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2_1.V1_2_1RPro
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3_1.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4_6.V1_4_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_5.V1_5RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
@@ -39,6 +40,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BChunk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BMultiBlockArray;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_5Team;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.mojang.nbt.CompoundTag;
 
@@ -286,6 +288,13 @@ public class Type {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_5RProtocol.TEAM.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<V1_6_1EntityAttributes> V1_6_1_ENTITY_ATTRIBUTES = new TypeObject<>(V1_6_1EntityAttributes.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_6RProtocol.ENTITY_ATTRIBUTES.write(holder, packetOutput);
         }
     });
 }

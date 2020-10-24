@@ -20,17 +20,16 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.server.codec;
+package com.github.dirtpowered.dirtmv.data.protocol.objects;
 
-public class ChannelConstants {
-    public static final String DEFAULT_PIPELINE = "minecraft_pipeline";
-    public static final String LEGACY_PING = "legacy_ping";
-    public static final String NETTY_DETECTION = "netty_detection";
-    public static final String LEGACY_ENCODER = "legacy_encoder";
-    public static final String LEGACY_DECODER = "legacy_decoder";
-    public static final String TIMEOUT_HANDLER = "timeout";
-    public static final String PACKET_ENCRYPTION = "packet_encryption";
-    public static final String PACKET_DECRYPTION = "packet_decryption";
-    public static final String SERVER_HANDLER = "server_handler";
-    public static final String CLIENT_HANDLER = "client_handler";
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.util.Map;
+
+@Data
+@AllArgsConstructor
+public class V1_6_1EntityAttributes {
+    private int entityId;
+    private Map<String, Double> attributes;
 }

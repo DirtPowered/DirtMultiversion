@@ -20,17 +20,34 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.server.codec;
+package com.github.dirtpowered.dirtmv.network.server.codec.netty;
 
-public class ChannelConstants {
-    public static final String DEFAULT_PIPELINE = "minecraft_pipeline";
-    public static final String LEGACY_PING = "legacy_ping";
-    public static final String NETTY_DETECTION = "netty_detection";
-    public static final String LEGACY_ENCODER = "legacy_encoder";
-    public static final String LEGACY_DECODER = "legacy_decoder";
-    public static final String TIMEOUT_HANDLER = "timeout";
-    public static final String PACKET_ENCRYPTION = "packet_encryption";
-    public static final String PACKET_DECRYPTION = "packet_decryption";
-    public static final String SERVER_HANDLER = "server_handler";
-    public static final String CLIENT_HANDLER = "client_handler";
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+
+public class DetectionHandler extends ChannelInboundHandlerAdapter {
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object object) {
+        ByteBuf buffer = (ByteBuf) object;
+        short packetId = buffer.readUnsignedByte();
+
+        // TODO: Better check?
+        if (packetId != 0x02 && packetId != 0xFE) {
+            System.out.println("client is using 'post-netty rewrite' client");
+        } else {
+            System.out.println("client is using 'pre-netty rewrite' client");
+        }
+
+        close(ctx, buffer);
+    }
+
+
+    private void close(ChannelHandlerContext ctx, ByteBuf object) {
+        object.resetReaderIndex();
+
+        ctx.channel().pipeline().remove(this);
+        ctx.fireChannelRead(object);
+    }
 }
