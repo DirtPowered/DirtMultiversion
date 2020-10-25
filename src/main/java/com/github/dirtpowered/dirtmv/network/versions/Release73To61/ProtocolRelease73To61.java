@@ -230,17 +230,43 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             }
         });
 
-        addTranslator(19, new PacketTranslator() {
+        addTranslator(0x13 /* ENTITY ACTION */, new PacketTranslator() {
+
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                return new PacketData(-1);
+
+                return PacketUtil.createPacket(0x13, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        set(Type.INT, 0) // jump
+                });
             }
         });
 
-        addTranslator(39, new PacketTranslator() {
+        addTranslator(0x27 /* ENTITY ATTACH */, new PacketTranslator() {
+
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                return new PacketData(-1);
+
+                return PacketUtil.createPacket(0x27, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        set(Type.BOOLEAN, false) // leash
+                });
+            }
+        });
+
+        addTranslator(0x1B /* STEER VEHICLE */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                boolean dismount = data.read(Type.BOOLEAN, 3);
+
+                if (dismount) {
+                   // TODO: Vehicle dismounting
+                }
+
+                return new PacketData(-1); // packet doesn't exist in 1.5
             }
         });
 
