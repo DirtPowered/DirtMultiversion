@@ -27,6 +27,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
+import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
@@ -35,7 +36,6 @@ import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
-import com.github.dirtpowered.dirtmv.network.versions.Release73To61.sound.SoundMappings;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,10 +43,12 @@ import java.util.Map;
 
 public class ProtocolRelease73To61 extends ServerProtocol {
 
+    private SoundRemapper soundRemapper;
+
     public ProtocolRelease73To61() {
         super(MinecraftVersion.R1_6_1, MinecraftVersion.R1_5_2);
 
-        new SoundMappings(); // load sound mappings
+        soundRemapper = new SoundRemapper("1_5To1_6SoundMappings");
     }
 
     private PacketData getDefaultAttributes(int entityId) {
@@ -188,7 +190,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 String soundName = data.read(Type.STRING, 0);
-                String newSoundName = SoundMappings.getNewSoundName(soundName);
+                String newSoundName = soundRemapper.getNewSoundName(soundName);
 
                 if (newSoundName.isEmpty())
                     return new PacketData(-1);

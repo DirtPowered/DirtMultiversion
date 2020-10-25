@@ -34,13 +34,13 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
-import com.github.dirtpowered.dirtmv.network.versions.Release51To39.sound.SoundMappings;
 import com.mojang.nbt.CompoundTag;
 import io.netty.buffer.Unpooled;
 
@@ -53,10 +53,12 @@ import java.util.WeakHashMap;
 
 public class ProtocolRelease51To39 extends ServerProtocol {
 
+    private SoundRemapper soundRemapper;
+
     public ProtocolRelease51To39() {
         super(MinecraftVersion.R1_4_6, MinecraftVersion.R1_3_1);
 
-        new SoundMappings(); // load sound mappings
+        soundRemapper = new SoundRemapper("1_3To1_4SoundMappings");
     }
 
     private String transformMotd(String oldMessage) {
@@ -323,7 +325,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
                 String soundName = data.read(Type.STRING, 0);
-                String newSoundName = SoundMappings.getNewSoundName(soundName);
+                String newSoundName = soundRemapper.getNewSoundName(soundName);
 
                 if (newSoundName.isEmpty())
                     return new PacketData(-1);
