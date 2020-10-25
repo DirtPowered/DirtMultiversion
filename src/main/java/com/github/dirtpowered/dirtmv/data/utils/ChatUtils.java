@@ -22,6 +22,9 @@
 
 package com.github.dirtpowered.dirtmv.data.utils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 public class ChatUtils {
 
     /**
@@ -31,6 +34,9 @@ public class ChatUtils {
      * @return JSON String
      */
     public static String legacyToJsonString(String message) {
-        return "{\"text\":\"" + message + "\"}";
+        JsonObject jsonElement = new JsonObject();
+        jsonElement.add("text", new JsonPrimitive(message));
+
+        return jsonElement.toString();
     }
 }

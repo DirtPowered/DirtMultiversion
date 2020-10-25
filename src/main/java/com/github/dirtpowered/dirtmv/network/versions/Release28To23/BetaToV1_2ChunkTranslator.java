@@ -34,6 +34,8 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
+import java.util.Arrays;
+
 public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
     @Override
@@ -47,6 +49,8 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
         int chunkX = oldChunk.getX() / 16;
         int chunkZ = oldChunk.getZ() / 16;
+
+        byte[] biomes = new byte[256];
 
         boolean groundUpContinuous = true;
 
@@ -90,6 +94,9 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                 }
             }
         }
+
+        Arrays.fill(biomes, (byte) 0x04 /* Forest */);
+        v1_2ChunkStorage.setBiomeData(biomes);
 
         byte[] compressedData = v1_2ChunkStorage.getCompressedData(groundUpContinuous, !groundUpContinuous ? bitmap : 0);
 

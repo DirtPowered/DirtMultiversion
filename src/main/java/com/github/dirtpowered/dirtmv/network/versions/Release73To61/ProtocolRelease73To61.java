@@ -36,8 +36,6 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.sound.SoundMappings;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -109,23 +107,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                         data.read(2),
                         data.read(3)
                 });
-            }
-        });
-
-        addTranslator(0xFA /* CUSTOM PAYLOAD */, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                String channel = data.read(Type.STRING, 0);
-                byte[] payload = data.read(Type.SHORT_BYTE_ARRAY, 1);
-
-                if (channel.equals("MC|PingHost")) {
-                    ByteBuf buf = Unpooled.wrappedBuffer(payload);
-
-                    int protocolId = buf.readUnsignedByte();
-                    session.getUserData().setClientVersion(MinecraftVersion.fromProtocolVersion(protocolId));
-                }
-                return data;
             }
         });
 
