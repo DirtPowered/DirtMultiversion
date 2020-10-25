@@ -51,6 +51,17 @@ public class ProtocolRelease73To61 extends ServerProtocol {
         new SoundMappings(); // load sound mappings
     }
 
+    private PacketData getDefaultAttributes(int entityId) {
+        Map<String, Double> map = new HashMap<>();
+        map.put("generic.movementSpeed", 0.1D);
+
+        V1_6_1EntityAttributes attrObj = new V1_6_1EntityAttributes(entityId, map);
+
+        return PacketUtil.createPacket(0x2C, new TypeHolder[] {
+                set(Type.V1_6_1_ENTITY_ATTRIBUTES, attrObj)
+        });
+    }
+
     @Override
     public void registerTranslators() {
 
@@ -61,20 +72,24 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 session.getUserData().setProtocolState(ProtocolState.IN_GAME);
 
                 int entityId = data.read(Type.INT, 0);
-
-                Map<String, Double> map = new HashMap<>();
-                map.put("generic.movementSpeed", 0.1D);
-                // TODO: Add more default values
-
-                V1_6_1EntityAttributes attrObj = new V1_6_1EntityAttributes(entityId, map);
-
-                PacketData entityAttributes = PacketUtil.createPacket(0x2C, new TypeHolder[] {
-                        set(Type.V1_6_1_ENTITY_ATTRIBUTES, attrObj)
-                });
+                session.getUserData().setEntityId(entityId);
 
                 // send entity attributes (fixes fast movement)
                 session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());
-                session.sendPacket(entityAttributes, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(getDefaultAttributes(entityId), PacketDirection.SERVER_TO_CLIENT, getFrom());
+
+                return new PacketData(-1);
+            }
+        });
+
+        addTranslator(0x09 /* RESPAWN */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+                int entityId = session.getUserData().getEntityId();
+
+                session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(getDefaultAttributes(entityId), PacketDirection.SERVER_TO_CLIENT, getFrom());
 
                 return new PacketData(-1);
             }
