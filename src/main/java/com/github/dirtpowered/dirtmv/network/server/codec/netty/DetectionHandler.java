@@ -25,7 +25,9 @@ package com.github.dirtpowered.dirtmv.network.server.codec.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class DetectionHandler extends ChannelInboundHandlerAdapter {
 
     @Override
@@ -35,9 +37,9 @@ public class DetectionHandler extends ChannelInboundHandlerAdapter {
 
         // TODO: Better check?
         if (packetId != 0x02 && packetId != 0xFE) {
-            System.out.println("client is using 'post-netty rewrite' client");
+            log.debug("client is using 'post-netty rewrite' client");
         } else {
-            System.out.println("client is using 'pre-netty rewrite' client");
+            log.debug("client is using 'pre-netty rewrite' client");
         }
 
         close(ctx, buffer);

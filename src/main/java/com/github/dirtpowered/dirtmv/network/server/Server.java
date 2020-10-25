@@ -35,7 +35,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class Server {
     private EventLoopGroup bossGroup = new NioEventLoopGroup();
     private EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -66,7 +68,7 @@ public class Server {
             future = b.bind(Constants.SERVER_HOST, Constants.SERVER_PORT).sync();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            System.out.println("address already in use: " + e.getLocalizedMessage());
+            log.error("address already in use: {}", e.getLocalizedMessage());
             stop();
         }
     }

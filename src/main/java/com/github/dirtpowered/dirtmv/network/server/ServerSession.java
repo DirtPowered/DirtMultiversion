@@ -43,6 +43,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.internal.StringUtil;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -54,6 +55,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Server to Client connection session
  */
+@Log4j2
 public class ServerSession extends SimpleChannelInboundHandler<PacketData> implements Tickable {
 
     @Getter
@@ -81,7 +83,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     /**
      * Translates and sends packet to server
-     *  @param packet         {@link PacketData} Packet
+     * @param packet         {@link PacketData} Packet
      * @param direction      {@link PacketDirection} sending direction (client/server)
      * @param from Version to start from
      */
@@ -111,13 +113,11 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
                     Preconditions.checkNotNull(target, "%s returned null while translating %s", protocolName, namedOpCode);
 
                     if (target.getOpCode() == -1) {
-                        System.out.println("cancelling " + namedOpCode + " " +
-                                "| direction: " + direction.name() + " | through " + protocolName);
+                        log.debug("cancelling {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
                         return;
                     }
 
-                    System.out.println("translating " + namedOpCode + " " +
-                            "| direction: " + direction.name() + " | through " + protocolName);
+                    log.debug("translating {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
                 }
             }
         }

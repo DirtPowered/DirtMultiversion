@@ -31,6 +31,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -38,6 +39,7 @@ import java.util.UUID;
 /**
  * Client to Server connection session
  */
+@Log4j2
 public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
 
     private ServerSession serverSession;
@@ -64,7 +66,7 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        System.out.println("[" + getAddress() + "] connected to remote server");
+        log.info("[{}] connected to remote server", getAddress());
         serverSession.getMain().getSessionRegistry().addSession(key, new MultiSession(this, serverSession));
 
         callback.onComplete();
@@ -72,7 +74,7 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        System.out.println("[" + getAddress() + "] disconnected from remote server");
+        log.info("[{}] disconnected from remote server", getAddress());
         serverSession.getMain().getSessionRegistry().removeSession(key);
         channel.close();
 
