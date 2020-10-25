@@ -39,6 +39,7 @@ public class UserData {
     private ProtocolState protocolState;
     private int dimension;
     private int entityId;
+    private int vehicleEntityId;
 
     public UserData() {
         this.clientVersion = MinecraftVersion.B1_5;

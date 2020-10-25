@@ -492,14 +492,38 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                // 0 - x (int)
-                // 1 - y (short)
-                // 2 - z (int)
-                // 3 - instrument (byte)
-                // 4 - pitch (byte)
+                byte type = data.read(Type.BYTE, 3);
+
+                short blockId = 0;
+
+                switch (type) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        blockId = 25; // noteblock
+                        break;
+                    case 3:
+                        blockId = 25;
+                        break;
+                    case 4:
+                        blockId = 25;
+                        break;
+                    default:
+                        blockId = 25;
+                        break;
+                }
 
                 // TODO: Chunk cache
-                return new PacketData(-1);
+                return PacketUtil.createPacket(0x36, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.SHORT, blockId)
+                });
             }
         });
     }

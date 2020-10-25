@@ -231,10 +231,10 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
 
+                // client -> server
                 return PacketUtil.createPacket(0x13, new TypeHolder[] {
                         data.read(0),
                         data.read(1),
-                        set(Type.INT, 0) // jump
                 });
             }
         });
@@ -243,6 +243,9 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+
+                int vehicleEntityId = data.read(Type.INT, 1);
+                session.getUserData().setVehicleEntityId(vehicleEntityId);
 
                 return PacketUtil.createPacket(0x27, new TypeHolder[] {
                         data.read(0),
@@ -255,11 +258,17 @@ public class ProtocolRelease73To61 extends ServerProtocol {
         addTranslator(0x1B /* STEER VEHICLE */, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
                 boolean dismount = data.read(Type.BOOLEAN, 3);
 
                 if (dismount) {
-                   // TODO: Vehicle dismounting
+                    PacketData useEntity = PacketUtil.createPacket(0x07, new TypeHolder[] {
+                        set(Type.INT, session.getUserData().getEntityId()),
+                        set(Type.INT, session.getUserData().getVehicleEntityId()),
+                        set(Type.BYTE, 0),
+                    });
+
+                    session.sendPacket(useEntity, PacketDirection.CLIENT_TO_SERVER, getFrom());
                 }
 
                 return new PacketData(-1); // packet doesn't exist in 1.5
