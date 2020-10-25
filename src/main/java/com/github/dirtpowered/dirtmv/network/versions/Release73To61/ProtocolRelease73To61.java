@@ -69,8 +69,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
-                session.getUserData().setProtocolState(ProtocolState.IN_GAME);
-
                 int entityId = data.read(Type.INT, 0);
                 session.getUserData().setEntityId(entityId);
 

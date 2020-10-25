@@ -28,6 +28,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import io.netty.buffer.ByteBuf;
@@ -52,10 +53,32 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
         boolean flag = packetDirection == PacketDirection.SERVER_TO_CLIENT;
 
         setUserProtocol(flag, buffer);
-
         PacketInput inputBuffer = new NettyInputWrapper(buffer);
 
-        list.add(PacketUtil.readPacket(flag ? Constants.REMOTE_SERVER_VERSION : userData.getClientVersion(), inputBuffer));
+        PacketData packet = PacketUtil.readPacket(flag ? Constants.REMOTE_SERVER_VERSION : userData.getClientVersion(), inputBuffer);
+
+        setProtocolState(packet);
+        list.add(packet);
+    }
+
+    private void setProtocolState(PacketData data) {
+        if (userData.getProtocolState() == ProtocolState.PLAY)
+            return;
+
+        switch (data.getOpCode()) {
+            case 0xFE:
+                userData.setProtocolState(ProtocolState.PING);
+                break;
+            case 0x02:
+                userData.setProtocolState(ProtocolState.HANDSHAKE);
+                break;
+            case 0x01:
+                userData.setProtocolState(ProtocolState.LOGIN);
+                break;
+            case 0x06 /* spawn position */:
+                userData.setProtocolState(ProtocolState.PLAY);
+                break;
+        }
     }
 
     private void setUserProtocol(boolean flag, ByteBuf buffer) {

@@ -190,7 +190,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     }
 
     public void disconnect(String message) {
-        if (message.isEmpty()) {
+        if (message == null || message.isEmpty()) {
             channel.close();
         } else {
             sendPacket(PacketUtil.createPacket(

@@ -23,5 +23,5 @@
 package com.github.dirtpowered.dirtmv.data.translator;
 
 public enum ProtocolState {
-    PING, IN_GAME
+    PING, HANDSHAKE, LOGIN, PLAY
 }

@@ -96,8 +96,6 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 if (dir == PacketDirection.SERVER_TO_CLIENT)
                     session.getUserData().setDimension(data.read(Type.BYTE, 3));
 
-                // switch state
-                session.getUserData().setProtocolState(ProtocolState.IN_GAME);
                 return data;
             }
         });

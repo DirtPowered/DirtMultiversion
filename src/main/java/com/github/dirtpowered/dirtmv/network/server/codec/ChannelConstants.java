@@ -25,7 +25,6 @@ package com.github.dirtpowered.dirtmv.network.server.codec;
 public class ChannelConstants {
     public static final String DEFAULT_PIPELINE = "minecraft_pipeline";
     public static final String LEGACY_PING = "legacy_ping";
-    public static final String NETTY_DETECTION = "netty_detection";
     public static final String LEGACY_ENCODER = "legacy_encoder";
     public static final String LEGACY_DECODER = "legacy_decoder";
     public static final String TIMEOUT_HANDLER = "timeout";
