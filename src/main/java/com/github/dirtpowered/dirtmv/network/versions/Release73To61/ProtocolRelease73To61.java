@@ -26,7 +26,9 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
@@ -38,7 +40,9 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ProtocolRelease73To61 extends ServerProtocol {
@@ -160,14 +164,34 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                return new PacketData(-1);
+                // TODO: Translate metadata
+                List<WatchableObject> defaultMetadata = Arrays.asList(
+                        new WatchableObject(MetadataType.BYTE, 0, 0),
+                        new WatchableObject(MetadataType.SHORT, 1, 300)
+                );
+
+                return PacketUtil.createPacket(0x18, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        data.read(8),
+                        data.read(9),
+                        data.read(10),
+                        set(Type.V1_4R_METADATA, defaultMetadata),
+                });
             }
         });
 
         addTranslator(0x28 /* ENTITY METADATA */, new PacketTranslator() {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                return new PacketData(-1);
+                // TODO: Translate metadata
+                return data;
             }
         });
 
@@ -272,13 +296,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 }
 
                 return new PacketData(-1); // packet doesn't exist in 1.5
-            }
-        });
-
-        addTranslator(100, new PacketTranslator() {
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                return new PacketData(-1);
             }
         });
     }
