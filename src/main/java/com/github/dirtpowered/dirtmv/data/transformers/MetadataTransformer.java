@@ -20,33 +20,12 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.user;
+package com.github.dirtpowered.dirtmv.data.transformers;
 
-import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.data.entity.EntityTracker;
-import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
-import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import lombok.Data;
+import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 
-import javax.crypto.SecretKey;
+public interface MetadataTransformer {
 
-@Data
-public class UserData {
-    private MinecraftVersion clientVersion;
-    private boolean protocolDetected;
-    private PacketData proxyRequest;
-    private SecretKey secretKey;
-    private String username;
-    private ProtocolState protocolState;
-    private int dimension;
-    private int entityId;
-    private int vehicleEntityId;
-    private EntityTracker entityTracker;
-
-    public UserData() {
-        this.clientVersion = MinecraftVersion.B1_5;
-        this.protocolDetected = false;
-        this.protocolState = ProtocolState.PING;
-        this.entityTracker = new EntityTracker();
-    }
+    WatchableObject[] transformMetadata(EntityType entityType, WatchableObject[] watchableObjects);
 }

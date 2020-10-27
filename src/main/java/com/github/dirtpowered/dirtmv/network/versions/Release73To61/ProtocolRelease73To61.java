@@ -23,10 +23,10 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release73To61;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
@@ -37,22 +37,23 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_5RTo1_6RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ProtocolRelease73To61 extends ServerProtocol {
 
     private SoundRemapper soundRemapper;
+    private V1_5RTo1_6RMetadataTransformer metadataTransformer;
 
     public ProtocolRelease73To61() {
         super(MinecraftVersion.R1_6_1, MinecraftVersion.R1_5_2);
 
         soundRemapper = new SoundRemapper("1_5To1_6SoundMappings");
+        metadataTransformer = new V1_5RTo1_6RMetadataTransformer();
     }
 
     private PacketData getDefaultAttributes(int entityId) {
@@ -164,11 +165,13 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                // TODO: Translate metadata
-                List<WatchableObject> defaultMetadata = Arrays.asList(
-                        new WatchableObject(MetadataType.BYTE, 0, 0),
-                        new WatchableObject(MetadataType.SHORT, 1, 300)
-                );
+                EntityType entityType = EntityType.fromEntityTypeId(data.read(Type.BYTE, 1));
+                int entityId = data.read(Type.INT, 0);
+
+                session.getUserData().getEntityTracker().addEntity(entityId, entityType);
+
+                WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 11);
+                WatchableObject[] newMeta = metadataTransformer.transformMetadata(entityType, oldMeta);
 
                 return PacketUtil.createPacket(0x18, new TypeHolder[] {
                         data.read(0),
@@ -182,16 +185,43 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                         data.read(8),
                         data.read(9),
                         data.read(10),
-                        set(Type.V1_4R_METADATA, defaultMetadata),
+                        set(Type.V1_4R_METADATA, newMeta),
                 });
             }
         });
 
-        addTranslator(0x28 /* ENTITY METADATA */, new PacketTranslator() {
+        addTranslator(0x1D /* ENTITY DESTROY */, new PacketTranslator() {
+
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                // TODO: Translate metadata
+                int[] entities = data.read(Type.BYTE_INT_ARRAY, 0);
+
+                for (int entityId : entities) {
+                    session.getUserData().getEntityTracker().removeEntity(entityId);
+                }
+
                 return data;
+            }
+        });
+
+        addTranslator(0x28 /* ENTITY METADATA */, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+                int entityId = data.read(Type.INT, 0);
+                EntityType entityType = session.getUserData().getEntityTracker().getEntityById(entityId);
+
+                if (entityType == null) {
+                    return data;
+                }
+
+                WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 1);
+                WatchableObject[] newMeta = metadataTransformer.transformMetadata(entityType, oldMeta);
+
+                return PacketUtil.createPacket(0x28, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.V1_4R_METADATA, newMeta)
+                });
             }
         });
 

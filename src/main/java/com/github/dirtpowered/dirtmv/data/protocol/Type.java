@@ -256,14 +256,14 @@ public class Type {
         }
     });
 
-    public static final TypeObject<WatchableObject> V1_3B_METADATA = new TypeObject<>(WatchableObject.class, new TypeHandler() {
+    public static final TypeObject<WatchableObject[]> V1_3B_METADATA = new TypeObject<>(WatchableObject[].class, new TypeHandler() {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_3BProtocol.METADATA.write(holder, packetOutput);
         }
     });
 
-    public static final TypeObject<WatchableObject> V1_4R_METADATA = new TypeObject<>(WatchableObject.class, new TypeHandler() {
+    public static final TypeObject<WatchableObject[]> V1_4R_METADATA = new TypeObject<>(WatchableObject[].class, new TypeHandler() {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_4_6RProtocol.METADATA.write(holder, packetOutput);

@@ -379,7 +379,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         data.read(5), // yaw
                         data.read(6), // pitch
                         data.read(7), // item
-                        set(Type.V1_3B_METADATA, watchableObjects) // default metadata
+                        set(Type.V1_3B_METADATA, watchableObjects.toArray(new WatchableObject[0])) // default metadata
                 });
             }
         });

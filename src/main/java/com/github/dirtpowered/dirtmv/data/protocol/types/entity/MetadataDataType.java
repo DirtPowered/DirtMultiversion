@@ -38,25 +38,19 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
-@SuppressWarnings("unchecked")
-public class MetadataDataType extends DataType<List<WatchableObject>> {
+public class MetadataDataType extends DataType<WatchableObject[]> {
 
     public MetadataDataType(TypeObject type) {
         super(type);
     }
 
     @Override
-    public List<WatchableObject> read(PacketInput packetInput) throws IOException {
+    public WatchableObject[] read(PacketInput packetInput) throws IOException {
 
-        ArrayList<WatchableObject> dataMap = null;
+        ArrayList<WatchableObject> dataMap = new ArrayList<>();
 
         for (byte b = packetInput.readByte(); b != 127; b = packetInput.readByte()) {
-            if (dataMap == null) {
-                dataMap = new ArrayList<>();
-            }
-
             MetadataType type = MetadataType.fromType((b & 224) >> 5);
             int index = b & 31;
             WatchableObject value = null;
@@ -99,14 +93,14 @@ public class MetadataDataType extends DataType<List<WatchableObject>> {
             dataMap.add(value);
         }
 
-        return dataMap;
+        return dataMap.toArray(new WatchableObject[0]);
     }
 
     @Override
     public void write(TypeHolder typeHolder, PacketOutput packetOutput) throws IOException {
-        List<WatchableObject> watchableObjects = (List<WatchableObject>) typeHolder.getObject();
+        WatchableObject[] watchableObjects = (WatchableObject[]) typeHolder.getObject();
 
-        if (watchableObjects == null || watchableObjects.isEmpty()) {
+        if (watchableObjects == null || watchableObjects.length == 0) {
             packetOutput.writeByte(127);
             return;
         }

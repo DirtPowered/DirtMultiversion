@@ -20,33 +20,23 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.user;
+package com.github.dirtpowered.dirtmv.data.entity;
 
-import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.data.entity.EntityTracker;
-import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
-import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import lombok.Data;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javax.crypto.SecretKey;
+public class EntityTracker {
+    private Map<Integer, EntityType> entities = new ConcurrentHashMap<>();
 
-@Data
-public class UserData {
-    private MinecraftVersion clientVersion;
-    private boolean protocolDetected;
-    private PacketData proxyRequest;
-    private SecretKey secretKey;
-    private String username;
-    private ProtocolState protocolState;
-    private int dimension;
-    private int entityId;
-    private int vehicleEntityId;
-    private EntityTracker entityTracker;
+    public void addEntity(int entityId, EntityType entity) {
+        entities.putIfAbsent(entityId, entity);
+    }
 
-    public UserData() {
-        this.clientVersion = MinecraftVersion.B1_5;
-        this.protocolDetected = false;
-        this.protocolState = ProtocolState.PING;
-        this.entityTracker = new EntityTracker();
+    public EntityType getEntityById(int entityId) {
+        return entities.get(entityId);
+    }
+
+    public void removeEntity(int entityId) {
+        entities.remove(entityId);
     }
 }

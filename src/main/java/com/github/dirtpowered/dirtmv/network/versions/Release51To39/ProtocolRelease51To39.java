@@ -242,7 +242,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
                 PacketData itemMetadata = PacketUtil.createPacket(0x28, new TypeHolder[] {
                         data.read(0),
-                        set(Type.V1_4R_METADATA, metadata)
+                        set(Type.V1_4R_METADATA, metadata.toArray(new WatchableObject[0]))
                 });
 
                 session.sendPacket(vehicleSpawn, PacketDirection.SERVER_TO_CLIENT, getFrom());
