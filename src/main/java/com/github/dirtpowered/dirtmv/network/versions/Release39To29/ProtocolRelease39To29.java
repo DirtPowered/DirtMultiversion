@@ -132,7 +132,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0),
                         data.read(2),
-                        set(Type.BYTE, data.read(Type.INT, 4).byteValue()),
+                        set(Type.BYTE, data.read(Type.INT, 3).byteValue()),
                         set(Type.BYTE, data.read(Type.INT, 4).byteValue()),
                         data.read(5),
                         data.read(6),
