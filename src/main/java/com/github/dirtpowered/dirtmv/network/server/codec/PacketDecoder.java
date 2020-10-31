@@ -28,7 +28,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
-import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import io.netty.buffer.ByteBuf;
@@ -62,21 +62,15 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
     }
 
     private void setProtocolState(PacketData data) {
-        if (userData.getProtocolState() == ProtocolState.PLAY)
+        if (userData.getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME)
             return;
 
         switch (data.getOpCode()) {
             case 0xFE:
-                userData.setProtocolState(ProtocolState.PING);
-                break;
-            case 0x02:
-                userData.setProtocolState(ProtocolState.HANDSHAKE);
-                break;
-            case 0x01:
-                userData.setProtocolState(ProtocolState.LOGIN);
+                userData.setPreNettyProtocolState(PreNettyProtocolState.STATUS);
                 break;
             case 0x06 /* spawn position */:
-                userData.setProtocolState(ProtocolState.PLAY);
+                userData.setPreNettyProtocolState(PreNettyProtocolState.IN_GAME);
                 break;
         }
     }

@@ -22,6 +22,6 @@
 
 package com.github.dirtpowered.dirtmv.data.translator;
 
-public enum ProtocolState {
-    PING, HANDSHAKE, LOGIN, PLAY
+public enum PreNettyProtocolState {
+    STATUS, IN_GAME
 }

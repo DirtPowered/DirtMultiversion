@@ -37,7 +37,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
-import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
@@ -124,7 +124,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                if (session.getUserData().getProtocolState() != ProtocolState.PING)
+                if (session.getUserData().getPreNettyProtocolState() != PreNettyProtocolState.STATUS)
                     return data;
 
                 String reason = data.read(Type.STRING, 0);

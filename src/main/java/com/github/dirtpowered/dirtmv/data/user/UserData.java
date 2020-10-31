@@ -25,7 +25,7 @@ package com.github.dirtpowered.dirtmv.data.user;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.entity.EntityTracker;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
-import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
 import lombok.Data;
 
 import javax.crypto.SecretKey;
@@ -37,7 +37,7 @@ public class UserData {
     private PacketData proxyRequest;
     private SecretKey secretKey;
     private String username;
-    private ProtocolState protocolState;
+    private PreNettyProtocolState preNettyProtocolState;
     private int dimension;
     private int entityId;
     private int vehicleEntityId;
@@ -46,7 +46,7 @@ public class UserData {
     public UserData() {
         this.clientVersion = MinecraftVersion.B1_5;
         this.protocolDetected = false;
-        this.protocolState = ProtocolState.PING;
+        this.preNettyProtocolState = PreNettyProtocolState.STATUS;
         this.entityTracker = new EntityTracker();
     }
 }
