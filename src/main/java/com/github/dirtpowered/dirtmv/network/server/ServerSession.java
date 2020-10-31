@@ -151,11 +151,14 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     public void channelActive(ChannelHandlerContext ctx) {
         main.getScheduledExecutorService().execute(() -> client.createClient(key, () -> {
             if (!initialPacketQueue.isEmpty()) {
-                try {
-                    sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, null);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+                initialPacketQueue.forEach(data -> {
+                    try {
+                        sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, null);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         }));
     }
