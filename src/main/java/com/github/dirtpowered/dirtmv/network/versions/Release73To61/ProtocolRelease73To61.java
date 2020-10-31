@@ -125,6 +125,8 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 String reason = data.read(Type.STRING, 0);
 
                 ServerMotd pingMessage = ServerMotd.deserialize(reason);
+
+                pingMessage.setVersionName("1.6.1");
                 pingMessage.setProtocol(session.getUserData().getClientVersion().getProtocolId());
 
                 return PacketUtil.createPacket(0xFF, new TypeHolder[] {
