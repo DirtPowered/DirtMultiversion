@@ -69,7 +69,11 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
                 if (dir == PacketDirection.CLIENT_TO_SERVER) {
-                    log.debug("ping: {}", data.read(Type.LONG, 0));
+                    PacketData response = PacketUtil.createPacket(0x01, new TypeHolder[] {
+                            data.read(0)
+                    });
+
+                    session.sendPacket(response, PacketDirection.SERVER_TO_CLIENT, getFrom());
                 }
 
                 return new PacketData(-1);
