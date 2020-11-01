@@ -25,9 +25,9 @@ package com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6;
 import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
-import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2_1.V1_2_1RProtocol;
-import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3_1.V1_3_1RProtocol;
-import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4_6.V1_4_6RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2.V1_2_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4.V1_4_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_5.V1_5RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.V1_6_1REntityAttributesDataType;
 

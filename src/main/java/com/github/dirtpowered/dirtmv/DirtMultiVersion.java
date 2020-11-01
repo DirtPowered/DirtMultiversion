@@ -30,11 +30,12 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_7.V1_7BProtoco
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_8.V1_8BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_0.V1_0RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_1.V1_1RProtocol;
-import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2_1.V1_2_1RProtocol;
-import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3_1.V1_3_1RProtocol;
-import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4_6.V1_4_6RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2.V1_2_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4.V1_4_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_5.V1_5RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.registry.ProtocolRegistry;
 import com.github.dirtpowered.dirtmv.data.registry.TranslatorRegistry;
 import com.github.dirtpowered.dirtmv.network.server.Server;
@@ -49,6 +50,8 @@ import com.github.dirtpowered.dirtmv.network.versions.Release39To29.ProtocolRele
 import com.github.dirtpowered.dirtmv.network.versions.Release51To39.ProtocolRelease51To39;
 import com.github.dirtpowered.dirtmv.network.versions.Release60To51.ProtocolRelease60To51;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ProtocolRelease73To61;
+import com.github.dirtpowered.dirtmv.network.versions.Release74To73.ProtocolRelease74To73;
+import com.github.dirtpowered.dirtmv.network.versions.Release78To74.ProtocolRelease78To74;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
 import lombok.Getter;
@@ -83,7 +86,11 @@ public class DirtMultiVersion implements Runnable {
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_5_1, new V1_5RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_5_2, new V1_5RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_6_1, new V1_6RProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_6_2, new V1_6_2RProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_6_4, new V1_6_2RProtocol());
 
+        translatorRegistry.registerProtocol(new ProtocolRelease78To74());
+        translatorRegistry.registerProtocol(new ProtocolRelease74To73());
         translatorRegistry.registerProtocol(new ProtocolRelease73To61());
         translatorRegistry.registerProtocol(new ProtocolRelease60To51());
         translatorRegistry.registerProtocol(new ProtocolRelease51To39());

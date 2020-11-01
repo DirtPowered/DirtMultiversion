@@ -25,11 +25,12 @@ package com.github.dirtpowered.dirtmv.data.protocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_8.V1_8BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_0.V1_0RProtocol;
-import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2_1.V1_2_1RProtocol;
-import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3_1.V1_3_1RProtocol;
-import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4_6.V1_4_6RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2.V1_2_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4.V1_4_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_5.V1_5RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
@@ -295,6 +296,13 @@ public class Type {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_6RProtocol.ENTITY_ATTRIBUTES.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<V1_6_1EntityAttributes> V1_6_2_ENTITY_ATTRIBUTES = new TypeObject<>(V1_6_1EntityAttributes.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_6_2RProtocol.ENTITY_ATTRIBUTES.write(holder, packetOutput);
         }
     });
 }

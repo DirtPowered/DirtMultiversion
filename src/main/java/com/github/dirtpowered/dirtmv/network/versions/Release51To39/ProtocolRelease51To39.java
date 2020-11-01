@@ -26,7 +26,7 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
-import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3_1.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
