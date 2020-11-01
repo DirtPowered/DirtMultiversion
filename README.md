@@ -16,13 +16,14 @@ Proxy that allows connecting to almost all minecraft versions. Work in progress
 - [X] Release 1.2
 - [X] Release 1.3
 - [X] Release 1.4
-- [ ] Release 1.5
-- [ ] Release 1.6
+- [X] Release 1.5
+- [X] Release 1.6
+- [ ] Release 1.7
 
 ### Bugs
 - [x] Non-full chunks (r1.1 -> r1.2)
 - [x] Experience translation (b1.8 -> r1.0)
-- [x] 1.3 protocol is not finished yet
+- [x] all listed above protocols are unfinished, buggy
 - [x] and many more ...
 
 
