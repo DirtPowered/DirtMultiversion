@@ -26,6 +26,8 @@ public interface PacketInput {
 
     int readInt();
 
+    int readVarInt();
+
     byte readByte();
 
     boolean readBoolean();

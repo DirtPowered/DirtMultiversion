@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.data.protocol;
 
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
+import com.google.common.base.Preconditions;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
 
@@ -43,6 +44,7 @@ public class PacketData {
     }
 
     public TypeHolder read(int index) {
+        Preconditions.checkArgument(objects[index] == null, "reader index is above range (%s)", index);
         return objects[index];
     }
 

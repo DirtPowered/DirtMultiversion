@@ -31,6 +31,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4.V1_4_6RProto
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_5.V1_5RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6_2RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
@@ -94,6 +95,13 @@ public class Type {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             BaseProtocol.SHORT.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<Integer> UNSIGNED_SHORT = new TypeObject<>(Integer.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            BaseProtocol.UNSIGNED_SHORT.write(holder, packetOutput);
         }
     });
 
@@ -303,6 +311,20 @@ public class Type {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_6_2RProtocol.ENTITY_ATTRIBUTES.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<Integer> VAR_INT = new TypeObject<>(Integer.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_7_2RProtocol.VAR_INT.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<String> V1_7_STRING = new TypeObject<>(String.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_7_2RProtocol.STRING.write(holder, packetOutput);
         }
     });
 }

@@ -39,6 +39,19 @@ public class NettyOutputWrapper implements PacketOutput {
     }
 
     @Override
+    public void writeVarInt(int intValue) {
+        do {
+            byte temp = (byte) (intValue & 0x7F);
+
+            intValue >>>= 7;
+            if (intValue != 0) {
+                temp |= 0x80;
+            }
+            buf.writeByte(temp);
+        } while (intValue != 0);
+    }
+
+    @Override
     public void writeByte(int byteValue) {
         buf.writeByte(byteValue);
     }

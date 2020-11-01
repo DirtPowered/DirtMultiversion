@@ -20,21 +20,30 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.server.codec;
+package com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7;
 
-public class ChannelConstants {
-    public static final String DEFAULT_PIPELINE = "minecraft_pipeline";
-    public static final String LEGACY_PING = "legacy_ping";
-    public static final String LEGACY_ENCODER = "legacy_encoder";
-    public static final String LEGACY_DECODER = "legacy_decoder";
-    public static final String TIMEOUT_HANDLER = "timeout";
-    public static final String PACKET_ENCRYPTION = "packet_encryption";
-    public static final String PACKET_DECRYPTION = "packet_decryption";
-    public static final String SERVER_HANDLER = "server_handler";
-    public static final String CLIENT_HANDLER = "client_handler";
-    public static final String DETECTION_HANDLER = "netty_detection_handler";
-    public static final String NETTY_LENGTH_DECODER = "netty_length_decoder";
-    public static final String NETTY_LENGTH_ENCODER = "netty_length_encoder";
-    public static final String NETTY_PACKET_DECODER = "netty_packet_decoder";
-    public static final String NETTY_PACKET_ENCODER = "netty_packet_encoder";
+import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.DataType;
+import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.types.netty.V1_7StringDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.netty.VarIntDataType;
+
+public class V1_7_2RProtocol extends BaseProtocol {
+
+    public static final DataType VAR_INT;
+    public static final DataType STRING;
+
+    public static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
+
+    static {
+        VAR_INT = new VarIntDataType();
+        STRING = new V1_7StringDataType();
+
+        STATE_DEPENDED_PROTOCOL = new V1_7_2ProtocolDefinitions();
+    }
+
+    @Override
+    public void registerPackets() {
+        // none
+    }
 }

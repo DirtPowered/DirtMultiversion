@@ -43,7 +43,7 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
     private PacketDirection packetDirection;
     private UserData userData;
 
-    PacketDecoder(PacketDirection packetDirection, UserData userData) {
+    public PacketDecoder(PacketDirection packetDirection, UserData userData) {
         this.packetDirection = packetDirection;
         this.userData = userData;
     }

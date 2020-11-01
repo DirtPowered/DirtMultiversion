@@ -20,21 +20,26 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.server.codec;
+package com.github.dirtpowered.dirtmv.network.server.codec.netty;
 
-public class ChannelConstants {
-    public static final String DEFAULT_PIPELINE = "minecraft_pipeline";
-    public static final String LEGACY_PING = "legacy_ping";
-    public static final String LEGACY_ENCODER = "legacy_encoder";
-    public static final String LEGACY_DECODER = "legacy_decoder";
-    public static final String TIMEOUT_HANDLER = "timeout";
-    public static final String PACKET_ENCRYPTION = "packet_encryption";
-    public static final String PACKET_DECRYPTION = "packet_decryption";
-    public static final String SERVER_HANDLER = "server_handler";
-    public static final String CLIENT_HANDLER = "client_handler";
-    public static final String DETECTION_HANDLER = "netty_detection_handler";
-    public static final String NETTY_LENGTH_DECODER = "netty_length_decoder";
-    public static final String NETTY_LENGTH_ENCODER = "netty_length_encoder";
-    public static final String NETTY_PACKET_DECODER = "netty_packet_decoder";
-    public static final String NETTY_PACKET_ENCODER = "netty_packet_encoder";
+import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageEncoder;
+
+import java.util.List;
+
+public class VarIntFrameEncoder extends MessageToMessageEncoder<ByteBuf> {
+
+    @Override
+    protected void encode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) {
+        ByteBuf packetLengthHeader = ctx.alloc().buffer(5);
+
+        NettyOutputWrapper outputWrapper = new NettyOutputWrapper(packetLengthHeader);
+
+        outputWrapper.writeVarInt(byteBuf.readableBytes());
+
+        list.add(packetLengthHeader);
+        list.add(byteBuf.retain());
+    }
 }

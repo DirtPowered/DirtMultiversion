@@ -36,7 +36,7 @@ public class LegacyPingVersionHandler extends ChannelInboundHandlerAdapter {
     private final static String CHANNEL_NAME = "MC|PingHost";
     private UserData userData;
 
-    LegacyPingVersionHandler(UserData data) {
+    public LegacyPingVersionHandler(UserData data) {
         this.userData = data;
     }
 
@@ -93,7 +93,7 @@ public class LegacyPingVersionHandler extends ChannelInboundHandlerAdapter {
         } finally {
             buffer.resetReaderIndex();
             ctx.channel().pipeline().remove(ChannelConstants.LEGACY_PING);
-            ctx.fireChannelRead(buffer);
+            ctx.fireChannelRead(object);
         }
     }
 

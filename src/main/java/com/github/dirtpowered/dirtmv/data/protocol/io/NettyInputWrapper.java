@@ -39,6 +39,26 @@ public class NettyInputWrapper implements PacketInput {
     }
 
     @Override
+    public int readVarInt() {
+        int numRead = 0;
+        int result = 0;
+
+        byte read;
+        do {
+            read = buf.readByte();
+            int value = (read & 0x7F);
+            result |= (value << (7 * numRead));
+
+            numRead++;
+            if (numRead > 5) {
+                throw new RuntimeException("VarInt is too big");
+            }
+        } while ((read & 0x80) != 0);
+
+        return result;
+    }
+
+    @Override
     public byte readByte() {
         return buf.readByte();
     }

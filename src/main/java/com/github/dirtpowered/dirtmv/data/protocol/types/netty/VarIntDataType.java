@@ -20,21 +20,27 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.server.codec;
+package com.github.dirtpowered.dirtmv.data.protocol.types.netty;
 
-public class ChannelConstants {
-    public static final String DEFAULT_PIPELINE = "minecraft_pipeline";
-    public static final String LEGACY_PING = "legacy_ping";
-    public static final String LEGACY_ENCODER = "legacy_encoder";
-    public static final String LEGACY_DECODER = "legacy_decoder";
-    public static final String TIMEOUT_HANDLER = "timeout";
-    public static final String PACKET_ENCRYPTION = "packet_encryption";
-    public static final String PACKET_DECRYPTION = "packet_decryption";
-    public static final String SERVER_HANDLER = "server_handler";
-    public static final String CLIENT_HANDLER = "client_handler";
-    public static final String DETECTION_HANDLER = "netty_detection_handler";
-    public static final String NETTY_LENGTH_DECODER = "netty_length_decoder";
-    public static final String NETTY_LENGTH_ENCODER = "netty_length_encoder";
-    public static final String NETTY_PACKET_DECODER = "netty_packet_decoder";
-    public static final String NETTY_PACKET_ENCODER = "netty_packet_encoder";
+import com.github.dirtpowered.dirtmv.data.protocol.DataType;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
+
+public class VarIntDataType extends DataType<Integer> {
+
+    public VarIntDataType() {
+        super(Type.VAR_INT);
+    }
+
+    @Override
+    public Integer read(PacketInput packetInput) {
+        return packetInput.readVarInt();
+    }
+
+    @Override
+    public void write(TypeHolder typeHolder, PacketOutput packetOutput) {
+        packetOutput.writeVarInt((Integer) typeHolder.getObject());
+    }
 }

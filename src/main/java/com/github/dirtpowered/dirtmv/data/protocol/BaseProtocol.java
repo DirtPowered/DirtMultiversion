@@ -35,6 +35,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.types.ShortDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.StringDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.UTF8StringDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.UnsignedByteDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.UnsignedShortDataType;
 
 public abstract class BaseProtocol {
     public static final DataType INT = new IntDataType();
@@ -53,6 +54,7 @@ public abstract class BaseProtocol {
     public static final DataType BYTE_INT_ARRAY = new IntArrayDataType();
     public static final DataType COMPOUND_TAG = new CompoundTagDataType();
     public static final DataType BOOLEAN = new BooleanDataType();
+    public static final DataType UNSIGNED_SHORT = new UnsignedShortDataType();
 
     public DataType[][] dataTypes = new DataType[256][];
 

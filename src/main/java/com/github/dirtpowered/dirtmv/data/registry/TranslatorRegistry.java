@@ -28,6 +28,7 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthrough;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthroughEncrypted;
+import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ProtocolRelease4To78;
 import lombok.Getter;
 
 import java.util.Collections;
@@ -57,6 +58,9 @@ public class TranslatorRegistry {
         List<ServerProtocol> serverProtocols = new LinkedList<>();
 
         MinecraftVersion from = data.getClientVersion();
+        if (from.isNettyProtocol()) {
+            from = MinecraftVersion.R1_6_4; // temp workaround
+        }
 
         // check if translating is needed
         if (from == Constants.REMOTE_SERVER_VERSION) {
@@ -89,6 +93,12 @@ public class TranslatorRegistry {
                     serverProtocols.add(target);
                 }
             }
+        }
+
+        // TODO: auto detecting
+        if (data.getClientVersion().isNettyProtocol()) {
+            // add translator manually
+            serverProtocols.add(new ProtocolRelease4To78());
         }
 
         return serverProtocols;
