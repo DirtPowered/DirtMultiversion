@@ -28,8 +28,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Random;
+
 public class LegacyPingVersionHandler extends ChannelInboundHandlerAdapter {
 
+    private final static String CHANNEL_NAME = "MC|PingHost";
     private UserData userData;
 
     LegacyPingVersionHandler(UserData data) {
@@ -40,40 +44,67 @@ public class LegacyPingVersionHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object object) {
         ByteBuf buffer = (ByteBuf) object;
 
-        if (buffer.readUnsignedByte() == 254) {
-            int i = buffer.readableBytes();
+        try {
+            if (buffer.readUnsignedByte() == 0xFE) {
+                int i = buffer.readableBytes();
 
-            if (i == 0) {
-                userData.setClientVersion(MinecraftVersion.B1_8_1);
+                if (i == 0) {
+                    userData.setClientVersion(MinecraftVersion.B1_8_1);
+                } else if (i == 1) {
+                    if (buffer.readUnsignedByte() != 0x01) {
+                        return;
+                    }
 
-                close(ctx, buffer);
-            } else if (i == 1) {
-                if (buffer.readUnsignedByte() != 1) {
-                    return;
+                    userData.setClientVersion(MinecraftVersion.R1_4_6);
+                } else {
+                    if (buffer.readUnsignedByte() == 0x01 || buffer.readUnsignedByte() == 0xFA) {
+                        int protocolVersion = -1;
+
+                        buffer.skipBytes(Byte.BYTES);
+
+                        int readerIndex = buffer.readerIndex();
+
+                        String channelName = readString(buffer);
+                        if (channelName != null) {
+                            if (channelName.equals(CHANNEL_NAME)) {
+                                buffer.skipBytes(Short.BYTES);
+
+                                protocolVersion = buffer.readUnsignedByte();
+                            }
+                        }
+
+                        buffer.readerIndex(readerIndex);
+
+                        if (protocolVersion != -1) {
+                            userData.setClientVersion(MinecraftVersion.fromProtocolVersion(protocolVersion));
+                        } else {
+                            // temp workaround
+                            int[] versions = new int[] {73, 74, 78};
+                            int index = new Random().nextInt(versions.length);
+
+                            protocolVersion = versions[index];
+                            userData.setClientVersion(MinecraftVersion.fromProtocolVersion(protocolVersion));
+                        }
+                    }
                 }
-
-                userData.setClientVersion(MinecraftVersion.R1_4_6);
-
-                close(ctx, buffer);
-            } else {
-                if (buffer.readUnsignedByte() != 0x01 || buffer.readUnsignedByte() != 0xFA) {
-                    return;
-                }
-
-                // TODO: get protocol version
-                userData.setClientVersion(MinecraftVersion.R1_6_1);
-
-                close(ctx, buffer);
             }
-        } else {
-            close(ctx, buffer);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        } finally {
+            buffer.resetReaderIndex();
+            ctx.channel().pipeline().remove(ChannelConstants.LEGACY_PING);
+            ctx.fireChannelRead(buffer);
         }
     }
 
-    private void close(ChannelHandlerContext ctx, ByteBuf object) {
-        object.resetReaderIndex();
+    private String readString(ByteBuf buffer) {
+        int size = buffer.readShort() * Character.BYTES;
+        if (!buffer.isReadable(size)) {
+            return null;
+        }
 
-        ctx.channel().pipeline().remove(this);
-        ctx.fireChannelRead(object);
+        String result = buffer.toString(buffer.readerIndex(), size, StandardCharsets.UTF_16BE);
+        buffer.skipBytes(size);
+        return result;
     }
 }
