@@ -327,4 +327,11 @@ public class Type {
             V1_7_2RProtocol.STRING.write(holder, packetOutput);
         }
     });
+
+    public static final TypeObject<byte[]> VAR_INT_BYTE_ARRAY = new TypeObject<>(byte[].class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_7_2RProtocol.VAR_INT_BYTE_ARRAY.write(holder, packetOutput);
+        }
+    });
 }

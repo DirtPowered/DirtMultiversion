@@ -25,6 +25,7 @@ package com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7;
 import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 
@@ -43,24 +44,142 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
         // server info request
         addPacket(0x00, ProtocolState.PING, PacketDirection.CLIENT_TO_SERVER, new DataType[0]);
 
-        // server info response
-        addPacket(0x00, ProtocolState.PING, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
-                V1_7_2RProtocol.STRING // JSON Message
-        });
-
         // ping
         addPacket(0x01, ProtocolState.PING, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
                 BaseProtocol.LONG // time
         });
 
-        // pong
-        addPacket(0x01, ProtocolState.PING, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
-                BaseProtocol.LONG // time
+        // login start
+        addPacket(0x00, ProtocolState.LOGIN, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                V1_7_2RProtocol.STRING, // player name
         });
 
-        // login disconnect
-        addPacket(0x00, ProtocolState.LOGIN, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
-                V1_7_2RProtocol.STRING, // disconnect reason
+        // encryption response
+        addPacket(0x01, ProtocolState.LOGIN, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                V1_7_2RProtocol.VAR_INT_BYTE_ARRAY, // verify key
+                V1_7_2RProtocol.VAR_INT_BYTE_ARRAY, // token
+        });
+
+
+        // keep-alive
+        addPacket(0x00, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.INT // keep-alive id
+        });
+
+        // chat client -> server
+        addPacket(0x01, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                V1_7_2RProtocol.STRING // Chat Message
+        });
+
+        // use entity
+        addPacket(0x02, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.INT ,// entity id
+                BaseProtocol.BYTE // action
+        });
+
+        // player
+        addPacket(0x03, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE //on ground
+        });
+
+        // player position
+        addPacket(0x04, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.DOUBLE,
+                BaseProtocol.DOUBLE,
+                BaseProtocol.DOUBLE,
+                BaseProtocol.DOUBLE,
+                BaseProtocol.BYTE //on ground
+        });
+
+        // player look
+        addPacket(0x05, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.FLOAT, // yaw
+                BaseProtocol.FLOAT, // pitch
+                BaseProtocol.BYTE //on ground
+        });
+
+        // player pos look
+        addPacket(0x06, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.DOUBLE,
+                BaseProtocol.DOUBLE,
+                BaseProtocol.DOUBLE,
+                BaseProtocol.DOUBLE,
+                BaseProtocol.FLOAT, // yaw
+                BaseProtocol.FLOAT, // pitch
+                BaseProtocol.BYTE //on ground
+        });
+
+        // player digging
+        addPacket(0x07, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.UNSIGNED_BYTE,
+                BaseProtocol.INT,
+                BaseProtocol.UNSIGNED_BYTE,
+                BaseProtocol.INT,
+                BaseProtocol.UNSIGNED_BYTE,
+        });
+
+        // block placement
+        addPacket(0x08, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.INT,
+                BaseProtocol.UNSIGNED_BYTE,
+                BaseProtocol.INT,
+                BaseProtocol.UNSIGNED_BYTE,
+                V1_3_1RProtocol.ITEM,
+                BaseProtocol.UNSIGNED_BYTE,
+                BaseProtocol.UNSIGNED_BYTE,
+                BaseProtocol.UNSIGNED_BYTE,
+        });
+
+        // held slot
+        addPacket(0x09, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.SHORT // slot
+        });
+
+        // animation
+        addPacket(0x0A, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.INT,
+                BaseProtocol.BYTE
+        });
+
+        // entity action
+        addPacket(0x0B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.INT,
+                BaseProtocol.BYTE,
+                BaseProtocol.INT
+        });
+
+        // player input
+        addPacket(0x0C, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.FLOAT,
+                BaseProtocol.FLOAT,
+                BaseProtocol.BOOLEAN,
+                BaseProtocol.BOOLEAN
+        });
+
+        // close window
+        addPacket(0x0D, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE, // window id
+        });
+
+        // client settings
+        addPacket(0x15, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                V1_7_2RProtocol.STRING,
+                BaseProtocol.BYTE,
+                BaseProtocol.BYTE, // chat visibility
+                BaseProtocol.BOOLEAN,
+                BaseProtocol.BYTE, // difficulty
+                BaseProtocol.BOOLEAN,
+        });
+
+        // client status
+        addPacket(0x16, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE // action
+        });
+
+        // custom payload
+        addPacket(0x17, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                V1_7_2RProtocol.STRING, // Channel name
+                BaseProtocol.SHORT_BYTE_ARRAY // payload
         });
     }
 }
