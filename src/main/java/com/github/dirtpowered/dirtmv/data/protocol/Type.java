@@ -334,4 +334,11 @@ public class Type {
             V1_7_2RProtocol.VAR_INT_BYTE_ARRAY.write(holder, packetOutput);
         }
     });
+
+    public static final TypeObject<WatchableObject[]> V1_7R_METADATA = new TypeObject<>(WatchableObject[].class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_7_2RProtocol.METADATA.write(holder, packetOutput);
+        }
+    });
 }

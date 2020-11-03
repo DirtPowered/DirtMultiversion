@@ -27,6 +27,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.types.ByteArrayDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.entity.MetadataDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.V1_7StringDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.VarIntDataType;
 
@@ -35,6 +36,7 @@ public class V1_7_2RProtocol extends BaseProtocol {
     public static final DataType VAR_INT;
     public static final DataType STRING;
     public static final DataType VAR_INT_BYTE_ARRAY;
+    public final static DataType METADATA;
 
     public static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
 
@@ -42,6 +44,7 @@ public class V1_7_2RProtocol extends BaseProtocol {
         VAR_INT = new VarIntDataType();
         STRING = new V1_7StringDataType();
         VAR_INT_BYTE_ARRAY = new ByteArrayDataType(Type.VAR_INT_BYTE_ARRAY);
+        METADATA = new MetadataDataType(Type.V1_7R_METADATA);
 
         STATE_DEPENDED_PROTOCOL = new V1_7_2ProtocolDefinitions();
     }

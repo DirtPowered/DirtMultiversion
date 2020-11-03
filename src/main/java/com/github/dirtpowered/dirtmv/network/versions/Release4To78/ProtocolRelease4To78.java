@@ -31,6 +31,7 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
+import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
@@ -200,6 +201,20 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0xFF SC 0x40 (kick disconnect)
+        addTranslator(0xFF, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                String legacyDisconnect = data.read(Type.STRING, 0);
+
+                return PacketUtil.createPacket(0x40, new TypeHolder[]{
+                        set(Type.V1_7_STRING, ChatUtils.legacyToJsonString(legacyDisconnect))
+                });
+            }
+        });
+
         // 0x05 SC 0x04 (entity equipment)
         addTranslator(0x05, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
@@ -276,6 +291,94 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x18 SC 0x0F (spawn mob)
+        addTranslator(0x18, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0F, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)), // entity id
+                        data.read(1), // type
+                        data.read(2), // x
+                        data.read(3), // y
+                        data.read(4), // z
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        data.read(8),
+                        data.read(9),
+                        data.read(10),
+                        set(Type.V1_7R_METADATA, data.read(Type.V1_4R_METADATA, 11))
+                });
+            }
+        });
+
+        // 0x1F SC 0x15 (entity relative move)
+        addTranslator(0x1F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x15, data.getObjects());
+            }
+        });
+
+        // 0x1C SC 0x12 (entity velocity)
+        addTranslator(0x1C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x12, data.getObjects());
+            }
+        });
+
+        // 0x1D SC 0x13 (entity destroy)
+        addTranslator(0x1D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x13, data.getObjects());
+            }
+        });
+
+        // 0x20 SC 0x16 (entity look)
+        addTranslator(0x20, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x16, data.getObjects());
+            }
+        });
+
+        // 0x22 SC 0x18 (entity teleport)
+        addTranslator(0x22, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x18, data.getObjects());
+            }
+        });
+
+        // 0x09 SC 0x07 (respawn)
+        addTranslator(0x09, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x07, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        set(Type.V1_7_STRING, data.read(Type.STRING, 3))
+                });
+            }
+        });
+
         // 0x0D SC 0x08 (player pos look)
         addTranslator(0x0D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
@@ -335,44 +438,48 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x03 CS 0x0A (player ground state)
+        addTranslator(0x03, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0A, data.getObjects());
+            }
+        });
+
+        // 0x04 CS 0x0B (player position)
+        addTranslator(0x04, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0B, data.getObjects());
+            }
+        });
+
+        // 0x05 CS 0x0C (player look)
+        addTranslator(0x05, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0C, data.getObjects());
+            }
+        });
+
+        // 0x06 CS 0x0D (player position look)
+        addTranslator(0x06, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0D, data.getObjects());
+            }
+        });
+
         // TODO: translate packets
         addTranslator(21, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-
-                return new PacketData(-1);
-            }
-        });
-
-        addTranslator(4, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-
-                return new PacketData(-1);
-            }
-        });
-
-        addTranslator(5, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-
-                return new PacketData(-1);
-            }
-        });
-
-        addTranslator(3, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-
-                return new PacketData(-1);
-            }
-        });
-
-        addTranslator(6, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
