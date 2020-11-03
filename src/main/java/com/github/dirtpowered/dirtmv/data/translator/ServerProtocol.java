@@ -23,8 +23,11 @@
 package com.github.dirtpowered.dirtmv.data.translator;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeObject;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
+import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -57,6 +60,19 @@ public abstract class ServerProtocol {
         TranslatorKeyObj obj = new TranslatorKeyObj(opCode, state, direction);
 
         registeredTranslators.put(obj, packetTranslator);
+    }
+
+    protected void addTranslator(int opCode, int opCodeTo, ProtocolState state, PacketDirection direction) {
+        TranslatorKeyObj obj = new TranslatorKeyObj(opCode, state, direction);
+
+        registeredTranslators.put(obj, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(opCodeTo, data.getObjects());
+            }
+        });
     }
 
     public PacketTranslator getTranslatorFor(int opCode, ProtocolState state, PacketDirection direction) {

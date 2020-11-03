@@ -161,6 +161,23 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.BYTE, // window id
         });
 
+        // click window
+        addPacket(0x0E, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE, // window id
+                BaseProtocol.SHORT,
+                BaseProtocol.BYTE,
+                BaseProtocol.SHORT,
+                BaseProtocol.BYTE,
+                V1_3_1RProtocol.ITEM
+        });
+
+        // confirm transaction
+        addPacket(0x0F, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE,
+                BaseProtocol.SHORT,
+                BaseProtocol.BYTE
+        });
+
         // client settings
         addPacket(0x15, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
                 V1_7_2RProtocol.STRING,
