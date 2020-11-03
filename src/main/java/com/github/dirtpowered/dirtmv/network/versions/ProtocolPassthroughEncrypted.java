@@ -49,12 +49,12 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
-
-        addTranslator(0xFD /* SERVER AUTH DATA */, new PacketTranslator() {
+        // server auth data
+        addTranslator(0xFD, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @SneakyThrows
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 PacketData encryptRequest = EncryptionUtils.createEncryptionRequest(session);
 
                 SecretKey secretKey = EncryptionUtils.getSecretKey();
@@ -91,26 +91,33 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
             }
         });
 
-        addTranslator(0xFC /* CLIENT SHARED KEY */, new PacketTranslator() {
+        // client shared key
+        addTranslator(0xFC, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @SneakyThrows
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                if (dir == PacketDirection.CLIENT_TO_SERVER) {
-                    SecretKey shared = EncryptionUtils.getSecret(data, session.getUserData().getProxyRequest());
+            public PacketData translate(ServerSession session, PacketData data) {
+                SecretKey shared = EncryptionUtils.getSecret(data, session.getUserData().getProxyRequest());
 
-                    // server -> client
-                    EncryptionUtils.sendEmptyEncryptionResponse(session, getFrom());
+                // server -> client
+                EncryptionUtils.sendEmptyEncryptionResponse(session, getFrom());
 
-                    // enable encryption
-                    EncryptionUtils.setEncryption(session.getChannel(), shared);
-                    return new PacketData(-1); // cancel packet
-                } else {
-                    // enable client connection encryption
-                    EncryptionUtils.setEncryption(session.getClientSession().getChannel(), session.getUserData().getSecretKey());
+                // enable encryption
+                EncryptionUtils.setEncryption(session.getChannel(), shared);
+                return new PacketData(-1); // cancel packet
+            }
+        });
 
-                    return new PacketData(-1); // cancel packet
-                }
+
+        // client shared key
+        addTranslator(0xFC, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                // enable client connection encryption
+                EncryptionUtils.setEncryption(session.getClientSession().getChannel(), session.getUserData().getSecretKey());
+
+                return new PacketData(-1); // cancel packet
             }
         });
     }

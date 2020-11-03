@@ -88,42 +88,43 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
-
-        addTranslator(0x01 /* LOGIN */, new PacketTranslator() {
+        // login
+        addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                if (dir == PacketDirection.SERVER_TO_CLIENT)
-                    session.getUserData().setDimension(data.read(Type.BYTE, 3));
+            public PacketData translate(ServerSession session, PacketData data) {
 
+                session.getUserData().setDimension(data.read(Type.BYTE, 3));
                 return data;
             }
         });
 
-        addTranslator(0x09 /* RESPAWN */, new PacketTranslator() {
+        // respawn
+        addTranslator(0x09, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                if (dir == PacketDirection.SERVER_TO_CLIENT)
-                    session.getUserData().setDimension(data.read(Type.INT, 0));
+            public PacketData translate(ServerSession session, PacketData data) {
 
+                session.getUserData().setDimension(data.read(Type.INT, 0));
                 return data;
             }
         });
 
-        addTranslator(0xFE /* SERVER PING REQUEST */, new PacketTranslator() {
+        // server ping request
+        addTranslator(0xFE, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 // empty
                 return PacketUtil.createPacket(0xFE, new TypeHolder[0]);
             }
         });
 
-        addTranslator(0xFF /* KICK DISCONNECT */, new PacketTranslator() {
+        // kick disconnect
+        addTranslator(0xFF, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 if (session.getUserData().getPreNettyProtocolState() != PreNettyProtocolState.STATUS)
                     return data;
 
@@ -136,10 +137,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x02 /* HANDSHAKE */, new PacketTranslator() {
+        // handshake
+        addTranslator(0x02, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 if (data.getObjects().length < 3) {
                     return new PacketData(-1);
                 }
@@ -153,10 +155,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0xCC /* CLIENT SETTINGS */, new PacketTranslator() {
+        // client settings
+        addTranslator(0xCC, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0xCC, new TypeHolder[] {
                         data.read(0),
@@ -167,10 +170,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x83 /* MAP DATA */, new PacketTranslator() {
+        // map data
+        addTranslator(0x83, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 byte[] mapData = data.read(Type.BYTE_BYTE_ARRAY, 2);
 
@@ -182,10 +186,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x04 /* UPDATE TIME */, new PacketTranslator() {
+        // update time
+        addTranslator(0x04, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x04, new TypeHolder[] {
                         data.read(0),
@@ -194,10 +199,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x17 /* VEHICLE SPAWN */, new PacketTranslator() {
+        // vehicle spawn
+        addTranslator(0x17, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x17, new TypeHolder[] {
                         data.read(0),
@@ -212,10 +218,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x15 /* PICKUP SPAWN */, new PacketTranslator() {
+        // item spawn
+        addTranslator(0x15, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) throws IOException {
 
                 PacketData vehicleSpawn = PacketUtil.createPacket(0x17, new TypeHolder[] {
                         data.read(0),
@@ -252,10 +259,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(24 /* MOB SPAWN */, new PacketTranslator() {
+        // mob spawn
+        addTranslator(0x18, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) throws IOException {
                 session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());
 
                 byte type = data.read(Type.BYTE, 1);
@@ -277,10 +285,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0xFA /* CUSTOM PAYLOAD */, new PacketTranslator() {
+        // custom payload
+        addTranslator(0xFA, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) throws IOException {
                 String channel = data.read(Type.STRING, 0);
                 byte[] payload = data.read(Type.SHORT_BYTE_ARRAY, 1);
 
@@ -318,10 +327,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x3E /* SOUND LEVEL */, new PacketTranslator() {
+        // level sound
+        addTranslator(0x3E, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 String soundName = data.read(Type.STRING, 0);
                 String newSoundName = soundRemapper.getNewSoundName(soundName);
 
@@ -339,10 +349,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x3D /* DOOR CHANGE */, new PacketTranslator() {
+        // door change
+        addTranslator(0x3D, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x3D, new TypeHolder[]{
                         data.read(0),
@@ -355,10 +366,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x38 /* CHUNK BULK */, new PacketTranslator() {
+        // chunk bulk
+        addTranslator(0x38, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 V1_3_4ChunkBulk oldChunk = data.read(Type.V1_3CHUNK_BULK, 0);
 
                 oldChunk.setSkylight(session.getUserData().getDimension() == 0);

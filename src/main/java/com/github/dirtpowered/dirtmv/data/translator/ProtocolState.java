@@ -27,7 +27,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public enum ProtocolState {
-    PING(1), HANDSHAKE(-1), LOGIN(2), PLAY(0);
+    STATUS(1), HANDSHAKE(-1), LOGIN(2), PLAY(0), PRE_NETTY(-999);
 
     @Getter
     private int stateId;

@@ -42,10 +42,10 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
         });
 
         // server info request
-        addPacket(0x00, ProtocolState.PING, PacketDirection.CLIENT_TO_SERVER, new DataType[0]);
+        addPacket(0x00, ProtocolState.STATUS, PacketDirection.CLIENT_TO_SERVER, new DataType[0]);
 
         // ping
-        addPacket(0x01, ProtocolState.PING, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+        addPacket(0x01, ProtocolState.STATUS, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
                 BaseProtocol.LONG // time
         });
 

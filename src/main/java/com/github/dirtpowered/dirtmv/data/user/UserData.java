@@ -44,6 +44,8 @@ public class UserData {
     private int vehicleEntityId;
     private EntityTracker entityTracker;
     private ProtocolState protocolState;
+    private String address;
+    private int port;
 
     public UserData() {
         this.clientVersion = MinecraftVersion.B1_5;

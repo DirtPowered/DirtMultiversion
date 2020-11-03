@@ -44,30 +44,29 @@ public class ProtocolRelease22To17 extends ServerProtocol {
     @Override
     public void registerTranslators() {
 
-        addTranslator(0x01 /* LOGIN */, new PacketTranslator() {
-            @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                if (dir == PacketDirection.CLIENT_TO_SERVER) {
-                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
-                            set(Type.INT, 17), // protocol version
-                            data.read(1),
-                            data.read(2),
-                            data.read(3),
-                            data.read(4),
-                            data.read(5),
-                            data.read(6),
-                            data.read(7),
-                    });
-                }
+        // login
+        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
-                return data;
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                return PacketUtil.createPacket(0x01, new TypeHolder[]{
+                        set(Type.INT, 17), // protocol version
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                });
             }
         });
 
-        addTranslator(0x0F /* BLOCK PLACE */, new PacketTranslator() {
+        // block place
+        addTranslator(0x0F, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x0F, new TypeHolder[]{
                         data.read(0),
@@ -79,10 +78,11 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x66 /* WINDOW CLICK */, new PacketTranslator() {
+        // window click
+        addTranslator(0x66, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x66, new TypeHolder[]{
                         data.read(0),
@@ -95,10 +95,11 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x6B /* CREATIVE SET SLOT */, new PacketTranslator() {
+        // creative set slot
+        addTranslator(0x6B, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x6B, new TypeHolder[]{
                         data.read(0),
@@ -107,10 +108,11 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x2B /* SET EXPERIENCE */, new PacketTranslator() {
+        // set experience
+        addTranslator(0x2B, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 float exp = 0.0F; // TODO convert progress
 
                 short level = data.read(Type.BYTE, 1).shortValue();
@@ -124,10 +126,11 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x67 /* SET SLOT */, new PacketTranslator() {
+        // set slot
+        addTranslator(0x67, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 ItemStack item = data.read(Type.V1_3B_ITEM, 2);
 
                 if (item != null && LegacyItemList.isEnchantable(item.getItemId()))
@@ -141,10 +144,11 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x68, /* WINDOW ITEMS */ new PacketTranslator() {
+        // window items
+        addTranslator(0x68, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 ItemStack[] items = data.read(Type.V1_3B_ITEM_ARRAY, 1);
 
                 for (ItemStack item : items) {

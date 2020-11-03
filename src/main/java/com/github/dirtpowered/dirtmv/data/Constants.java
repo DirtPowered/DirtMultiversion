@@ -30,4 +30,6 @@ public class Constants {
 
     public static final int SERVER_PORT = 25565;
     public static final int REMOTE_PORT = 25567;
+
+    public static final boolean DEBUG = false;
 }

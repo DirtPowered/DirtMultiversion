@@ -29,5 +29,5 @@ import java.io.IOException;
 
 public abstract class PacketTranslator {
 
-    public abstract PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException;
+    public abstract PacketData translate(ServerSession session, PacketData data) throws IOException;
 }

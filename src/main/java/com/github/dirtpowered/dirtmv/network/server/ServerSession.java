@@ -31,6 +31,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
@@ -102,22 +103,33 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         PacketData target = packet;
 
         for (ServerProtocol protocol : protocols) {
-            PacketTranslator translator = protocol.getTranslatorFor(target.getOpCode());
+            boolean isNetty = userData.getClientVersion().isNettyProtocol();
+            ProtocolState state = isNetty ? userData.getProtocolState() : ProtocolState.PRE_NETTY;
+
+            if (!protocol.getFrom().isNettyProtocol()) {
+                state = ProtocolState.PRE_NETTY;
+            }
+
+            PacketTranslator translator = protocol.getTranslatorFor(target.getOpCode(), state, direction);
+
             String protocolName = protocol.getClass().getSimpleName();
 
             if (translator != null) {
                 if (from == null || from != protocol.getFrom()) {
-                    target = translator.translate(this, direction, target);
+                    target = translator.translate(this, target);
 
                     String namedOpCode = PreNettyPacketNames.getPacketName(packet.getOpCode());
                     Preconditions.checkNotNull(target, "%s returned null while translating %s", protocolName, namedOpCode);
 
                     if (target.getOpCode() == -1) {
-                        log.debug("cancelling {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
+                        if (state == ProtocolState.PRE_NETTY && Constants.DEBUG) {
+                            log.debug("cancelling {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
+                        }
                         return;
                     }
-
-                    log.debug("translating {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
+                    if (state == ProtocolState.PRE_NETTY && Constants.DEBUG) {
+                        log.debug("translating {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
+                    }
                 }
             }
         }
@@ -196,6 +208,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         if (message == null || message.isEmpty()) {
             channel.close();
         } else {
+            log.warn("disconnected with message: {}", message);
             sendPacket(PacketUtil.createPacket(
                     0xFF,
 

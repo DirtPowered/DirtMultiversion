@@ -24,7 +24,6 @@ package com.github.dirtpowered.dirtmv.network.server.codec.netty;
 
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
-import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
@@ -65,7 +64,6 @@ public class NettyPacketDecoder extends ByteToMessageDecoder {
         ProtocolState protocolState = userData.getProtocolState();
 
         PacketData packet = read1_7Packet(protocolState, inputBuffer, packetDirection, i);
-        handleProtocolState(protocolState, packet);
 
         int readableBytes = byteBuf.readableBytes();
 
@@ -74,21 +72,6 @@ public class NettyPacketDecoder extends ByteToMessageDecoder {
             log.warn("skipping {} bytes for packet id: {}, direction: {}", readableBytes, i, packetDirection);
         } else {
             list.add(packet);
-        }
-    }
-
-    private void handleProtocolState(ProtocolState protocolState, PacketData data) {
-        int packetId = data.getOpCode();
-
-        switch (protocolState) {
-            case HANDSHAKE:
-                ProtocolState nextState = ProtocolState.fromId(data.read(Type.VAR_INT, 3));
-                userData.setProtocolState(nextState);
-                break;
-            case LOGIN:
-                if (packetId == 0x02 && packetDirection == PacketDirection.SERVER_TO_CLIENT)
-                    userData.setProtocolState(ProtocolState.PLAY);
-                break;
         }
     }
 

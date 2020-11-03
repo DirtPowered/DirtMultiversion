@@ -40,15 +40,29 @@ public class ProtocolBeta14To13 extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
-        // client <-> server
-        addTranslator(0x01 /* LOGIN */, new PacketTranslator() {
+        // login
+        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
-                        dir == PacketDirection.CLIENT_TO_SERVER ? set(Type.INT, 13) : data.read(0),
+                        set(Type.INT, 13),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                });
+            }
+        });
 
+        // login
+        addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x01, new TypeHolder[]{
+                        data.read(0),
                         data.read(1),
                         data.read(2),
                         data.read(3),

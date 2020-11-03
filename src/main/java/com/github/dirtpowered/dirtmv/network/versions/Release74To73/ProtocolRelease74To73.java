@@ -20,10 +20,11 @@ public class ProtocolRelease74To73 extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
-        addTranslator(0x02 /* HANDSHAKE */, new PacketTranslator() {
+        // handshake
+        addTranslator(0x02, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 if (data.getObjects().length < 3) {
                     return new PacketData(-1);
                 }
@@ -37,20 +38,22 @@ public class ProtocolRelease74To73 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x2C /* ENTITY ATTRIBUTES */, new PacketTranslator() {
+        // entity attributes/properties
+        addTranslator(0x2C, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 //TODO: Translate
                 return new PacketData(-1);
             }
         });
 
-        addTranslator(0xFF /* KICK DISCONNECT */, new PacketTranslator() {
+        // kick disconnect
+        addTranslator(0xFF, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 if (session.getUserData().getPreNettyProtocolState() != PreNettyProtocolState.STATUS)
                     return data;
 

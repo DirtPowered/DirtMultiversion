@@ -42,10 +42,11 @@ public class ProtocolRelease60To51 extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
-        addTranslator(0x02 /* HANDSHAKE */, new PacketTranslator() {
+        // handshake
+        addTranslator(0x02, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 if (data.getObjects().length < 3) {
                     return new PacketData(-1);
                 }
@@ -59,10 +60,11 @@ public class ProtocolRelease60To51 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x64 /* OPEN WINDOW */, new PacketTranslator() {
+        // open window
+        addTranslator(0x64, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x64, new TypeHolder[]{
                         data.read(0),
@@ -74,39 +76,43 @@ public class ProtocolRelease60To51 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x68 /* WINDOW ITEMS */, new PacketTranslator() {
+        // window items
+        addTranslator(0x68, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 ItemStack[] itemArray = (ItemStack[]) data.read(1).getObject();
                 // TODO: Inventory cache
                 return data;
             }
         });
 
-        addTranslator(0x67 /* SET SLOT */, new PacketTranslator() {
+        // set slot
+        addTranslator(0x67, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 ItemStack item = (ItemStack) data.read(2).getObject();
-                // TODO: Inventory cache
+                // TODO: Inventowry cache
                 return data;
             }
         });
 
-        addTranslator(0x66 /* WINDOW CLICK */, new PacketTranslator() {
+        // window click
+        addTranslator(0x66, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 // TODO: fix inventory issues
                 return data;
             }
         });
 
-        addTranslator(0x17 /* VEHICLE SPAWN */, new PacketTranslator() {
+        // vehicle spawn
+        addTranslator(0x17, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 Motion motion = data.read(Type.MOTION, 7);
 
                 int throwerId = motion.getThrowerId();

@@ -43,10 +43,11 @@ public class ProtocolBeta17to14 extends ServerProtocol {
     @Override
     public void registerTranslators() {
 
-        addTranslator(0xFE /* PING REQUEST */, new PacketTranslator() {
+        // ping request
+        addTranslator(0xFE, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) throws IOException {
 
                 PacketData packetData = PacketUtil.createPacket(0xFF, new TypeHolder[]{
                         set(Type.STRING, "A Minecraft Server§0§20")
@@ -57,38 +58,45 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x01 /* LOGIN */, new PacketTranslator() {
+        // login
+        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                if (dir == PacketDirection.CLIENT_TO_SERVER) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
-                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
-                            set(Type.INT, 14), // INT
-                            data.read(1), // STRING
-                            data.read(2), // LONG
-                            data.read(4) // BYTE
-                    });
-                } else {
-
-                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
-                            data.read(0), // INT - entityId
-                            data.read(1), // STRING - empty
-                            data.read(2), // LONG - world seed
-                            set(Type.INT, 0), // INT - gameMode
-                            data.read(3), // BYTE - dimension
-                            set(Type.BYTE, 0), // BYTE - difficulty
-                            set(Type.BYTE, -128), // BYTE - world height
-                            set(Type.BYTE, 20), // BYTE - maxPlayers
-                    });
-                }
+                return PacketUtil.createPacket(0x01, new TypeHolder[]{
+                        set(Type.INT, 14), // INT
+                        data.read(1), // STRING
+                        data.read(2), // LONG
+                        data.read(4) // BYTE
+                });
             }
         });
 
-        addTranslator(0x08 /* UPDATE HEALTH */, new PacketTranslator() {
+        // login
+        addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x01, new TypeHolder[]{
+                        data.read(0), // INT - entityId
+                        data.read(1), // STRING - empty
+                        data.read(2), // LONG - world seed
+                        set(Type.INT, 0), // INT - gameMode
+                        data.read(3), // BYTE - dimension
+                        set(Type.BYTE, 0), // BYTE - difficulty
+                        set(Type.BYTE, -128), // BYTE - world height
+                        set(Type.BYTE, 20), // BYTE - maxPlayers
+                });
+            }
+        });
+
+        // update health
+        addTranslator(0x08, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x08, new TypeHolder[]{
                         data.read(0),
@@ -99,36 +107,37 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x09 /* RESPAWN */, new PacketTranslator() {
+        // respawn
+        addTranslator(0x09, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-
-                PacketData packetData;
-
-                if (dir == PacketDirection.CLIENT_TO_SERVER) {
-                    packetData = PacketUtil.createPacket(0x09, new TypeHolder[]{
-                            data.read(0),
-
-                    });
-                } else {
-                    packetData = PacketUtil.createPacket(0x09, new TypeHolder[]{
-                            data.read(0),
-                            set(Type.BYTE, 0),
-                            set(Type.BYTE, 0),
-                            set(Type.SHORT, 128),
-                            set(Type.LONG, 0),
-                    });
-                }
-
-                return packetData;
+            public PacketData translate(ServerSession session, PacketData data) {
+                return PacketUtil.createPacket(0x09, new TypeHolder[]{
+                        data.read(0),
+                });
             }
         });
 
-        addTranslator(0x64 /* OPEN WINDOW */, new PacketTranslator() {
+        // respawn
+        addTranslator(0x09, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
+                return PacketUtil.createPacket(0x09, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.BYTE, 0),
+                        set(Type.BYTE, 0),
+                        set(Type.SHORT, 128),
+                        set(Type.LONG, 0),
+                });
+            }
+        });
+
+        // open window
+        addTranslator(0x64, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x64, new TypeHolder[]{
                         data.read(0),
@@ -139,10 +148,11 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x46 /* GAME-MODE / WEATHER */, new PacketTranslator() {
+        // game state
+        addTranslator(0x46, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x46, new TypeHolder[]{
                         data.read(0),
@@ -151,10 +161,11 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             }
         });
 
-        addTranslator(0x13 /* ENTITY ACTION */, new PacketTranslator() {
+        // entity action
+        addTranslator(0x13, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
                 byte state = data.read(Type.BYTE, 1);
 
                 if (state == 5 || state == 4) { // sprinting (stop/start)
