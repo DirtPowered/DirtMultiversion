@@ -352,6 +352,80 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x28 SC 0x1C (entity metadata)
+        addTranslator(0x28, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x1C, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.V1_7R_METADATA, data.read(Type.V1_4R_METADATA, 1))
+                });
+            }
+        });
+
+        // 0x46 SC 0x2B (game event)
+        addTranslator(0x46, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int reason = data.read(Type.BYTE, 0);
+
+                if (reason == 1) {
+                    reason = 2;
+                } else if (reason == 2) {
+                    reason = 1;
+                }
+
+                return PacketUtil.createPacket(0x2B, new TypeHolder[] {
+                        set(Type.UNSIGNED_BYTE, reason),
+                        set(Type.FLOAT, data.read(Type.BYTE, 1).floatValue())
+                });
+            }
+        });
+
+        // 0x64 SC 0x2D (open window) // TODO: optional horse data
+        addTranslator(0x64, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x2D, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        set(Type.V1_7_STRING, data.read(Type.STRING, 2)),
+                        data.read(3),
+                        data.read(4)
+                });
+            }
+        });
+
+        // 0x3C SC 0x27 (explosion)
+        addTranslator(0x3C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x27, new TypeHolder[] {
+                        set(Type.FLOAT, data.read(Type.DOUBLE, 0).floatValue()),
+                        set(Type.FLOAT, data.read(Type.DOUBLE, 1).floatValue()),
+                        set(Type.FLOAT, data.read(Type.DOUBLE, 2).floatValue()),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                });
+            }
+        });
+
+        // 0x83 SC 0x34 (map data) // TODO: translate
+        addTranslator(0x83, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
+        // 0x26 SC 0x1A (entity status)
+        addTranslator(0x26, 0x1A, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
         // 0x23 SC 0x19 (entity head look)
         addTranslator(0x23, 0x19, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
@@ -397,6 +471,15 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         // 0x22 SC 0x18 (entity teleport)
         addTranslator(0x22, 0x18, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
+        // 0x16 SC 0x0D (item collect)
+        addTranslator(0x16, 0x0D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
+        // 0x67 SC 0x2F (inventory set slot)
+        addTranslator(0x67, 0x2F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
+        // 0x68 SC 0x30 (inventory window items)
+        addTranslator(0x68, 0x30, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
         // 0x01 CS 0x03 (chat)
         addTranslator(0x01, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
@@ -423,14 +506,19 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
-        // 0x16 SC 0x0D (item collect)
-        addTranslator(0x16, 0x0D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        // 0x02 SC 0x07 (use entity)
+        addTranslator(0x02, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
-        // 0x67 SC 0x2F (inventory set slot)
-        addTranslator(0x67, 0x2F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
 
-        // 0x68 SC 0x30 (inventory window items)
-        addTranslator(0x68, 0x30, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+                return PacketUtil.createPacket(0x07, new TypeHolder[] {
+                        set(Type.INT, 0),
+                        data.read(0),
+                        data.read(1)
+                });
+            }
+        });
 
         // 0x09 CS 0x10 (held slot change)
         addTranslator(0x09, 0x10, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
