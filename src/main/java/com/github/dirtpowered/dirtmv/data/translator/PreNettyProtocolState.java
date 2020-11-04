@@ -23,5 +23,5 @@
 package com.github.dirtpowered.dirtmv.data.translator;
 
 public enum PreNettyProtocolState {
-    STATUS, IN_GAME
+    STATUS, LOGIN, IN_GAME
 }

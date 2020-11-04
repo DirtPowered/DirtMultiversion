@@ -186,6 +186,21 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // login kick disconnect
+        addTranslator(0xFF, ProtocolState.LOGIN, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                String message = data.read(Type.STRING, 0);
+                log.debug(message);
+
+                return PacketUtil.createPacket(0x00, new TypeHolder[] {
+                        set(Type.V1_7_STRING, ChatUtils.legacyToJsonString(message))
+                });
+            }
+        });
+
         // pre-netty login
         addTranslator(0x01, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
@@ -676,6 +691,9 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x27 CS 0x1B (entity attach)
+        addTranslator(0x27, 0x1B, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
         // 0x3D SC 0x28 (door change)
         addTranslator(0x3D, 0x28, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
@@ -765,9 +783,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
         // 0x68 SC 0x30 (inventory window items)
         addTranslator(0x68, 0x30, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // 0x27 CS 0x1B (entity attach)
-        addTranslator(0x27, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x01 CS 0x03 (chat)
         addTranslator(0x01, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {

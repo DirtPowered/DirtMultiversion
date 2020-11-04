@@ -72,6 +72,9 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
             case 0x06 /* spawn position */:
                 userData.setPreNettyProtocolState(PreNettyProtocolState.IN_GAME);
                 break;
+            default:
+                userData.setPreNettyProtocolState(PreNettyProtocolState.LOGIN);
+                break;
         }
     }
 
