@@ -193,7 +193,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 String message = data.read(Type.STRING, 0);
-                log.debug(message);
 
                 return PacketUtil.createPacket(0x00, new TypeHolder[] {
                         set(Type.V1_7_STRING, ChatUtils.legacyToJsonString(message))
@@ -691,7 +690,42 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
-        // 0x27 CS 0x1B (entity attach)
+        // 0x12 SC 0x0B (entity animation)
+        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int animationType = data.read(Type.BYTE, 1);
+
+                switch (animationType) {
+                    case 1:
+                        animationType = 0;
+                        break;
+                    case 2:
+                        animationType = 1;
+                        break;
+                    case 3:
+                        animationType = 2;
+                        break;
+                    case 5:
+                        animationType = 3;
+                        break;
+                    case 6:
+                        animationType = 4;
+                        break;
+                    case 7:
+                        animationType = 5;
+                        break;
+                }
+
+                return PacketUtil.createPacket(0x0B, new TypeHolder[] {
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        set(Type.UNSIGNED_BYTE, animationType)
+                });
+            }
+        });
+
+        // 0x27 SC 0x1B (entity attach)
         addTranslator(0x27, 0x1B, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x3D SC 0x28 (door change)
