@@ -74,8 +74,17 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0xFE, new TypeHolder[]{
-                        set(Type.BYTE, 1)
+                String address = "localhost";
+                int port = 25565;
+
+                return PacketUtil.createPacket(0xFE, new TypeHolder[] {
+                        set(Type.UNSIGNED_BYTE, 1),
+                        set(Type.UNSIGNED_BYTE, 0xFA),
+                        set(Type.STRING, "MC|PingHost"),
+                        set(Type.SHORT, 3 + 2 * address.length() + 4),
+                        set(Type.BYTE, (byte) 78),
+                        set(Type.STRING, address),
+                        set(Type.INT, port)
                 });
             }
         });
