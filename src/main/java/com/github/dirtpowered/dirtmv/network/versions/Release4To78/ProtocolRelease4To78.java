@@ -537,7 +537,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x09, new TypeHolder[] {
-                        set(Type.BYTE, data.read(Type.SHORT, 0))
+                        set(Type.BYTE, data.read(Type.SHORT, 0).byteValue())
                 });
             }
         });
@@ -627,6 +627,58 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x3F SC 0x2A (world particles)
+        addTranslator(0x3F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x2A, new TypeHolder[] {
+                        set(Type.V1_7_STRING, data.read(Type.STRING, 0)),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        data.read(8),
+                });
+            }
+        });
+
+        // 0x85 SC 0x36 (open sign editor)
+        addTranslator(0x85, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x36, new TypeHolder[] {
+                        data.read(1),
+                        data.read(2),
+                        data.read(3)
+                });
+            }
+        });
+
+        // 0x11 SC 0x0A (use bed)
+        addTranslator(0x11, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0A, new TypeHolder[] {
+                        data.read(0),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                });
+            }
+        });
+
+        // 0x3D SC 0x28 (door change)
+        addTranslator(0x3D, 0x28, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
         // 0x69 SC 0x31 (update progress bar -> window property)
         addTranslator(0x69, 0x31, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
@@ -714,14 +766,8 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         // 0x68 SC 0x30 (inventory window items)
         addTranslator(0x68, 0x30, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
-        // 0x11 CS 0x0A (use bed)
-        addTranslator(0x11, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
         // 0x27 CS 0x1B (entity attach)
         addTranslator(0x27, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // 0x3D CS 0x28 (door change)
-        addTranslator(0x3D, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x01 CS 0x03 (chat)
         addTranslator(0x01, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
