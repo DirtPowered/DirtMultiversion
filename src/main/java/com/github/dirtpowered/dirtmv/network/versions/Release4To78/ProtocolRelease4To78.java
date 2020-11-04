@@ -208,9 +208,10 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                String message = ChatUtils.fixTranslationComponent(data.read(Type.STRING, 0));
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
-                        set(Type.V1_7_STRING, data.read(Type.STRING, 0))
+                        set(Type.V1_7_STRING, message)
                 });
             }
         });
@@ -292,7 +293,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                         data.read(0),
                         data.read(1),
                         data.read(2),
-                        set(Type.V1_7_STRING, data.read(Type.STRING, 3))
+                        set(Type.V1_7_STRING, data.read(Type.STRING, 4))
                 });
             }
         });
@@ -561,6 +562,22 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x37 SC 0x25 (block break animation)
+        addTranslator(0x37, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x25, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                });
+            }
+        });
+
         // 0x69 SC 0x31 (update progress bar -> window property)
         addTranslator(0x69, 0x31, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
@@ -674,9 +691,12 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                int status = data.read(Type.BYTE, 0);
 
-                if (data.read(Type.BYTE, 0) == 0x00) {
-                    return PacketUtil.createPacket(0xCD, data.getObjects());
+                if (status == 0) {
+                    return PacketUtil.createPacket(0xCD, new TypeHolder[]{
+                            set(Type.BYTE, 1) // perform respawn
+                    });
                 } else {
                     return new PacketData(-1);
                 }
