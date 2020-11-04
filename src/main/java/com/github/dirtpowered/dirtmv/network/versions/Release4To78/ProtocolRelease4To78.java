@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
@@ -45,8 +46,12 @@ import java.util.UUID;
 @Log4j2
 public class ProtocolRelease4To78 extends ServerProtocol {
 
+    private SoundRemapper soundRemapper;
+
     public ProtocolRelease4To78() {
         super(MinecraftVersion.R1_7_2, MinecraftVersion.R1_6_4);
+
+        soundRemapper = new SoundRemapper("1_6To1_7SoundMappings");
     }
 
     @Override
@@ -434,9 +439,14 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                String soundName = data.read(Type.STRING, 0);
+                String newSoundName = soundRemapper.getNewSoundName(soundName);
+
+                if (newSoundName.isEmpty())
+                    return new PacketData(-1);
 
                 return PacketUtil.createPacket(0x29, new TypeHolder[] {
-                        set(Type.STRING, ""), // TODO: sound mappings
+                        set(Type.V1_7_STRING, soundName),
                         data.read(1),
                         data.read(2),
                         data.read(3),
@@ -502,17 +512,72 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x19 SC 0x10 (spawn painting)
+        addTranslator(0x19, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x10, new TypeHolder[] {
+                      set(Type.VAR_INT, data.read(Type.INT, 0)),
+                      set(Type.V1_7_STRING, data.read(Type.STRING, 1)),
+                      data.read(2),
+                      data.read(3),
+                      data.read(4),
+                      data.read(5),
+                });
+            }
+        });
+
+        // 0x10 SC 0x09 (held slot change)
+        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x09, new TypeHolder[] {
+                        set(Type.BYTE, data.read(Type.SHORT, 0))
+                });
+            }
+        });
+
+        // 0xCB SC 0x3A (tab complete)
+        addTranslator(0xCB, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                String arr = data.read(Type.STRING,0);
+                String[] commands = arr.split( "\0" );
+
+                TypeHolder[] types = new TypeHolder[commands.length + 1];
+                types[0] = set(Type.VAR_INT, commands.length);
+
+                for (int i = 0; i < commands.length; i++) {
+                    String command = commands[i];
+                    types[i + 1] = set(Type.V1_7_STRING, command);
+                }
+
+                return PacketUtil.createPacket(0x3A, types);
+            }
+        });
+
+        // 0x69 SC 0x31 (update progress bar -> window property)
+        addTranslator(0x69, 0x31, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
+        // 0x65 SC 0x2E (window close)
+        addTranslator(0x65, 0x2E, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
+        // 0x29 SC 0x1D (entity effect)
+        addTranslator(0x29, 0x1D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
+        // 0x2A SC 0x1E (clear entity effect)
+        addTranslator(0x2A, 0x1E, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
         // 0x84 SC 0x35 (update tile entity)
-        addTranslator(0x84, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x84, 0x35, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x6A SC 0x32 (inventory transaction)
         addTranslator(0x6A, 0x32, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // 0x29 SC 0x1D (entity effect)
-        addTranslator(0x29, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // 0x2A SC 0x1E (clear entity effect)
-        addTranslator(0x2A, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0xCA SC 0x39 (player abilities)
         addTranslator(0xCA, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
@@ -586,17 +651,11 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         // 0x11 CS 0x0A (use bed)
         addTranslator(0x11, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
-        // 0x19 CS 0x10 (spawn painting)
-        addTranslator(0x19, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
         // 0x27 CS 0x1B (entity attach)
         addTranslator(0x27, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x3D CS 0x28 (door change)
         addTranslator(0x3D, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // 0x69 CS 0x31 (update progress bar)
-        addTranslator(0x69, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x01 CS 0x03 (chat)
         addTranslator(0x01, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
@@ -634,6 +693,18 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                         set(Type.INT, 0),
                         data.read(0),
                         data.read(1)
+                });
+            }
+        });
+
+        // 0x14 CS 0xCB (tab complete)
+        addTranslator(0x14, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0xCB, new TypeHolder[] {
+                        set(Type.STRING, data.read(Type.V1_7_STRING, 0))
                 });
             }
         });

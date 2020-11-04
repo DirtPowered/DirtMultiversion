@@ -1,0 +1,15 @@
+{
+  "sound_replacements": [
+    {
+      "random.breath": "",
+      "damage.fallbig": "game.neutral.hurt.fall.big",
+      "damage.fallsmall": "game.neutral.hurt.fall.small",
+      "damage.hit": "game.neutral.hurt",
+      "liquid.splash": "game.neutral.swim.splash",
+      "liquid.swim": "game.neutral.swim",
+      "random.classic_hurt": "game.neutral.hurt",
+      "random.fuse": "game.tnt.primed",
+      "random.glass": "dig.glass"
+    }
+  ]
+}

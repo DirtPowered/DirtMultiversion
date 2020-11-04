@@ -156,7 +156,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x46, new TypeHolder[]{
                         data.read(0),
-                        set(Type.BYTE, 0)
+                        set(Type.BYTE, (byte) 0)
                 });
             }
         });

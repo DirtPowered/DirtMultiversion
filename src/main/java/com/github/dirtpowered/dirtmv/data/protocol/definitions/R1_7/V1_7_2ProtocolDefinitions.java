@@ -178,6 +178,11 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.BYTE
         });
 
+        // tab complete
+        addPacket(0x14, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[] {
+                V1_7_2RProtocol.STRING
+        });
+
         // client settings
         addPacket(0x15, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
                 V1_7_2RProtocol.STRING,
