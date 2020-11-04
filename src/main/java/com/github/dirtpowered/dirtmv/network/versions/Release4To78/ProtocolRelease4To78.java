@@ -578,6 +578,55 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0xCE SC 0x3B (set objective)
+        addTranslator(0xCE, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x3B, new TypeHolder[] {
+                        set(Type.V1_7_STRING, data.read(Type.STRING, 0)),
+                        set(Type.V1_7_STRING, data.read(Type.STRING, 1)),
+                        data.read(2)
+                });
+            }
+        });
+
+        // 0xCF SC 0x3C (update score)
+        addTranslator(0xCF, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                String itemName = data.read(Type.STRING, 0);
+                int action = data.read(Type.BYTE, 1);
+
+                TypeHolder[] types = new TypeHolder[action != 1 ? 4 : 2];
+
+                types[0] = set(Type.V1_7_STRING, itemName);
+                types[1] = set(Type.BYTE, (byte) action);
+
+                if (action != 1) {
+                    types[2] = set(Type.V1_7_STRING, data.read(Type.STRING, 2));
+                    types[3] = data.read(3);
+                }
+
+                return PacketUtil.createPacket(0x3C, types);
+            }
+        });
+
+        // 0xD0 SC 0x3D (set display objective)
+        addTranslator(0xD0, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x3D, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.V1_7_STRING, data.read(Type.STRING, 1))
+                });
+            }
+        });
+
         // 0x69 SC 0x31 (update progress bar -> window property)
         addTranslator(0x69, 0x31, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
