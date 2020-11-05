@@ -40,71 +40,82 @@ public class ProtocolRelease23To22 extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
-        addTranslator(0x01 /* LOGIN */, new PacketTranslator() {
 
+        // login
+        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
-                if (dir == PacketDirection.CLIENT_TO_SERVER) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
-                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
-                            set(Type.INT, 22), // protocol version
-                            data.read(1),
-                            data.read(2),
-                            data.read(4),
-                            data.read(5),
-                            data.read(6),
-                            data.read(7),
-                            data.read(8),
-                    });
-                } else {
-
-                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
-                            data.read(0),
-                            data.read(1),
-                            data.read(2),
-                            set(Type.STRING, "NORMAL"), // world type
-                            data.read(3),
-                            data.read(4),
-                            data.read(5),
-                            data.read(6),
-                            data.read(7),
-                    });
-                }
+                return PacketUtil.createPacket(0x01, new TypeHolder[]{
+                        set(Type.INT, 22), // protocol version
+                        data.read(1),
+                        data.read(2),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        data.read(8),
+                });
             }
         });
 
-        addTranslator(0x09 /* RESPAWN */, new PacketTranslator() {
-
+        // login
+        addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
-                if (dir == PacketDirection.CLIENT_TO_SERVER) {
-
-                    return PacketUtil.createPacket(0x09, new TypeHolder[]{
-                            data.read(0),
-                            data.read(1),
-                            data.read(2),
-                            data.read(3),
-                            data.read(4),
-                    });
-                } else {
-
-                    return PacketUtil.createPacket(0x09, new TypeHolder[]{
-                            data.read(0),
-                            data.read(1),
-                            data.read(2),
-                            data.read(3),
-                            data.read(4),
-                            set(Type.STRING, "NORMAL"), // world type
-                    });
-                }
+                return PacketUtil.createPacket(0x01, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        set(Type.STRING, "NORMAL"), // world type
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                });
             }
         });
 
-        addTranslator(0xFA /* CUSTOM PAYLOAD */, new PacketTranslator() {
+        // respawn
+        addTranslator(0x09, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x09, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                });
+            }
+        });
+
+        // respawn
+        addTranslator(0x09, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x09, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.STRING, "NORMAL"), // world type
+                });
+            }
+        });
+
+        // custom payload
+        addTranslator(0xFA, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
                 return new PacketData(-1); // cancel packet
             }
         });

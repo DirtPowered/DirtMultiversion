@@ -20,8 +20,36 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.translator;
+package com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping;
 
-public enum PreNettyProtocolState {
-    STATUS, LOGIN, IN_GAME
+import com.google.gson.Gson;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+@Data
+public class ServerPing {
+    private String description;
+    private Players players;
+    private Version version;
+    private String favicon;
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
+    }
+
+    @Getter
+    @Setter
+    public static class Players {
+        private int max;
+        private int online;
+    }
+
+    @Getter
+    @Setter
+    public static class Version {
+        private String name;
+        private int protocol;
+    }
 }

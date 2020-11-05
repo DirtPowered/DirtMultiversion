@@ -26,6 +26,8 @@ public interface PacketOutput {
 
     void writeInt(int intValue);
 
+    void writeVarInt(int intValue);
+
     void writeByte(int byteValue);
 
     void writeBoolean(boolean booleanValue);

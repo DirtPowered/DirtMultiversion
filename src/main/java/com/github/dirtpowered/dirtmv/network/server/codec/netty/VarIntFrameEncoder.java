@@ -20,8 +20,26 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.translator;
+package com.github.dirtpowered.dirtmv.network.server.codec.netty;
 
-public enum PreNettyProtocolState {
-    STATUS, LOGIN, IN_GAME
+import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageEncoder;
+
+import java.util.List;
+
+public class VarIntFrameEncoder extends MessageToMessageEncoder<ByteBuf> {
+
+    @Override
+    protected void encode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) {
+        ByteBuf packetLengthHeader = ctx.alloc().buffer(5);
+
+        NettyOutputWrapper outputWrapper = new NettyOutputWrapper(packetLengthHeader);
+
+        outputWrapper.writeVarInt(byteBuf.readableBytes());
+
+        list.add(packetLengthHeader);
+        list.add(byteBuf.retain());
+    }
 }

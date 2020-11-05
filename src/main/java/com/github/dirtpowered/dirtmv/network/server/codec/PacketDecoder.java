@@ -43,7 +43,7 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
     private PacketDirection packetDirection;
     private UserData userData;
 
-    PacketDecoder(PacketDirection packetDirection, UserData userData) {
+    public PacketDecoder(PacketDirection packetDirection, UserData userData) {
         this.packetDirection = packetDirection;
         this.userData = userData;
     }
@@ -71,6 +71,9 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
                 break;
             case 0x06 /* spawn position */:
                 userData.setPreNettyProtocolState(PreNettyProtocolState.IN_GAME);
+                break;
+            default:
+                userData.setPreNettyProtocolState(PreNettyProtocolState.LOGIN);
                 break;
         }
     }

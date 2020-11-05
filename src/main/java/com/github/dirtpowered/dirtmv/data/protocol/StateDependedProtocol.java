@@ -20,38 +20,39 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.user;
+package com.github.dirtpowered.dirtmv.data.protocol;
 
-import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.data.entity.EntityTracker;
-import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
-import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 
-import javax.crypto.SecretKey;
+import java.util.HashMap;
+import java.util.Map;
 
-@Data
-public class UserData {
-    private MinecraftVersion clientVersion;
-    private boolean protocolDetected;
-    private PacketData proxyRequest;
-    private SecretKey secretKey;
-    private String username;
-    private PreNettyProtocolState preNettyProtocolState;
-    private int dimension;
-    private int entityId;
-    private int vehicleEntityId;
-    private EntityTracker entityTracker;
-    private ProtocolState protocolState;
-    private String address;
-    private int port;
+public abstract class StateDependedProtocol {
 
-    public UserData() {
-        this.clientVersion = MinecraftVersion.B1_5;
-        this.protocolDetected = false;
-        this.preNettyProtocolState = PreNettyProtocolState.STATUS;
-        this.protocolState = ProtocolState.HANDSHAKE;
-        this.entityTracker = new EntityTracker();
+    private Map<PacketRegObj, DataType[]> packets = new HashMap<>();
+
+    public StateDependedProtocol() {
+        registerPackets();
+    }
+
+    public abstract void registerPackets();
+
+    protected void addPacket(int packetId, ProtocolState protocolState, PacketDirection packetDirection, DataType[] instructions) {
+        packets.put(new PacketRegObj(packetId, protocolState, packetDirection), instructions);
+    }
+
+    public DataType[] getInstruction(int packetId, ProtocolState protocolState, PacketDirection packetDirection) {
+        return packets.get(new PacketRegObj(packetId, protocolState, packetDirection));
+    }
+
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    private static class PacketRegObj {
+        private int packetId;
+        private ProtocolState protocolState;
+        private PacketDirection packetDirection;
     }
 }

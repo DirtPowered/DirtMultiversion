@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.network.server.codec;
 
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
+import com.github.dirtpowered.dirtmv.network.server.codec.netty.DetectionHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -42,10 +43,16 @@ public class PipelineFactory extends ChannelInitializer {
 
     @Override
     protected void initChannel(Channel channel) {
+        if (packetDirection == PacketDirection.CLIENT_TO_SERVER) {
+            channel.pipeline()
+                    .addFirst(ChannelConstants.DETECTION_HANDLER, new DetectionHandler(userData));
+        } else {
+            channel.pipeline()
+                    .addLast(ChannelConstants.LEGACY_DECODER, new PacketDecoder(packetDirection, userData))
+                    .addLast(ChannelConstants.LEGACY_ENCODER, new PacketEncoder());
+        }
+
         channel.pipeline()
-                .addLast(ChannelConstants.LEGACY_PING, new LegacyPingVersionHandler(userData))
-                .addLast(ChannelConstants.LEGACY_DECODER, new PacketDecoder(packetDirection, userData))
-                .addLast(ChannelConstants.LEGACY_ENCODER, new PacketEncoder())
                 .addLast(ChannelConstants.TIMEOUT_HANDLER, new ReadTimeoutHandler(TIMEOUT));
     }
 }

@@ -40,34 +40,30 @@ public class ProtocolRelease29To28 extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
-        addTranslator(0x01, new PacketTranslator() {
+        // login
+        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
-                if (dir == PacketDirection.CLIENT_TO_SERVER) {
-
-                    return PacketUtil.createPacket(0x01, new TypeHolder[]{
-                            set(Type.INT, 28), // protocol version
-                            data.read(1),
-                            data.read(2),
-                            data.read(3),
-                            data.read(4),
-                            data.read(5),
-                            data.read(6),
-                            data.read(7),
-                    });
-                } else {
-
-                    return data;
-                }
+                return PacketUtil.createPacket(0x01, new TypeHolder[]{
+                        set(Type.INT, 28), // protocol version
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                });
             }
         });
 
-        addTranslator(0xCA, /* PLAYER ABILITIES */ new PacketTranslator() {
+        // player abilities
+        addTranslator(0xCA, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 // cancel packet
                 return new PacketData(-1);

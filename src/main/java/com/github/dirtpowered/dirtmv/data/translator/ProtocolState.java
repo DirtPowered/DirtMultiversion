@@ -22,6 +22,23 @@
 
 package com.github.dirtpowered.dirtmv.data.translator;
 
-public enum PreNettyProtocolState {
-    STATUS, LOGIN, IN_GAME
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+public enum ProtocolState {
+    STATUS(1), HANDSHAKE(-1), LOGIN(2), PLAY(0), PRE_NETTY(-999);
+
+    @Getter
+    private int stateId;
+
+    public static ProtocolState fromId(int stateId) {
+        for (ProtocolState protocolState : ProtocolState.values()) {
+            if (protocolState.stateId == stateId) {
+                return protocolState;
+            }
+        }
+
+        return HANDSHAKE;
+    }
 }

@@ -23,8 +23,13 @@
 package com.github.dirtpowered.dirtmv.data.translator;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeObject;
+import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
+import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -32,7 +37,7 @@ import java.util.Map;
 
 @Getter
 public abstract class ServerProtocol {
-    private Map<Integer, PacketTranslator> registeredTranslators = new HashMap<>();
+    private Map<TranslatorKeyObj, PacketTranslator> registeredTranslators = new HashMap<>();
     private MinecraftVersion from;
     private MinecraftVersion to;
 
@@ -45,15 +50,44 @@ public abstract class ServerProtocol {
 
     public abstract void registerTranslators();
 
-    protected void addTranslator(int opCode, PacketTranslator packetTranslator) {
-        registeredTranslators.put(opCode, packetTranslator);
+    protected void addTranslator(int opCode, PacketDirection direction, PacketTranslator packetTranslator) {
+        TranslatorKeyObj obj = new TranslatorKeyObj(opCode, ProtocolState.PRE_NETTY, direction);
+
+        registeredTranslators.put(obj, packetTranslator);
     }
 
-    public PacketTranslator getTranslatorFor(int opCode) {
-        return registeredTranslators.get(opCode);
+    protected void addTranslator(int opCode, ProtocolState state, PacketDirection direction, PacketTranslator packetTranslator) {
+        TranslatorKeyObj obj = new TranslatorKeyObj(opCode, state, direction);
+
+        registeredTranslators.put(obj, packetTranslator);
+    }
+
+    protected void addTranslator(int opCode, int opCodeTo, ProtocolState state, PacketDirection direction) {
+        TranslatorKeyObj obj = new TranslatorKeyObj(opCode, state, direction);
+
+        registeredTranslators.put(obj, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(opCodeTo, data.getObjects());
+            }
+        });
+    }
+
+    public PacketTranslator getTranslatorFor(int opCode, ProtocolState state, PacketDirection direction) {
+        return registeredTranslators.get(new TranslatorKeyObj(opCode, state, direction));
     }
 
     public TypeHolder set(TypeObject type, Object obj) {
         return new TypeHolder(type, obj);
+    }
+
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    private static class TranslatorKeyObj {
+        private int packetId;
+        private ProtocolState protocolState;
+        private PacketDirection packetDirection;
     }
 }

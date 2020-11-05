@@ -20,8 +20,11 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.translator;
+package com.github.dirtpowered.dirtmv.data.utils;
 
-public enum PreNettyProtocolState {
-    STATUS, LOGIN, IN_GAME
+public class StringUtils {
+
+    public static String intToHexStr(int i) {
+        return "0x" + String.format("%2s", Integer.toHexString(i)).replace(' ', '0').toUpperCase();
+    }
 }

@@ -22,7 +22,9 @@
 
 package com.github.dirtpowered.dirtmv.data.utils;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 public class ChatUtils {
@@ -38,5 +40,25 @@ public class ChatUtils {
         jsonElement.add("text", new JsonPrimitive(message));
 
         return jsonElement.toString();
+    }
+
+    /**
+     * Fixes translation chat components between r1.6 and r1.7
+     *
+     * @param message r1.6 text message
+     * @return corrected r1.7 text message
+     */
+    public static String fixTranslationComponent(String message) {
+        JsonElement jsonElement = JsonParser.parseString(message);
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+        if (jsonObject.has("using")) {
+            JsonElement element = jsonObject.get("using");
+
+            jsonObject.remove("using");
+            jsonObject.add("with", element);
+        }
+
+        return jsonObject.toString();
     }
 }

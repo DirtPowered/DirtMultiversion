@@ -29,6 +29,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeObject;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
@@ -69,12 +70,16 @@ public class MetadataDataType extends DataType<WatchableObject[]> {
                     value = new WatchableObject(type, index, BaseProtocol.FLOAT.read(packetInput));
                     break;
                 case STRING:
-                    value = new WatchableObject(type, index, BaseProtocol.STRING.read(packetInput));
+                    if (getType() == Type.V1_7R_METADATA) {
+                        value = new WatchableObject(type, index, V1_7_2RProtocol.STRING.read(packetInput));
+                    } else {
+                        value = new WatchableObject(type, index, BaseProtocol.STRING.read(packetInput));
+                    }
                     break;
                 case ITEM:
                     ItemStack itemStack;
 
-                    if (getType() == Type.V1_4R_METADATA) {
+                    if (getType() == Type.V1_4R_METADATA || getType() == Type.V1_7R_METADATA) {
                         itemStack = (ItemStack) V1_3_1RProtocol.ITEM.read(packetInput);
                     } else {
                         itemStack = (ItemStack) V1_3BProtocol.ITEM.read(packetInput);
@@ -122,10 +127,14 @@ public class MetadataDataType extends DataType<WatchableObject[]> {
                     BaseProtocol.FLOAT.write(new TypeHolder(Type.FLOAT, watchableObject.getValue()), packetOutput);
                     break;
                 case STRING:
-                    BaseProtocol.STRING.write(new TypeHolder(Type.STRING, watchableObject.getValue()), packetOutput);
+                    if (getType() == Type.V1_7R_METADATA) {
+                        V1_7_2RProtocol.STRING.write(new TypeHolder(Type.V1_7_STRING, watchableObject.getValue()), packetOutput);
+                    } else {
+                        BaseProtocol.STRING.write(new TypeHolder(Type.STRING, watchableObject.getValue()), packetOutput);
+                    }
                     break;
                 case ITEM:
-                    if (getType() == Type.V1_4R_METADATA) {
+                    if (getType() == Type.V1_4R_METADATA || getType() == Type.V1_7R_METADATA) {
                         V1_3_1RProtocol.ITEM.write(new TypeHolder(Type.V1_3R_ITEM, watchableObject.getValue()), packetOutput);
                     } else {
                         V1_3BProtocol.ITEM.write(new TypeHolder(Type.V1_3B_ITEM, watchableObject.getValue()), packetOutput);

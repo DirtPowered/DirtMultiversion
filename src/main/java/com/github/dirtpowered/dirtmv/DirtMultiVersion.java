@@ -36,6 +36,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4.V1_4_6RProto
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_5.V1_5RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6_2RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.registry.ProtocolRegistry;
 import com.github.dirtpowered.dirtmv.data.registry.TranslatorRegistry;
 import com.github.dirtpowered.dirtmv.network.server.Server;
@@ -47,6 +48,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Release23To22.ProtocolRele
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.ProtocolRelease28To23;
 import com.github.dirtpowered.dirtmv.network.versions.Release29To28.ProtocolRelease29To28;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.ProtocolRelease39To29;
+import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ProtocolRelease4To78;
 import com.github.dirtpowered.dirtmv.network.versions.Release51To39.ProtocolRelease51To39;
 import com.github.dirtpowered.dirtmv.network.versions.Release60To51.ProtocolRelease60To51;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ProtocolRelease73To61;
@@ -88,7 +90,9 @@ public class DirtMultiVersion implements Runnable {
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_6_1, new V1_6RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_6_2, new V1_6_2RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_6_4, new V1_6_2RProtocol());
+        ProtocolRegistry.registerProtocol(MinecraftVersion.R1_7_2, new V1_7_2RProtocol());
 
+        translatorRegistry.registerProtocol(new ProtocolRelease4To78());
         translatorRegistry.registerProtocol(new ProtocolRelease78To74());
         translatorRegistry.registerProtocol(new ProtocolRelease74To73());
         translatorRegistry.registerProtocol(new ProtocolRelease73To61());

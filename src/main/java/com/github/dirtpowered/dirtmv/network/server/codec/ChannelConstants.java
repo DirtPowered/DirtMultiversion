@@ -32,4 +32,9 @@ public class ChannelConstants {
     public static final String PACKET_DECRYPTION = "packet_decryption";
     public static final String SERVER_HANDLER = "server_handler";
     public static final String CLIENT_HANDLER = "client_handler";
+    public static final String DETECTION_HANDLER = "netty_detection_handler";
+    public static final String NETTY_LENGTH_DECODER = "netty_length_decoder";
+    public static final String NETTY_LENGTH_ENCODER = "netty_length_encoder";
+    public static final String NETTY_PACKET_DECODER = "netty_packet_decoder";
+    public static final String NETTY_PACKET_ENCODER = "netty_packet_encoder";
 }

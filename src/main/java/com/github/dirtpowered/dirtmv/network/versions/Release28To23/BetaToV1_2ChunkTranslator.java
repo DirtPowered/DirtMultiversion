@@ -29,7 +29,6 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BChunk;
-import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
@@ -39,7 +38,7 @@ import java.util.Arrays;
 public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
     @Override
-    public PacketData translate(ServerSession session, PacketDirection dir, PacketData data) {
+    public PacketData translate(ServerSession session, PacketData data) {
         V1_3BChunk oldChunk = (V1_3BChunk) data.read(0).getObject();
 
         if (oldChunk.getXSize() * oldChunk.getYSize() * oldChunk.getZSize() != 32768) {

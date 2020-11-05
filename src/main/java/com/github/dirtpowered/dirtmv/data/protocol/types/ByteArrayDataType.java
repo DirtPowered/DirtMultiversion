@@ -30,6 +30,8 @@ import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.google.common.base.Preconditions;
 
+import java.io.IOException;
+
 public class ByteArrayDataType extends DataType<byte[]> {
 
     public ByteArrayDataType(TypeObject readDataType) {
@@ -58,13 +60,17 @@ public class ByteArrayDataType extends DataType<byte[]> {
             int size = packetInput.readInt();
 
             bytes = packetInput.readBytes(size);
+        } else if (getType() == Type.VAR_INT_BYTE_ARRAY) {
+            int size = packetInput.readVarInt();
+
+            bytes = packetInput.readBytes(size);
         }
 
         return bytes;
     }
 
     @Override
-    public void write(TypeHolder typeHolder, PacketOutput buffer) {
+    public void write(TypeHolder typeHolder, PacketOutput buffer) throws IOException {
         byte[] byteArray = (byte[]) typeHolder.getObject();
 
         if (getType() == Type.BYTE_BYTE_ARRAY) {
@@ -78,6 +84,10 @@ public class ByteArrayDataType extends DataType<byte[]> {
         } else if (getType() == Type.INT_BYTE_ARRAY) {
 
             buffer.writeInt(byteArray.length);
+            buffer.writeBytes(byteArray);
+        } else if (getType() == Type.VAR_INT_BYTE_ARRAY) {
+
+            buffer.writeVarInt(byteArray.length);
             buffer.writeBytes(byteArray);
         }
     }

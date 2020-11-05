@@ -20,8 +20,27 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.translator;
+package com.github.dirtpowered.dirtmv.data.protocol.types;
 
-public enum PreNettyProtocolState {
-    STATUS, LOGIN, IN_GAME
+import com.github.dirtpowered.dirtmv.data.protocol.DataType;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
+
+public class UnsignedShortDataType extends DataType<Integer> {
+
+    public UnsignedShortDataType() {
+        super(Type.UNSIGNED_SHORT);
+    }
+
+    @Override
+    public Integer read(PacketInput packetInput) {
+        return packetInput.readUnsignedShort();
+    }
+
+    @Override
+    public void write(TypeHolder typeHolder, PacketOutput packetOutput) {
+        packetOutput.writeShort((Integer) typeHolder.getObject());
+    }
 }

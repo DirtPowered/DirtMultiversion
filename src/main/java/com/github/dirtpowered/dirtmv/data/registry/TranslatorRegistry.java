@@ -71,7 +71,7 @@ public class TranslatorRegistry {
 
             return Collections.singletonList(serverProtocol);
         } else {
-            if (from.getProtocolId() >= 39 && Constants.REMOTE_SERVER_VERSION.getProtocolId() >= 39) {
+            if (from.getProtocolId() >= 39 && Constants.REMOTE_SERVER_VERSION.getProtocolId() >= 39 && !from.isNettyProtocol()) {
                 // add encryption translators to pipeline
                 serverProtocols.add(new ProtocolPassthroughEncrypted(from, versionTo));
             }

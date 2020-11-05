@@ -20,8 +20,27 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.translator;
+package com.github.dirtpowered.dirtmv.data.protocol.types.netty;
 
-public enum PreNettyProtocolState {
-    STATUS, LOGIN, IN_GAME
+import com.github.dirtpowered.dirtmv.data.protocol.DataType;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
+
+public class VarIntDataType extends DataType<Integer> {
+
+    public VarIntDataType() {
+        super(Type.VAR_INT);
+    }
+
+    @Override
+    public Integer read(PacketInput packetInput) {
+        return packetInput.readVarInt();
+    }
+
+    @Override
+    public void write(TypeHolder typeHolder, PacketOutput packetOutput) {
+        packetOutput.writeVarInt((Integer) typeHolder.getObject());
+    }
 }
