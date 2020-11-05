@@ -738,6 +738,19 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x83 SC 0x34 (map data)
+        addTranslator(0x83, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x34, new TypeHolder[] {
+                        set(Type.VAR_INT, data.read(Type.SHORT, 1).intValue()),
+                        data.read(2)
+                });
+            }
+        });
+
         // 0x2C SC 0x20 (entity attributes)
         addTranslator(0x2C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
@@ -776,9 +789,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
         // 0x38 SC 0x26 (chunk bulk)
         addTranslator(0x38, 0x26, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // 0x83 SC 0x34 (map data) // TODO: translate
-        addTranslator(0x83, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x26 SC 0x1A (entity status)
         addTranslator(0x26, 0x1A, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
