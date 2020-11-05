@@ -34,6 +34,7 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
+import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.data.utils.other.PreNettyPacketNames;
 import com.github.dirtpowered.dirtmv.network.client.Client;
@@ -209,15 +210,28 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
             channel.close();
         } else {
             log.warn("disconnected with message: {}", message);
-            sendPacket(PacketUtil.createPacket(
-                    0xFF,
-
-                    new TypeHolder[]{
-                            new TypeHolder(Type.STRING, message),
-                    }));
+            sendDisconnectPacket(message);
         }
 
         initialPacketQueue.clear();
+    }
+
+    private void sendDisconnectPacket(String message) {
+        PacketData kickPacket;
+
+        if (userData.getClientVersion().isNettyProtocol()) {
+            boolean state = userData.getProtocolState() == ProtocolState.LOGIN;
+
+            kickPacket = PacketUtil.createPacket(state ? 0x00 : 0x40, new TypeHolder[]{
+                    new TypeHolder(Type.V1_7_STRING, ChatUtils.legacyToJsonString(message)),
+            });
+        } else {
+            kickPacket = PacketUtil.createPacket(0xFF, new TypeHolder[]{
+                    new TypeHolder(Type.STRING, message),
+            });
+        }
+
+        sendPacket(kickPacket);
     }
 
     public void disconnect() {
