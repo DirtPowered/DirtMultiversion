@@ -55,7 +55,8 @@ public enum EntityType {
     OZELOT(98, true),
     IRON_GOLEM(99, true),
     HORSE(100, true),
-    VILLAGER(120, true);
+    VILLAGER(120, true),
+    HUMAN(-1, true);
 
     @Getter
     private int entityTypeId;

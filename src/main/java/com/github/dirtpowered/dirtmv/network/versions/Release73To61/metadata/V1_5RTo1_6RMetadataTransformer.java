@@ -26,13 +26,11 @@ import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.transformers.MetadataTransformer;
-import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Log4j2
 public class V1_5RTo1_6RMetadataTransformer implements MetadataTransformer {
 
     @Override

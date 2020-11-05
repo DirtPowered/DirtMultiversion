@@ -233,6 +233,28 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             }
         });
 
+        // name entity spawn
+        addTranslator(0x14, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 8);
+                WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
+
+                return PacketUtil.createPacket(0x14, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        set(Type.V1_4R_METADATA, newMeta)
+                });
+            }
+        });
+
         // statistics
         addTranslator(0xC8, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 

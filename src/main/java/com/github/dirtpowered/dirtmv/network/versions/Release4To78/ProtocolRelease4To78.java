@@ -479,7 +479,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 String username = data.read(Type.STRING, 1);
 
                 return PacketUtil.createPacket(0x0C, new TypeHolder[] {
-                        set(Type.VAR_INT, data.read(0)), // entity id
+                        set(Type.VAR_INT, data.read(Type.INT, 0)), // entity id
                         set(Type.V1_7_STRING, "bananas"), // player UUID,
                         set(Type.V1_7_STRING, username), // player name
                         data.read(2),
