@@ -208,10 +208,10 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0), // entity id
-                        set(Type.UNSIGNED_BYTE, 0),
-                        set(Type.BYTE, (byte) 0),
-                        set(Type.UNSIGNED_BYTE, 0),
-                        set(Type.UNSIGNED_BYTE, 20),
+                        data.read(2), // game type
+                        data.read(3), // dimension
+                        data.read(4), // difficulty
+                        data.read(6), // max players
                         set(Type.V1_7_STRING, data.read(Type.STRING, 1))
                 });
             }
@@ -376,7 +376,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                         data.read(2),
                         data.read(3),
                         data.read(4),
-                        set(Type.VAR_INT, data.read(Type.SHORT, 5)),
+                        set(Type.VAR_INT, data.read(Type.SHORT, 5).intValue()),
                 });
             }
         });
@@ -725,6 +725,25 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0xFA SC 0x3F (custom payload)
+        addTranslator(0xFA, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x3F, new TypeHolder[] {
+                        set(Type.V1_7_STRING, data.read(Type.STRING, 0)),
+                        data.read(1)
+                });
+            }
+        });
+
+        // 0x2C SC 0x20 (entity attributes)
+        addTranslator(0x2C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
+        // 0xC8 SC 0x37 -> cancel (statistics)
+        addTranslator(0xC8, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
         // 0x27 SC 0x1B (entity attach)
         addTranslator(0x27, 0x1B, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
@@ -750,7 +769,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         addTranslator(0x6A, 0x32, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0xCA SC 0x39 (player abilities)
-        addTranslator(0xCA, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0xCA, 0x39, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x2B SC 0x1F (set experience)
         addTranslator(0x2B, 0x1F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
@@ -772,9 +791,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
         // 0x1E SC 0x14 (entity ground state)
         addTranslator(0x1E, 0x14, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // 0xC8 SC 0x37 (statistics) // TODO: translate
-        addTranslator(0xC8, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x05 SC 0x04 (entity equipment)
         addTranslator(0x05, 0x04, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
@@ -818,6 +834,24 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         // 0x68 SC 0x30 (inventory window items)
         addTranslator(0x68, 0x30, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
+        // 0x17 CS 0xFA (custom payload)
+        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                String channel = data.read(Type.V1_7_STRING, 0);
+
+                if (channel.equals("MC|AdvCmd")) { // TODO: fix command blocks
+                    return new PacketData(-1);
+                }
+
+                return PacketUtil.createPacket(0xFA, new TypeHolder[] {
+                        set(Type.STRING, channel),
+                        data.read(1)
+                });
+            }
+        });
+
         // 0x01 CS 0x03 (chat)
         addTranslator(0x01, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
@@ -830,7 +864,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
-        // 0x16 CS 0xCD (client status)
+        // 0x16 CS 0xCD (client command)
         addTranslator(0x16, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
@@ -873,6 +907,15 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x10 CS 0x6B (creative item get)
+        addTranslator(0x10, 0x6B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+
+        // 0x13 CS 0xCA (player abilities)
+        addTranslator(0x13, 0xCA, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+
+        // 0x11 CS 0x6C (enchant slot selection)
+        addTranslator(0x11, 0x6C, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+
         // 0x09 CS 0x10 (held slot change)
         addTranslator(0x09, 0x10, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
 
@@ -906,10 +949,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         // 0x15 CS 0xCC (player settings)
         addTranslator(0x15, -1, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
 
-        // 0x17 CS 0xFA (custom payload)
-        addTranslator(0x17, -1, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
-
         // 0x0B CS 0x13 (entity action)
-        addTranslator(0x0B, -1, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x0B, 0x13, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
     }
 }

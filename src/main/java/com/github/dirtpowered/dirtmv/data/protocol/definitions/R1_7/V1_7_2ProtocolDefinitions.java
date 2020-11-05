@@ -178,6 +178,25 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.BYTE
         });
 
+        // enchant slot selection
+        addPacket(0x11, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE, // id
+                BaseProtocol.BYTE // button
+        });
+
+        // player abilities
+        addPacket(0x13, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE,
+                BaseProtocol.FLOAT,
+                BaseProtocol.FLOAT
+        });
+
+        // creative item get
+        addPacket(0x10, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.SHORT, // slot
+                V1_3_1RProtocol.ITEM
+        });
+
         // tab complete
         addPacket(0x14, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[] {
                 V1_7_2RProtocol.STRING
