@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.server.codec.netty;
 
+import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
@@ -38,8 +39,10 @@ import lombok.extern.log4j.Log4j2;
 public class DetectionHandler extends ChannelInboundHandlerAdapter {
 
     private UserData userData;
+    private DirtMultiVersion main;
 
-    public DetectionHandler(UserData userData) {
+    public DetectionHandler(DirtMultiVersion main, UserData userData) {
+        this.main = main;
         this.userData = userData;
     }
 
@@ -64,7 +67,7 @@ public class DetectionHandler extends ChannelInboundHandlerAdapter {
 
                 ctx.channel().pipeline()
                         .addAfter(ChannelConstants.DETECTION_HANDLER, ChannelConstants.LEGACY_PING, new LegacyPingVersionHandler(userData))
-                        .addAfter(ChannelConstants.LEGACY_PING, ChannelConstants.LEGACY_DECODER, new PacketDecoder(PacketDirection.CLIENT_TO_SERVER, userData))
+                        .addAfter(ChannelConstants.LEGACY_PING, ChannelConstants.LEGACY_DECODER, new PacketDecoder(main, PacketDirection.CLIENT_TO_SERVER, userData))
                         .addAfter(ChannelConstants.LEGACY_DECODER, ChannelConstants.LEGACY_ENCODER, new PacketEncoder());
             }
         } catch (RuntimeException e) {

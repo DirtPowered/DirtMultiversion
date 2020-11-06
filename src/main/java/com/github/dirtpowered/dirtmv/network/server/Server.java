@@ -23,7 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.server;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
-import com.github.dirtpowered.dirtmv.data.Constants;
+import com.github.dirtpowered.dirtmv.config.Configuration;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
 import com.github.dirtpowered.dirtmv.network.server.codec.PipelineFactory;
@@ -57,7 +57,8 @@ public class Server {
                     public void initChannel(SocketChannel channel) {
                         ServerSession serverSession = new ServerSession(channel, main);
 
-                        channel.pipeline().addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(serverSession.getUserData(), PacketDirection.CLIENT_TO_SERVER))
+                        channel.pipeline().addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(
+                                main, serverSession.getUserData(), PacketDirection.CLIENT_TO_SERVER))
                                 .addLast(ChannelConstants.SERVER_HANDLER, serverSession);
                     }
                 })
@@ -65,7 +66,9 @@ public class Server {
 
         ChannelFuture future;
         try {
-            future = b.bind(Constants.SERVER_HOST, Constants.SERVER_PORT).sync();
+            Configuration c = main.getConfiguration();
+
+            future = b.bind(c.getBindAddress(), c.getBindPort()).sync();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("address already in use: {}", e.getLocalizedMessage());

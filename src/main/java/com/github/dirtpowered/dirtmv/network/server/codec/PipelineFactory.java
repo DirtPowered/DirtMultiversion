@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.server.codec;
 
+import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.server.codec.netty.DetectionHandler;
@@ -33,10 +34,12 @@ public class PipelineFactory extends ChannelInitializer {
 
     private static final int TIMEOUT = 30;
 
+    private DirtMultiVersion main;
     private PacketDirection packetDirection;
     private UserData userData;
 
-    public PipelineFactory(UserData userData, PacketDirection packetDirection) {
+    public PipelineFactory(DirtMultiVersion main, UserData userData, PacketDirection packetDirection) {
+        this.main = main;
         this.packetDirection = packetDirection;
         this.userData = userData;
     }
@@ -45,10 +48,10 @@ public class PipelineFactory extends ChannelInitializer {
     protected void initChannel(Channel channel) {
         if (packetDirection == PacketDirection.CLIENT_TO_SERVER) {
             channel.pipeline()
-                    .addFirst(ChannelConstants.DETECTION_HANDLER, new DetectionHandler(userData));
+                    .addFirst(ChannelConstants.DETECTION_HANDLER, new DetectionHandler(main, userData));
         } else {
             channel.pipeline()
-                    .addLast(ChannelConstants.LEGACY_DECODER, new PacketDecoder(packetDirection, userData))
+                    .addLast(ChannelConstants.LEGACY_DECODER, new PacketDecoder(main, packetDirection, userData))
                     .addLast(ChannelConstants.LEGACY_ENCODER, new PacketEncoder());
         }
 

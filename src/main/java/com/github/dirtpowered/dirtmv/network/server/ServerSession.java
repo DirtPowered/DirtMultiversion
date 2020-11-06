@@ -23,7 +23,6 @@
 package com.github.dirtpowered.dirtmv.network.server;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
-import com.github.dirtpowered.dirtmv.data.Constants;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.interfaces.Tickable;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
@@ -90,7 +89,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
      * @param from Version to start from
      */
     public void sendPacket(PacketData packet, PacketDirection direction, MinecraftVersion from) throws IOException {
-        MinecraftVersion version = Constants.REMOTE_SERVER_VERSION;
+        MinecraftVersion version = main.getConfiguration().getServerVersion();
         if (from != null && from != version) {
             version = from;
         }
@@ -122,13 +121,15 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
                     String namedOpCode = PreNettyPacketNames.getPacketName(packet.getOpCode());
                     Preconditions.checkNotNull(target, "%s returned null while translating %s", protocolName, namedOpCode);
 
+                    boolean debug = main.getConfiguration().isDebugMode();
+
                     if (target.getOpCode() == -1) {
-                        if (state == ProtocolState.PRE_NETTY && Constants.DEBUG) {
+                        if (state == ProtocolState.PRE_NETTY && debug) {
                             log.debug("cancelling {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
                         }
                         return;
                     }
-                    if (state == ProtocolState.PRE_NETTY && Constants.DEBUG) {
+                    if (state == ProtocolState.PRE_NETTY && debug) {
                         log.debug("translating {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
                     }
                 }

@@ -22,7 +22,8 @@
 
 package com.github.dirtpowered.dirtmv.data.registry;
 
-import com.github.dirtpowered.dirtmv.data.Constants;
+import com.github.dirtpowered.dirtmv.DirtMultiVersion;
+import com.github.dirtpowered.dirtmv.config.Configuration;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
@@ -41,6 +42,12 @@ public class TranslatorRegistry {
     @Getter
     private Map<Integer, ServerProtocol> protocols = new ConcurrentHashMap<>();
 
+    private DirtMultiVersion main;
+
+    public TranslatorRegistry(DirtMultiVersion main) {
+        this.main = main;
+    }
+
     public void registerProtocol(ServerProtocol serverProtocol) {
         int clientProtocol = serverProtocol.getFrom().getProtocolId();
 
@@ -57,9 +64,10 @@ public class TranslatorRegistry {
         List<ServerProtocol> serverProtocols = new LinkedList<>();
 
         MinecraftVersion from = data.getClientVersion();
+        Configuration c = main.getConfiguration();
 
         // check if translating is needed
-        if (from == Constants.REMOTE_SERVER_VERSION) {
+        if (from == c.getServerVersion()) {
             ServerProtocol serverProtocol;
 
             // starting from r1.3 the whole connections is encrypted
@@ -71,7 +79,7 @@ public class TranslatorRegistry {
 
             return Collections.singletonList(serverProtocol);
         } else {
-            if (from.getProtocolId() >= 39 && Constants.REMOTE_SERVER_VERSION.getProtocolId() >= 39 && !from.isNettyProtocol()) {
+            if (from.getProtocolId() >= 39 && c.getServerVersion().getProtocolId() >= 39 && !from.isNettyProtocol()) {
                 // add encryption translators to pipeline
                 serverProtocols.add(new ProtocolPassthroughEncrypted(from, versionTo));
             }

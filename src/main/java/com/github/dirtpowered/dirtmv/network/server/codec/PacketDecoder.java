@@ -22,7 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.server.codec;
 
-import com.github.dirtpowered.dirtmv.data.Constants;
+import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
@@ -42,10 +42,12 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
 
     private PacketDirection packetDirection;
     private UserData userData;
+    private DirtMultiVersion main;
 
-    public PacketDecoder(PacketDirection packetDirection, UserData userData) {
+    public PacketDecoder(DirtMultiVersion main, PacketDirection packetDirection, UserData userData) {
         this.packetDirection = packetDirection;
         this.userData = userData;
+        this.main = main;
     }
 
     @Override
@@ -55,7 +57,7 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
         setUserProtocol(flag, buffer);
         PacketInput inputBuffer = new NettyInputWrapper(buffer);
 
-        PacketData packet = PacketUtil.readPacket(flag ? Constants.REMOTE_SERVER_VERSION : userData.getClientVersion(), inputBuffer);
+        PacketData packet = PacketUtil.readPacket(flag ? main.getConfiguration().getServerVersion() : userData.getClientVersion(), inputBuffer);
 
         setProtocolState(packet);
         list.add(packet);
@@ -66,7 +68,9 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
             return;
 
         switch (data.getOpCode()) {
-            case 0xFE:
+            case 0xFF: // kick disconnect
+            case 0xFE: // ping request
+            case 0xFA: // custom payload
                 userData.setPreNettyProtocolState(PreNettyProtocolState.STATUS);
                 break;
             case 0x06 /* spawn position */:

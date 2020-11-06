@@ -20,16 +20,39 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data;
+package com.github.dirtpowered.dirtmv.config;
 
-public class Constants {
-    public static final MinecraftVersion REMOTE_SERVER_VERSION = MinecraftVersion.B1_7_3;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 
-    public static final String SERVER_HOST = "localhost";
-    public static final String REMOTE_HOST = "localhost";
+public interface Configuration {
 
-    public static final int SERVER_PORT = 25565;
-    public static final int REMOTE_PORT = 25567;
+    /**
+     * Address to listen for connections
+     */
+    String getBindAddress();
 
-    public static final boolean DEBUG = false;
+    /**
+     * Port to listen for connections
+     */
+    int getBindPort();
+
+    /**
+     * Remote server address
+     */
+    String getRemoteServerAddress();
+
+    /**
+     * Remote server port
+     */
+    int getRemoteServerPort();
+
+    /**
+     * Remote server version
+     */
+    MinecraftVersion getServerVersion();
+
+    /**
+     * Debug mode, printing all packets, additional info
+     */
+    boolean isDebugMode();
 }

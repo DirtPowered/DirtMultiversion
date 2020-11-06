@@ -22,6 +22,8 @@
 
 package com.github.dirtpowered.dirtmv;
 
+import com.github.dirtpowered.dirtmv.config.Configuration;
+import com.github.dirtpowered.dirtmv.config.DefaultConfig;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_4.V1_4BProtocol;
@@ -69,9 +71,11 @@ public class DirtMultiVersion implements Runnable {
     private SessionRegistry sessionRegistry;
     private TranslatorRegistry translatorRegistry;
     private Random sharedRandom;
+    private Configuration configuration;
 
     private DirtMultiVersion() {
-        translatorRegistry = new TranslatorRegistry();
+        configuration = new DefaultConfig();
+        translatorRegistry = new TranslatorRegistry(this);
 
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_3, new V1_3BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_4, new V1_4BProtocol());

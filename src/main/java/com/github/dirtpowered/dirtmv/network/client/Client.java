@@ -22,7 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.client;
 
-import com.github.dirtpowered.dirtmv.data.Constants;
+import com.github.dirtpowered.dirtmv.config.Configuration;
 import com.github.dirtpowered.dirtmv.data.interfaces.Callback;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
@@ -58,14 +58,17 @@ public class Client {
             clientBootstrap.option(ChannelOption.SO_KEEPALIVE, true);
             clientBootstrap.option(ChannelOption.TCP_NODELAY, true);
 
-            clientBootstrap.remoteAddress(new InetSocketAddress(Constants.REMOTE_HOST, Constants.REMOTE_PORT));
+            Configuration c = serverSession.getMain().getConfiguration();
+
+            clientBootstrap.remoteAddress(new InetSocketAddress(c.getRemoteServerAddress(), c.getRemoteServerPort()));
 
             clientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
                 @Override
                 protected void initChannel(SocketChannel ch) {
                     ch.pipeline()
-                            .addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(serverSession.getUserData(), PacketDirection.SERVER_TO_CLIENT))
+                            .addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(serverSession.getMain(),
+                                    serverSession.getUserData(), PacketDirection.SERVER_TO_CLIENT))
                             .addLast(ChannelConstants.CLIENT_HANDLER, new ClientSession(key, serverSession, ch, callback));
                 }
             });
