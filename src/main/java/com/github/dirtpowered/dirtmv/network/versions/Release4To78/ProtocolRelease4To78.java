@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_5Team;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
@@ -751,6 +752,17 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0xD1 SC 0x3E (set team) // TODO: translate
+        addTranslator(0xD1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                V1_5Team team = data.read(Type.V1_5_TEAM, 0);
+
+                return new PacketData(-1);
+            }
+        });
+
         // 0x2C SC 0x20 (entity attributes)
         addTranslator(0x2C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
@@ -883,7 +895,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 if (status == 0) {
                     return PacketUtil.createPacket(0xCD, new TypeHolder[]{
-                            set(Type.BYTE, 1) // perform respawn
+                            set(Type.BYTE, (byte) 1) // perform respawn
                     });
                 } else {
                     return new PacketData(-1);
@@ -913,6 +925,22 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0xCB, new TypeHolder[] {
                         set(Type.STRING, data.read(Type.V1_7_STRING, 0))
+                });
+            }
+        });
+
+        // 0x15 CS 0xCC (player settings)
+        addTranslator(0x15, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0xCC, new TypeHolder[] {
+                        set(Type.STRING, data.read(Type.V1_7_STRING, 0)),
+                        data.read(1),
+                        data.read(2),
+                        data.read(4),
+                        data.read(5)
                 });
             }
         });
@@ -955,9 +983,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
         // 0x0E CS 0x66 (click window)
         addTranslator(0x0E, 0x66, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
-
-        // 0x15 CS 0xCC (player settings)
-        addTranslator(0x15, -1, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
 
         // 0x0B CS 0x13 (entity action)
         addTranslator(0x0B, 0x13, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
