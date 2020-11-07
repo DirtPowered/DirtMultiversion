@@ -1,6 +1,7 @@
 package com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6;
 
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2.V1_2_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
@@ -13,7 +14,7 @@ public class V1_6_2RProtocol extends V1_6RProtocol {
     public static final DataType ENTITY_ATTRIBUTES;
 
     static {
-        ENTITY_ATTRIBUTES = new V1_6_2EntityAttributesDataType();
+        ENTITY_ATTRIBUTES = new V1_6_2EntityAttributesDataType(Type.V1_6_2_ENTITY_ATTRIBUTES);
     }
 
     @Override

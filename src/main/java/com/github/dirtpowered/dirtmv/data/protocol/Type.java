@@ -43,6 +43,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BMultiBlockArray;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_5Team;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_2EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.mojang.nbt.CompoundTag;
 
@@ -307,10 +308,17 @@ public class Type {
         }
     });
 
-    public static final TypeObject<V1_6_1EntityAttributes> V1_6_2_ENTITY_ATTRIBUTES = new TypeObject<>(V1_6_1EntityAttributes.class, new TypeHandler() {
+    public static final TypeObject<V1_6_2EntityAttributes> V1_6_2_ENTITY_ATTRIBUTES = new TypeObject<>(V1_6_2EntityAttributes.class, new TypeHandler() {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_6_2RProtocol.ENTITY_ATTRIBUTES.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<V1_6_2EntityAttributes> V1_7_ENTITY_ATTRIBUTES = new TypeObject<>(V1_6_2EntityAttributes.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_7_2RProtocol.ENTITY_ATTRIBUTES.write(holder, packetOutput);
         }
     });
 

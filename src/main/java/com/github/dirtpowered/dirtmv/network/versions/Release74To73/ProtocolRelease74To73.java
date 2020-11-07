@@ -4,6 +4,9 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.EntityAttribute;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_2EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
@@ -11,6 +14,10 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ProtocolRelease74To73 extends ServerProtocol {
 
@@ -43,9 +50,18 @@ public class ProtocolRelease74To73 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                V1_6_1EntityAttributes attrObj = data.read(Type.V1_6_1_ENTITY_ATTRIBUTES, 0);
+                List<EntityAttribute> entityAttributes = new ArrayList<>();
 
-                //TODO: Translate
-                return new PacketData(-1);
+                for (Map.Entry<String, Double> entry : attrObj.getAttributes().entrySet()) {
+                    entityAttributes.add(new EntityAttribute(entry.getKey(), entry.getValue()));
+                }
+
+                V1_6_2EntityAttributes attrObjModern = new V1_6_2EntityAttributes(attrObj.getEntityId(), entityAttributes);
+
+                return PacketUtil.createPacket(0x2C, new TypeHolder[]{
+                        set(Type.V1_6_2_ENTITY_ATTRIBUTES, attrObjModern)
+                });
             }
         });
 

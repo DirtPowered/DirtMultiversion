@@ -764,7 +764,16 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x2C SC 0x20 (entity attributes)
-        addTranslator(0x2C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x2C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x20, new TypeHolder[]{
+                        set(Type.V1_7_ENTITY_ATTRIBUTES, data.read(Type.V1_6_2_ENTITY_ATTRIBUTES, 0))
+                });
+            }
+        });
 
         // 0xC8 SC 0x37 -> cancel (statistics)
         addTranslator(0xC8, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);

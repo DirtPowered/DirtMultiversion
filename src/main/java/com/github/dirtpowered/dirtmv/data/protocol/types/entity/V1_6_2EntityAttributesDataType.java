@@ -26,6 +26,8 @@ import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeObject;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.AttributeModifier;
@@ -39,8 +41,8 @@ import java.util.UUID;
 
 public class V1_6_2EntityAttributesDataType extends DataType<V1_6_2EntityAttributes> {
 
-    public V1_6_2EntityAttributesDataType() {
-        super(Type.V1_6_2_ENTITY_ATTRIBUTES);
+    public V1_6_2EntityAttributesDataType(TypeObject type) {
+        super(type);
     }
 
     @Override
@@ -51,12 +53,18 @@ public class V1_6_2EntityAttributesDataType extends DataType<V1_6_2EntityAttribu
         List<EntityAttribute> entityAttributes = new ArrayList<>();
 
         for (int i = 0; i < attrCount; i++) {
-            String name = (String) BaseProtocol.STRING.read(packetInput);
+            String name;
+
+            if (getType() == Type.V1_7_ENTITY_ATTRIBUTES) {
+                name = (String) V1_7_2RProtocol.STRING.read(packetInput);
+            } else {
+                name = (String) BaseProtocol.STRING.read(packetInput);
+            }
             double value = packetInput.readDouble();
 
             EntityAttribute entityAttribute = new EntityAttribute(name, value);
 
-            int additionalData = packetInput.readUnsignedByte();
+            int additionalData = packetInput.readShort();
             for (int j = 0; j < additionalData; j++) {
                 UUID uuid = new UUID(packetInput.readLong(), packetInput.readLong());
 
@@ -80,10 +88,14 @@ public class V1_6_2EntityAttributesDataType extends DataType<V1_6_2EntityAttribu
         packetOutput.writeInt(entityAttributes.getEntityAttributes().size());
 
         for (EntityAttribute key : entityAttributes.getEntityAttributes()) {
-            BaseProtocol.STRING.write(new TypeHolder(Type.STRING, key.getName()), packetOutput);
+            if (getType() == Type.V1_7_ENTITY_ATTRIBUTES) {
+                V1_7_2RProtocol.STRING.write(new TypeHolder(Type.V1_7_STRING, key.getName()), packetOutput);
+            } else {
+                BaseProtocol.STRING.write(new TypeHolder(Type.STRING, key.getName()), packetOutput);
+            }
             packetOutput.writeDouble(key.getValue());
 
-            packetOutput.writeByte(key.getAttributeModifiers().size());
+            packetOutput.writeShort(key.getAttributeModifiers().size());
 
             for (AttributeModifier attributeModifier : key.getAttributeModifiers()) {
                 packetOutput.writeLong(attributeModifier.getUuid().getMostSignificantBits());
