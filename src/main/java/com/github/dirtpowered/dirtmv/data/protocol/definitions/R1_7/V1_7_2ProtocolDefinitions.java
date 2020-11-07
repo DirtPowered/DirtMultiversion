@@ -184,6 +184,17 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.BYTE // button
         });
 
+        // set sign text
+        addPacket(0x12, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.INT, // x
+                BaseProtocol.SHORT, // y
+                BaseProtocol.INT, // z
+                V1_7_2RProtocol.STRING,
+                V1_7_2RProtocol.STRING,
+                V1_7_2RProtocol.STRING,
+                V1_7_2RProtocol.STRING,
+        });
+
         // player abilities
         addPacket(0x13, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
                 BaseProtocol.BYTE,

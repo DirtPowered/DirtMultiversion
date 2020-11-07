@@ -954,6 +954,24 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x12 CS 0x82 (set sign text)
+        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x82, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        set(Type.STRING, data.read(Type.V1_7_STRING, 3)),
+                        set(Type.STRING, data.read(Type.V1_7_STRING, 4)),
+                        set(Type.STRING, data.read(Type.V1_7_STRING, 5)),
+                        set(Type.STRING, data.read(Type.V1_7_STRING, 6)),
+                });
+            }
+        });
+
         // 0x0C CS 0x1B (steer vehicle / player input)
         addTranslator(0x0C, 0x1B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
 

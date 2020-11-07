@@ -85,6 +85,7 @@ public class V1_6_2RProtocol extends V1_6RProtocol {
         dataTypes[130] = new DataType[]{INT, SHORT, INT, STRING, STRING, STRING, STRING};
         dataTypes[131] = new DataType[]{SHORT, SHORT, UNSIGNED_SHORT_BYTE_ARRAY};
         dataTypes[132] = new DataType[]{INT, SHORT, INT, BYTE, COMPOUND_TAG};
+        dataTypes[133] = new DataType[]{BYTE, INT, INT, INT}; // new
         dataTypes[200] = new DataType[]{INT, INT}; // changed
         dataTypes[201] = new DataType[]{STRING, BYTE, SHORT};
         dataTypes[202] = new DataType[]{BYTE, FLOAT, FLOAT}; // changed
