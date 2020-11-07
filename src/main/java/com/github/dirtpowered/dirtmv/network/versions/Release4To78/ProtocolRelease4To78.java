@@ -945,6 +945,9 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x0C CS 0x1B (steer vehicle / player input)
+        addTranslator(0x0C, 0x1B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+
         // 0x10 CS 0x6B (creative item get)
         addTranslator(0x10, 0x6B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
 
