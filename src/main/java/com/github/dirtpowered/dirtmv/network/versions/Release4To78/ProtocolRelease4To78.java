@@ -1009,7 +1009,23 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         addTranslator(0x0D, 0x65, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
 
         // 0x08 CS 0x0F (block placement)
-        addTranslator(0x08, 0x0F, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x08, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0F, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        set(Type.BYTE, data.read(Type.UNSIGNED_BYTE, 3).byteValue()),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7)
+                });
+            }
+        });
 
         // 0x0E CS 0x66 (click window)
         addTranslator(0x0E, 0x66, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);

@@ -15,14 +15,12 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
-import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Log4j2
 public class ProtocolRelease74To73 extends ServerProtocol {
 
     public ProtocolRelease74To73() {
@@ -104,7 +102,7 @@ public class ProtocolRelease74To73 extends ServerProtocol {
                 if (item == null) return data;
                 int itemId = item.getItemId();
 
-                int face = data.read(Type.UNSIGNED_BYTE, 3);
+                int face = data.read(Type.BYTE, 3);
 
                 if (face == 1) {
                     ++y;
