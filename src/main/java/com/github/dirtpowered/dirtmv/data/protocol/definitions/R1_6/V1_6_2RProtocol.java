@@ -34,7 +34,7 @@ public class V1_6_2RProtocol extends V1_6RProtocol {
         dataTypes[12] = new DataType[]{FLOAT, FLOAT, BYTE};
         dataTypes[13] = new DataType[]{DOUBLE, DOUBLE, DOUBLE, DOUBLE, FLOAT, FLOAT, BYTE};
         dataTypes[14] = new DataType[]{BYTE, INT, BYTE, INT, BYTE};
-        dataTypes[15] = new DataType[]{INT, BYTE, INT, BYTE, V1_3_1RProtocol.ITEM, BYTE, BYTE, BYTE};
+        dataTypes[15] = new DataType[]{INT, UNSIGNED_BYTE, INT, BYTE, V1_3_1RProtocol.ITEM, UNSIGNED_BYTE, UNSIGNED_BYTE, UNSIGNED_BYTE};
         dataTypes[16] = new DataType[]{SHORT};
         dataTypes[17] = new DataType[]{INT, BYTE, INT, BYTE, INT};
         dataTypes[18] = new DataType[]{INT, BYTE};
