@@ -5,8 +5,8 @@
 Proxy that allows connecting to almost all minecraft versions. Work in progress 
 
 ### Supported versions
-- [ ] Beta 1.3
-- [ ] Beta 1.4
+- [X] Beta 1.3
+- [X] Beta 1.4
 - [X] Beta 1.5
 - [X] Beta 1.6
 - [X] Beta 1.7
@@ -15,10 +15,10 @@ Proxy that allows connecting to almost all minecraft versions. Work in progress
 - [X] Release 1.1
 - [X] Release 1.2
 - [X] Release 1.3
-- [X] Release 1.4
+- [X] Release 1.4.6
 - [X] Release 1.5
 - [X] Release 1.6
-- [ ] Release 1.7
+- [X] Release 1.7.2
 
 ### Bugs
 - [x] Non-full chunks (r1.1 -> r1.2)
