@@ -26,6 +26,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class ChatUtils {
 
@@ -60,5 +63,27 @@ public class ChatUtils {
         }
 
         return jsonObject.toString();
+    }
+
+    /**
+     * Converts 1.6 text to 1.7 chat component
+     *
+     * @param message Legacy text
+     * @return corrected r1.7+ chat component in JSON format
+     */
+    public static String jsonToNewChatComponent(String message) {
+        String result = message;
+
+        JsonElement jsonElement = JsonParser.parseString(message);
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+        if (jsonObject.has("text") && !jsonObject.has("with")) {
+            message = jsonElement.getAsJsonObject().get("text").getAsString();
+            Component component = LegacyComponentSerializer.legacySection().deserialize(message);
+
+            result = GsonComponentSerializer.gson().serialize(component);
+        }
+
+        return result;
     }
 }

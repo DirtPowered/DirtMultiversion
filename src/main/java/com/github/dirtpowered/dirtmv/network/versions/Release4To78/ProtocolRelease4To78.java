@@ -223,7 +223,8 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                String message = ChatUtils.fixTranslationComponent(data.read(Type.STRING, 0));
+                String translationComponent = ChatUtils.fixTranslationComponent(data.read(Type.STRING, 0));
+                String message = ChatUtils.jsonToNewChatComponent(translationComponent);
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
                         set(Type.V1_7_STRING, message)
