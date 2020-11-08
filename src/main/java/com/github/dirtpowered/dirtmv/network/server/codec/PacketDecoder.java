@@ -68,7 +68,6 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
             return;
 
         switch (data.getOpCode()) {
-            case 0xFF: // kick disconnect
             case 0xFE: // ping request
             case 0xFA: // custom payload
                 userData.setPreNettyProtocolState(PreNettyProtocolState.STATUS);
