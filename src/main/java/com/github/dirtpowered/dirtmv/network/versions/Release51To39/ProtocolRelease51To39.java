@@ -269,19 +269,26 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 byte type = data.read(Type.BYTE, 1);
                 int itemId = 0;
 
-                if (type == 51) {
+                if (type == 51)
                     itemId = 261; // bow
-                } else if (type == 57) {
+
+                if (type == 57)
                     itemId = 283; // golden sword
+
+
+                if (itemId > 0) {
+                    ItemStack itemStack = new ItemStack(itemId, 1, 0, null);
+
+                    PacketData entityEquipment = PacketUtil.createPacket(0x05, new TypeHolder[]{
+                            data.read(0),
+                            set(Type.SHORT, (short) 0),
+                            set(Type.V1_3R_ITEM, itemStack)
+                    });
+
+                    session.sendPacket(entityEquipment, PacketDirection.SERVER_TO_CLIENT, getFrom());
                 }
 
-                ItemStack itemStack = new ItemStack(itemId, 1, 0, null);
-
-                return PacketUtil.createPacket(0x05, new TypeHolder[] {
-                        data.read(0),
-                        set(Type.SHORT, (short) 0),
-                        set(Type.V1_3R_ITEM, itemStack)
-                });
+                return new PacketData(-1);
             }
         });
 
