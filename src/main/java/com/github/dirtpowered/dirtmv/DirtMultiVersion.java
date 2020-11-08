@@ -42,6 +42,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProto
 import com.github.dirtpowered.dirtmv.data.registry.ProtocolRegistry;
 import com.github.dirtpowered.dirtmv.data.registry.TranslatorRegistry;
 import com.github.dirtpowered.dirtmv.network.server.Server;
+import com.github.dirtpowered.dirtmv.network.versions.Beta10To9.ProtocolBeta10To9;
 import com.github.dirtpowered.dirtmv.network.versions.Beta11To10.ProtocolBeta11To10;
 import com.github.dirtpowered.dirtmv.network.versions.Beta13To11.ProtocolBeta13To11;
 import com.github.dirtpowered.dirtmv.network.versions.Beta14To13.ProtocolBeta14To13;
@@ -112,6 +113,7 @@ public class DirtMultiVersion implements Runnable {
         translatorRegistry.registerProtocol(new ProtocolBeta14To13());
         translatorRegistry.registerProtocol(new ProtocolBeta13To11());
         translatorRegistry.registerProtocol(new ProtocolBeta11To10());
+        translatorRegistry.registerProtocol(new ProtocolBeta10To9());
 
         sessionRegistry = new SessionRegistry();
         scheduledExecutorService = Executors.newScheduledThreadPool(32);
