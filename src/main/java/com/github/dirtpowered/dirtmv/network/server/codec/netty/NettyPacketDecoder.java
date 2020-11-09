@@ -23,6 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.server.codec.netty;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
@@ -68,6 +69,12 @@ public class NettyPacketDecoder extends ByteToMessageDecoder {
         ProtocolState protocolState = userData.getProtocolState();
 
         PacketData packet = read1_7Packet(protocolState, inputBuffer, packetDirection, i);
+
+        if (protocolState == ProtocolState.HANDSHAKE) {
+            int protocol = packet.read(Type.VAR_INT, 0);
+
+            userData.setClientVersion(MinecraftVersion.fromNettyProtocolId(protocol));
+        }
 
         if (main.getConfiguration().getServerVersion().isNettyProtocol())
             handleProtocolState(protocolState, packet);

@@ -27,6 +27,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Data
 public class ServerPing {
     private String description;
@@ -44,6 +46,14 @@ public class ServerPing {
     public static class Players {
         private int max;
         private int online;
+        private List<Player> sample;
+    }
+
+    @Getter
+    @Setter
+    public static class Player {
+        private String name;
+        private String id;
     }
 
     @Getter

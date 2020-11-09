@@ -49,7 +49,7 @@ public class TranslatorRegistry {
     }
 
     public void registerProtocol(ServerProtocol serverProtocol) {
-        int clientProtocol = serverProtocol.getFrom().getProtocolId();
+        int clientProtocol = serverProtocol.getFrom().getRegistryId();
 
         protocols.put(clientProtocol, serverProtocol);
     }
@@ -71,7 +71,7 @@ public class TranslatorRegistry {
             ServerProtocol serverProtocol;
 
             // starting from r1.3 the whole connections is encrypted
-            if (from.getProtocolId() >= MinecraftVersion.R1_3_1.getProtocolId() && !from.isNettyProtocol()) {
+            if (from.getRegistryId() >= MinecraftVersion.R1_3_1.getRegistryId() && !from.isNettyProtocol()) {
                 serverProtocol = new ProtocolPassthroughEncrypted(from, versionTo);
             } else {
                 serverProtocol = new ProtocolPassthrough(from, versionTo);
@@ -79,17 +79,17 @@ public class TranslatorRegistry {
 
             return Collections.singletonList(serverProtocol);
         } else {
-            if (from.getProtocolId() >= 39 && c.getServerVersion().getProtocolId() >= 39 && !from.isNettyProtocol()) {
+            if (from.getRegistryId() >= 39 && c.getServerVersion().getRegistryId() >= 39 && !from.isNettyProtocol()) {
                 // add encryption translators to pipeline
                 serverProtocols.add(new ProtocolPassthroughEncrypted(from, versionTo));
             }
         }
 
-        int clientProtocol = from.getProtocolId();
-        int serverProtocol = versionTo.getProtocolId();
+        int clientProtocol = from.getRegistryId();
+        int serverProtocol = versionTo.getRegistryId();
 
         for (int i = serverProtocol; i <= clientProtocol; i++) {
-            if (MinecraftVersion.fromProtocolVersion(i) != null) {
+            if (MinecraftVersion.fromRegistryId(i) != null) {
 
                 ServerProtocol target = protocols.get(i);
 

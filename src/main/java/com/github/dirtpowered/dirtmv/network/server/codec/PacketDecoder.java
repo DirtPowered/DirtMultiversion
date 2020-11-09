@@ -89,7 +89,7 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
             int packetId = buffer.readUnsignedByte();
 
             if (packetId == 0x01 /* login */) {
-                clientVersion = MinecraftVersion.fromProtocolVersion(buffer.readInt());
+                clientVersion = MinecraftVersion.fromRegistryId(buffer.readInt());
 
                 userData.setProtocolDetected(true);
             } else if (packetId == 0x02 /* handshake */) {
@@ -98,7 +98,7 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
                 int protocol = buffer.readByte();
 
                 if (protocol != 0) {
-                    clientVersion = MinecraftVersion.fromProtocolVersion(protocol);
+                    clientVersion = MinecraftVersion.fromRegistryId(protocol);
                     userData.setProtocolDetected(true);
                 }
             }

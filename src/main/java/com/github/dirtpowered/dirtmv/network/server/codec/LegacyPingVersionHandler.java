@@ -76,14 +76,14 @@ public class LegacyPingVersionHandler extends ChannelInboundHandlerAdapter {
                         buffer.readerIndex(readerIndex);
 
                         if (protocolVersion != -1) {
-                            userData.setClientVersion(MinecraftVersion.fromProtocolVersion(protocolVersion));
+                            userData.setClientVersion(MinecraftVersion.fromRegistryId(protocolVersion));
                         } else {
                             // temp workaround
                             int[] versions = new int[] {73, 74, 78};
                             int index = new Random().nextInt(versions.length);
 
                             protocolVersion = versions[index];
-                            userData.setClientVersion(MinecraftVersion.fromProtocolVersion(protocolVersion));
+                            userData.setClientVersion(MinecraftVersion.fromRegistryId(protocolVersion));
                         }
                     }
                 }

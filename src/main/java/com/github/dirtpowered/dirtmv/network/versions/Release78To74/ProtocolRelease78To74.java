@@ -51,7 +51,7 @@ public class ProtocolRelease78To74 extends ServerProtocol {
                 ServerMotd pingMessage = ServerMotd.deserialize(reason);
 
                 pingMessage.setVersionName("1.6.4");
-                pingMessage.setProtocol(session.getUserData().getClientVersion().getProtocolId());
+                pingMessage.setProtocol(session.getUserData().getClientVersion().getRegistryId());
 
                 return PacketUtil.createPacket(0xFF, new TypeHolder[]{
                         set(Type.STRING, ServerMotd.serialize(pingMessage))

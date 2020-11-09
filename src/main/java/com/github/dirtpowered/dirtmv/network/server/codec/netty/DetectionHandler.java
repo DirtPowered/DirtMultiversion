@@ -23,7 +23,6 @@
 package com.github.dirtpowered.dirtmv.network.server.codec.netty;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
-import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
@@ -54,7 +53,6 @@ public class DetectionHandler extends ChannelInboundHandlerAdapter {
 
             if (packetId != 0x02 && packetId != 0xFE) {
                 log.debug("detected client is netty-based, using modern pipeline");
-                userData.setClientVersion(MinecraftVersion.R1_7_2); // default netty-based version
 
                 ctx.channel().pipeline()
                         .addAfter(ChannelConstants.DETECTION_HANDLER, ChannelConstants.NETTY_LENGTH_DECODER, new VarIntFrameDecoder())

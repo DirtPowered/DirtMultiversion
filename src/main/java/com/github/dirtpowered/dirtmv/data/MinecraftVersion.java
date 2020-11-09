@@ -42,29 +42,47 @@ public enum MinecraftVersion {
     R1_6_1(73, false),
     R1_6_2(74, false),
     R1_6_4(78, false),
-
-    // TODO: fix TranslatorRegistry #findProtocol
-    R1_7_2(82, true), // 4
-    R1_8(83, true); // 47
+    R1_7_2(80, 4, true),
+    R1_7_6(90, 5, true),
+    R1_8(100, 47, true);
 
     @Getter
-    private int protocolId;
+    private int registryId;
+
+    @Getter
+    private int protocolNettyId;
 
     @Getter
     private boolean nettyProtocol;
 
-    MinecraftVersion(int protocolId, boolean nettyProtocol) {
-        this.protocolId = protocolId;
+    MinecraftVersion(int registryId, boolean nettyProtocol) {
+        this.registryId = registryId;
         this.nettyProtocol = nettyProtocol;
     }
 
-    public static MinecraftVersion fromProtocolVersion(int protocolVersion) {
+    MinecraftVersion(int registryId, int protocolNettyId, boolean nettyProtocol) {
+        this.registryId = registryId;
+        this.protocolNettyId = protocolNettyId;
+        this.nettyProtocol = nettyProtocol;
+    }
+
+    public static MinecraftVersion fromRegistryId(int id) {
         for (MinecraftVersion version : MinecraftVersion.values()) {
-            if (version.protocolId == protocolVersion) {
+            if (version.registryId == id) {
                 return version;
             }
         }
 
-        return null;
+        return B1_3;
+    }
+
+    public static MinecraftVersion fromNettyProtocolId(int id) {
+        for (MinecraftVersion version : MinecraftVersion.values()) {
+            if (version.protocolNettyId == id) {
+                return version;
+            }
+        }
+
+        return B1_3;
     }
 }
