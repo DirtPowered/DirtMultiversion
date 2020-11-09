@@ -88,7 +88,7 @@ public class SoundRemapper {
                 }
             }
 
-            log.debug("loaded {} sound replacements", count);
+            log.info("loaded {} sound replacements from '{}'", count, fileName);
         } catch (Exception e) {
             e.printStackTrace();
         }
