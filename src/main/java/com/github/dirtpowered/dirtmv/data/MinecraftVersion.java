@@ -42,7 +42,10 @@ public enum MinecraftVersion {
     R1_6_1(73, false),
     R1_6_2(74, false),
     R1_6_4(78, false),
-    R1_7_2(82, true); // it should be 4, but well ...I'm lazy...
+
+    // TODO: fix TranslatorRegistry #findProtocol
+    R1_7_2(82, true), // 4
+    R1_8(83, true); // 47
 
     @Getter
     private int protocolId;

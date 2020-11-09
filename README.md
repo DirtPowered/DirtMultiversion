@@ -19,6 +19,8 @@ Proxy that allows connecting to almost all minecraft versions. Work in progress
 - [X] Release 1.5
 - [X] Release 1.6
 - [X] Release 1.7.2
+- [ ] Release 1.7.10
+- [ ] Release 1.8
 
 ### Bugs
 - [x] Non-full chunks (r1.1 -> r1.2)
