@@ -178,6 +178,18 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
                 byte[] mapData = data.read(Type.BYTE_BYTE_ARRAY, 2);
 
+                if (mapData[0] == 1) {
+                    for (int i = 0; i < (mapData.length - 1) / 3; ++i) {
+                        final byte icon = (byte) (mapData[i * 3 + 1] % 16);
+                        final byte centerX = mapData[i * 3 + 2];
+                        final byte centerZ = mapData[i * 3 + 3];
+                        final byte iconRotation = (byte) (mapData[i * 3 + 1] / 16);
+                        mapData[i * 3 + 1] = (byte) (icon << 4 | iconRotation & 15);
+                        mapData[i * 3 + 2] = centerX;
+                        mapData[i * 3 + 3] = centerZ;
+                    }
+                }
+
                 return PacketUtil.createPacket(0x83, new TypeHolder[] {
                         data.read(0),
                         data.read(1),
