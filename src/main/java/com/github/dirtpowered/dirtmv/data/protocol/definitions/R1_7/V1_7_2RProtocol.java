@@ -54,6 +54,6 @@ public class V1_7_2RProtocol extends BaseProtocol {
 
     @Override
     public void registerPackets() {
-        // none
+        setStateDependedProtocol(STATE_DEPENDED_PROTOCOL);
     }
 }

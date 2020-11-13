@@ -29,12 +29,40 @@ import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.registry.ProtocolRegistry;
+import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.utils.other.PreNettyPacketNames;
 import com.google.common.base.Preconditions;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 
+@Log4j2
 public class PacketUtil {
+
+    public static PacketData readModernPacket(MinecraftVersion ver, ProtocolState state, PacketInput buf, PacketDirection dir, int id) throws IOException {
+        BaseProtocol protocol = ProtocolRegistry.getProtocolFromVersion(ver);
+        DataType[] parts = protocol.getStateDependedProtocol().getInstruction(id, state, dir);
+
+        if (parts == null) {
+            log.warn("Unknown packet id {} ({}), state: {}, direction: {}", StringUtils.intToHexStr(id), id, state, dir);
+
+            return new PacketData(0);
+        }
+
+        TypeHolder[] typeHolders = new TypeHolder[parts.length];
+
+        int i = 0;
+
+        while (i < parts.length) {
+            DataType dataType = parts[i];
+
+            typeHolders[i] = new TypeHolder(dataType.getType(), dataType.read(buf));
+            i++;
+        }
+
+        return new PacketData(id, typeHolders);
+    }
 
     public static PacketData readPacket(MinecraftVersion version, PacketInput buffer) throws IOException {
         Preconditions.checkNotNull(version, "Version not provided");

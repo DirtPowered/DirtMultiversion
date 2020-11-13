@@ -67,6 +67,13 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
         if (userData.getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME)
             return;
 
+        if (data.getOpCode() == 255 && packetDirection == PacketDirection.SERVER_TO_CLIENT) {
+            if (!userData.getClientVersion().isNettyProtocol()) {
+                userData.setPreNettyProtocolState(PreNettyProtocolState.STATUS);
+                return;
+            }
+        }
+
         switch (data.getOpCode()) {
             case 0xFE: // ping request
             case 0xFA: // custom payload

@@ -36,6 +36,8 @@ import com.github.dirtpowered.dirtmv.data.protocol.types.StringDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.UTF8StringDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.UnsignedByteDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.UnsignedShortDataType;
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class BaseProtocol {
     public static final DataType INT = new IntDataType();
@@ -57,6 +59,10 @@ public abstract class BaseProtocol {
     public static final DataType UNSIGNED_SHORT = new UnsignedShortDataType();
 
     public DataType[][] dataTypes = new DataType[256][];
+
+    @Getter
+    @Setter
+    public StateDependedProtocol stateDependedProtocol;
 
     public BaseProtocol() {
         registerPackets();

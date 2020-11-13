@@ -20,31 +20,21 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.protocol;
+package com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7;
 
-import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
-import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import lombok.Getter;
+import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
 
-import java.util.HashMap;
-import java.util.Map;
+public class V1_7_6RProtocol extends BaseProtocol {
 
-public abstract class StateDependedProtocol {
+    private static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
 
-    @Getter
-    private Map<PacketRegObj, DataType[]> packets = new HashMap<>();
-
-    public StateDependedProtocol() {
-        registerPackets();
+    static {
+        STATE_DEPENDED_PROTOCOL = new V1_7_6ProtocolDefinitions();
     }
 
-    public abstract void registerPackets();
-
-    protected void addPacket(int packetId, ProtocolState protocolState, PacketDirection packetDirection, DataType[] instructions) {
-        packets.put(new PacketRegObj(packetId, protocolState, packetDirection), instructions);
-    }
-
-    public DataType[] getInstruction(int packetId, ProtocolState protocolState, PacketDirection packetDirection) {
-        return packets.get(new PacketRegObj(packetId, protocolState, packetDirection));
+    @Override
+    public void registerPackets() {
+        setStateDependedProtocol(STATE_DEPENDED_PROTOCOL);
     }
 }

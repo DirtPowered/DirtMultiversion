@@ -29,6 +29,7 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthrough;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthroughEncrypted;
+import com.github.dirtpowered.dirtmv.network.versions.ProtocolStateHandler;
 import lombok.Getter;
 
 import java.util.Collections;
@@ -73,6 +74,8 @@ public class TranslatorRegistry {
             // starting from r1.3 the whole connections is encrypted
             if (from.getRegistryId() >= MinecraftVersion.R1_3_1.getRegistryId() && !from.isNettyProtocol()) {
                 serverProtocol = new ProtocolPassthroughEncrypted(from, versionTo);
+            } else if (from.isNettyProtocol()) {
+                serverProtocol = new ProtocolStateHandler(from, versionTo);
             } else {
                 serverProtocol = new ProtocolPassthrough(from, versionTo);
             }
@@ -97,6 +100,10 @@ public class TranslatorRegistry {
                     serverProtocols.add(target);
                 }
             }
+        }
+
+        if (from.isNettyProtocol()) {
+            serverProtocols.add(new ProtocolStateHandler(from, versionTo));
         }
 
         return serverProtocols;

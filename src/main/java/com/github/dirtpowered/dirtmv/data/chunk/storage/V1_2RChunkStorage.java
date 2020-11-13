@@ -56,7 +56,7 @@ public class V1_2RChunkStorage implements Chunk {
         this.columnStorage = new ExtendedBlockStorage[16];
 
         for (int i = 0; i < 16; i++) {
-            this.columnStorage[i] = new ExtendedBlockStorage();
+            this.columnStorage[i] = new ExtendedBlockStorage(true);
         }
 
         this.biomeData = new byte[256];

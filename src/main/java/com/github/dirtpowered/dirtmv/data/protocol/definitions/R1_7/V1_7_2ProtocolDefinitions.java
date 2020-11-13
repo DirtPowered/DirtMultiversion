@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2.V1_2_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4.V1_4_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
@@ -178,6 +179,30 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 V1_7_2RProtocol.METADATA // metadata
         });
 
+        // spawn player
+        addPacket(0x0C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
+                V1_7_2RProtocol.VAR_INT, // entity id
+                V1_7_2RProtocol.STRING, // uuid
+                V1_7_2RProtocol.STRING, // name
+                BaseProtocol.INT, // x
+                BaseProtocol.INT, // y
+                BaseProtocol.INT, // z
+                BaseProtocol.BYTE, // yaw
+                BaseProtocol.BYTE, // pitch
+                BaseProtocol.SHORT, // held item
+                V1_7_2RProtocol.METADATA
+        });
+
+        // spawn painting
+        addPacket(0x10, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
+                V1_7_2RProtocol.VAR_INT, // entity id
+                V1_7_2RProtocol.STRING, // painting name
+                BaseProtocol.INT,
+                BaseProtocol.INT,
+                BaseProtocol.INT,
+                BaseProtocol.INT,
+        });
+
         // spawn experience orb
         addPacket(0x11, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
                 V1_7_2RProtocol.VAR_INT, // entity id
@@ -203,7 +228,6 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
         // entity
         addPacket(0x14, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
                 BaseProtocol.INT, // entity id
-
         });
 
         // entity relative move
@@ -247,6 +271,11 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.BYTE, // yaw
         });
 
+        // entity attributes
+        addPacket(0x20, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
+                V1_7_2RProtocol.ENTITY_ATTRIBUTES
+        });
+
         // entity status
         addPacket(0x1A, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
                 BaseProtocol.INT, // entity id
@@ -278,6 +307,13 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 V1_3_1RProtocol.CHUNK, // chunk
         });
 
+        // multi block change
+        addPacket(0x22, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
+                BaseProtocol.INT, // x
+                BaseProtocol.INT, // z
+                V1_2_1RProtocol.MULTIBLOCK_ARRAY
+        });
+
         // block change
         addPacket(0x23, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
                 BaseProtocol.INT,
@@ -300,6 +336,20 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.INT,
                 BaseProtocol.INT,
                 BaseProtocol.BOOLEAN,
+        });
+
+        // entity effect
+        addPacket(0x1D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
+                BaseProtocol.INT,
+                BaseProtocol.BYTE,
+                BaseProtocol.BYTE,
+                BaseProtocol.SHORT
+        });
+
+        // remove entity effect
+        addPacket(0x1E, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
+                BaseProtocol.INT,
+                BaseProtocol.UNSIGNED_BYTE
         });
 
         // sound effect

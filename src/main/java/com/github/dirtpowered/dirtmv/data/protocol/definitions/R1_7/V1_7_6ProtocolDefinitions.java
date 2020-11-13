@@ -20,31 +20,34 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.protocol;
+package com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7;
 
+import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.DataType;
+import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
+public class V1_7_6ProtocolDefinitions extends StateDependedProtocol {
 
-public abstract class StateDependedProtocol {
+    @Override
+    public void registerPackets() {
+        // register all 1.7.2 packets
+        V1_7_2RProtocol.STATE_DEPENDED_PROTOCOL.getPackets().forEach((packetRegObj, dataTypes) -> getPackets().put(packetRegObj, dataTypes));
 
-    @Getter
-    private Map<PacketRegObj, DataType[]> packets = new HashMap<>();
-
-    public StateDependedProtocol() {
-        registerPackets();
-    }
-
-    public abstract void registerPackets();
-
-    protected void addPacket(int packetId, ProtocolState protocolState, PacketDirection packetDirection, DataType[] instructions) {
-        packets.put(new PacketRegObj(packetId, protocolState, packetDirection), instructions);
-    }
-
-    public DataType[] getInstruction(int packetId, ProtocolState protocolState, PacketDirection packetDirection) {
-        return packets.get(new PacketRegObj(packetId, protocolState, packetDirection));
+        // spawn player
+        addPacket(0x0C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
+                V1_7_2RProtocol.VAR_INT, // entity id
+                V1_7_2RProtocol.STRING, // uuid
+                V1_7_2RProtocol.STRING, // name
+                V1_7_2RProtocol.VAR_INT,
+                BaseProtocol.INT, // x
+                BaseProtocol.INT, // y
+                BaseProtocol.INT, // z
+                BaseProtocol.BYTE, // yaw
+                BaseProtocol.BYTE, // pitch
+                BaseProtocol.SHORT, // held item
+                V1_7_2RProtocol.METADATA
+        });
     }
 }

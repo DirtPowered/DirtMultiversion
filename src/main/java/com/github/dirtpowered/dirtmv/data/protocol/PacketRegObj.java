@@ -24,27 +24,13 @@ package com.github.dirtpowered.dirtmv.data.protocol;
 
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public abstract class StateDependedProtocol {
-
-    @Getter
-    private Map<PacketRegObj, DataType[]> packets = new HashMap<>();
-
-    public StateDependedProtocol() {
-        registerPackets();
-    }
-
-    public abstract void registerPackets();
-
-    protected void addPacket(int packetId, ProtocolState protocolState, PacketDirection packetDirection, DataType[] instructions) {
-        packets.put(new PacketRegObj(packetId, protocolState, packetDirection), instructions);
-    }
-
-    public DataType[] getInstruction(int packetId, ProtocolState protocolState, PacketDirection packetDirection) {
-        return packets.get(new PacketRegObj(packetId, protocolState, packetDirection));
-    }
+@AllArgsConstructor
+@EqualsAndHashCode
+public class PacketRegObj {
+    private int packetId;
+    private ProtocolState protocolState;
+    private PacketDirection packetDirection;
 }

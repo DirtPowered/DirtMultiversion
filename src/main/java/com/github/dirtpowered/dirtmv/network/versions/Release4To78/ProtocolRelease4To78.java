@@ -55,25 +55,13 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         soundRemapper = new SoundRemapper("1_6To1_7SoundMappings");
     }
 
+    private String getOfflineUuid(String username) {
+        String uuidStr = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8)).toString();
+        return uuidStr.replaceAll("-", "");
+    }
+
     @Override
     public void registerTranslators() {
-
-        // handshake
-        addTranslator(0x00, ProtocolState.HANDSHAKE, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-                UserData userData = session.getUserData();
-
-                userData.setAddress(data.read(Type.V1_7_STRING, 1));
-                userData.setPort(data.read(Type.UNSIGNED_SHORT, 2));
-
-                userData.setProtocolState(ProtocolState.fromId(data.read(Type.VAR_INT, 3)));
-
-                return new PacketData(-1);
-            }
-        });
-
         // server info request
         addTranslator(0x00, ProtocolState.STATUS, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
@@ -140,6 +128,9 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
+                if (data.getObjects().length > 1)
+                    return new PacketData(-1);
+
                 UserData userData = session.getUserData();
                 String username = data.read(Type.V1_7_STRING, 0);
 
@@ -173,10 +164,8 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 UserData userData = session.getUserData();
                 String username = userData.getUsername();
 
-                String uuidStr = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8)).toString();
-
                 PacketData loginSuccess = PacketUtil.createPacket(0x02, new TypeHolder[]{
-                        set(Type.V1_7_STRING, uuidStr),
+                        set(Type.V1_7_STRING, getOfflineUuid(username)),
                         set(Type.V1_7_STRING, username)
                 });
 
@@ -482,7 +471,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x0C, new TypeHolder[] {
                         set(Type.VAR_INT, data.read(Type.INT, 0)), // entity id
-                        set(Type.V1_7_STRING, "bananas"), // player UUID,
+                        set(Type.V1_7_STRING, getOfflineUuid(username)), // player UUID,
                         set(Type.V1_7_STRING, username), // player name
                         data.read(2),
                         data.read(3),
@@ -536,12 +525,12 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x10, new TypeHolder[] {
-                      set(Type.VAR_INT, data.read(Type.INT, 0)),
-                      set(Type.V1_7_STRING, data.read(Type.STRING, 1)),
-                      data.read(2),
-                      data.read(3),
-                      data.read(4),
-                      data.read(5),
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        set(Type.V1_7_STRING, data.read(Type.STRING, 1)),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
                 });
             }
         });

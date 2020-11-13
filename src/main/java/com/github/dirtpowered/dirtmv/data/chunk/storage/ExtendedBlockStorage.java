@@ -25,10 +25,13 @@ package com.github.dirtpowered.dirtmv.data.chunk.storage;
 import com.github.dirtpowered.dirtmv.data.chunk.NibbleArray;
 import lombok.Getter;
 
-class ExtendedBlockStorage {
+public class ExtendedBlockStorage {
 
     @Getter
     private byte[] blockLSBArray;
+
+    @Getter
+    private NibbleArray blockMSBArray;
 
     @Getter
     private NibbleArray blockMetadataArray;
@@ -39,11 +42,14 @@ class ExtendedBlockStorage {
     @Getter
     private NibbleArray skylightArray;
 
-    ExtendedBlockStorage() {
+    public ExtendedBlockStorage(boolean skylight) {
         this.blockLSBArray = new byte[4096];
         this.blockMetadataArray = new NibbleArray(this.blockLSBArray.length, 4);
         this.blockLightArray = new NibbleArray(this.blockLSBArray.length, 4);
-        this.skylightArray = new NibbleArray(this.blockLSBArray.length, 4);
+
+        if (skylight) {
+            this.skylightArray = new NibbleArray(this.blockLSBArray.length, 4);
+        }
     }
 
     int getTypeAt(int x, int y, int z) {
@@ -78,7 +84,16 @@ class ExtendedBlockStorage {
         return this.blockLightArray.getNibble(x, y, z);
     }
 
-    boolean isEmpty() {
-        return false;
+    public boolean isEmpty() {
+        return this.blockMSBArray == null;
+    }
+
+    public void clearMSBArray() {
+        this.blockMSBArray = null;
+    }
+
+    public NibbleArray createBlockMSBArray() {
+        this.blockMSBArray = new NibbleArray(this.blockLSBArray.length);
+        return this.blockMSBArray;
     }
 }

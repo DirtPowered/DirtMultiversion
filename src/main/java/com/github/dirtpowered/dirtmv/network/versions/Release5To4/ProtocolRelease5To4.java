@@ -35,10 +35,16 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.google.gson.Gson;
 
+import java.util.List;
+
 public class ProtocolRelease5To4 extends ServerProtocol {
 
     public ProtocolRelease5To4() {
         super(MinecraftVersion.R1_7_6, MinecraftVersion.R1_7_2);
+    }
+
+    private String dashedFromTrimmedUUID(String trim) {
+        return trim.replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5");
     }
 
     @Override
@@ -57,8 +63,53 @@ public class ProtocolRelease5To4 extends ServerProtocol {
 
                 serverPing.setVersion(versionObj);
 
+                List<ServerPing.Player> samplePlayers = serverPing.getPlayers().getSample();
+
+                if (samplePlayers != null) {
+                    for (ServerPing.Player player : samplePlayers) {
+                        player.setId(dashedFromTrimmedUUID(player.getId()));
+                    }
+                }
+
                 return PacketUtil.createPacket(0x00, new TypeHolder[]{
                         set(Type.V1_7_STRING, serverPing.toString())
+                });
+            }
+        });
+
+        // login success
+        addTranslator(0x02, ProtocolState.LOGIN, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                String trimmedUUID = data.read(Type.V1_7_STRING, 0);
+
+                return PacketUtil.createPacket(0x02, new TypeHolder[]{
+                        set(Type.V1_7_STRING, dashedFromTrimmedUUID(trimmedUUID)),
+                        data.read(1)
+                });
+            }
+        });
+
+        // spawn player
+        addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                String trimmedUUID = data.read(Type.V1_7_STRING, 1);
+
+                return PacketUtil.createPacket(0x0C, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.V1_7_STRING, dashedFromTrimmedUUID(trimmedUUID)),
+                        data.read(2),
+                        set(Type.VAR_INT, 0),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        data.read(8),
+                        data.read(9),
                 });
             }
         });
