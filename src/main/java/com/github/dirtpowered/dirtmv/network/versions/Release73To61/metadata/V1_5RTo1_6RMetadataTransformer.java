@@ -71,6 +71,8 @@ public class V1_5RTo1_6RMetadataTransformer implements MetadataTransformer {
                 } else {
                     newMetaData.add(watchableObject);
                 }
+            } else {
+                newMetaData.add(watchableObject);
             }
         }
 

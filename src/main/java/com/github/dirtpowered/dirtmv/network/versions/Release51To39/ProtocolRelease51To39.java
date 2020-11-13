@@ -37,7 +37,6 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
-import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
@@ -125,11 +124,11 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                if (session.getUserData().getPreNettyProtocolState() != PreNettyProtocolState.STATUS)
-                    return data;
-
                 String reason = data.read(Type.STRING, 0);
-
+                // TODO: fix issues with detecting protocol state on post-netty versions
+                if (reason.split("\u00a7").length != 3) {
+                    return data;
+                }
                 // old to new format
                 return PacketUtil.createPacket(0xFF, new TypeHolder[] {
                         set(Type.STRING, transformMotd(reason))

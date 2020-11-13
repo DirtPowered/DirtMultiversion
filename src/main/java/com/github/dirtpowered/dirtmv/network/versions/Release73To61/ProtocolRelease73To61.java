@@ -39,11 +39,13 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_5RTo1_6RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 public class ProtocolRelease73To61 extends ServerProtocol {
 
     private SoundRemapper soundRemapper;
@@ -69,7 +71,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
-
         // login
         addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
@@ -77,6 +78,8 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
                 int entityId = data.read(Type.INT, 0);
                 session.getUserData().setEntityId(entityId);
+
+                session.getUserData().getEntityTracker().addEntity(entityId, EntityType.HUMAN);
 
                 // send entity attributes (fixes fast movement)
                 session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());
@@ -220,7 +223,8 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 EntityType entityType = session.getUserData().getEntityTracker().getEntityById(entityId);
 
                 if (entityType == null) {
-                    return data;
+                    log.warn("skipping translating metadata for {}. Entity is not tracked", entityId);
+                    return new PacketData(-1);
                 }
 
                 WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 1);
@@ -238,6 +242,9 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                int entityId = data.read(Type.INT, 0);
+                session.getUserData().getEntityTracker().addEntity(entityId, EntityType.HUMAN);
+
                 WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 8);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
 
@@ -252,6 +259,20 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                         data.read(7),
                         set(Type.V1_4R_METADATA, newMeta)
                 });
+            }
+        });
+
+        // vehicle spawn
+        addTranslator(0x17, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                if (data.read(Type.BYTE, 1) == 0x02 /* item */) {
+                    int entityId = data.read(Type.INT, 0);
+                    session.getUserData().getEntityTracker().addEntity(entityId, EntityType.ITEM);
+                }
+
+                return data;
             }
         });
 
