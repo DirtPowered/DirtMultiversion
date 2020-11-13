@@ -28,6 +28,8 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BMultiBlockArray;
+import com.github.dirtpowered.dirtmv.data.transformers.block.Block;
+import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
@@ -39,6 +41,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ProtocolRelease28To23 extends ServerProtocol {
+
+    private static final ItemBlockDataTransformer blockDataTransformer;
+
+    static {
+        blockDataTransformer = new BlockRemapper();
+    }
 
     public ProtocolRelease28To23() {
         super(MinecraftVersion.R1_2_1, MinecraftVersion.R1_1);
@@ -86,7 +94,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         });
 
         // chunk
-        addTranslator(0x33, PacketDirection.SERVER_TO_CLIENT, new BetaToV1_2ChunkTranslator());
+        addTranslator(0x33, PacketDirection.SERVER_TO_CLIENT, new BetaToV1_2ChunkTranslator(blockDataTransformer));
 
         // multi block change
         addTranslator(0x34, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
@@ -103,11 +111,13 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 for (int i = 0; i < blockArray.getSize(); ++i) {
                     short coordinate = blockArray.getCoordsArray()[i];
 
-                    int itemId = blockArray.getTypesArray()[i] & 255;
+                    int blockId = blockArray.getTypesArray()[i] & 255;
                     int blockData = blockArray.getMetadataArray()[i];
 
+                    Block replacement = blockDataTransformer.replaceBlock(blockId, blockData);
+
                     dataOutputStream.writeShort(coordinate);
-                    dataOutputStream.writeShort((short) ((itemId & 4095) << 4 | blockData & 15));
+                    dataOutputStream.writeShort((short) ((replacement.getBlockId() & 4095) << 4 | replacement.getBlockData() & 15));
                 }
 
                 byte[] b = byteArrayOutputStream.toByteArray();
@@ -118,6 +128,27 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                         data.read(0),
                         data.read(1),
                         set(Type.V1_2MULTIBLOCK_ARRAY, newFormat)
+                });
+            }
+        });
+
+        // block change
+        addTranslator(0x35, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                byte blockId = data.read(Type.BYTE, 3);
+                byte blockData = data.read(Type.BYTE, 4);
+
+                Block replacement = blockDataTransformer.replaceBlock(blockId, blockData);
+
+                return PacketUtil.createPacket(0x35, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        set(Type.BYTE, (byte) replacement.getBlockId()),
+                        set(Type.BYTE, (byte) replacement.getBlockData())
                 });
             }
         });
@@ -206,5 +237,29 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 return data;
             }
         });
+    }
+
+    static class BlockRemapper extends ItemBlockDataTransformer {
+
+        @Override
+        public void registerReplacements() {
+            // wooden door
+            addBlockReplacement(64, 9, new Block(64, 8));
+            addBlockReplacement(64, 10, new Block(64, 8));
+            addBlockReplacement(64, 11, new Block(64, 8));
+            addBlockReplacement(64, 12, new Block(64, 8));
+            addBlockReplacement(64, 13, new Block(64, 8));
+            addBlockReplacement(64, 14, new Block(64, 8));
+            addBlockReplacement(64, 15, new Block(64, 8));
+
+            // iron door
+            addBlockReplacement(71, 9, new Block(71, 8));
+            addBlockReplacement(71, 10, new Block(71, 8));
+            addBlockReplacement(71, 11, new Block(71, 8));
+            addBlockReplacement(71, 12, new Block(71, 8));
+            addBlockReplacement(71, 13, new Block(71, 8));
+            addBlockReplacement(71, 14, new Block(71, 8));
+            addBlockReplacement(71, 15, new Block(71, 8));
+        }
     }
 }

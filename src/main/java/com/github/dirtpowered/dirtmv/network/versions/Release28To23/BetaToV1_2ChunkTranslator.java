@@ -29,6 +29,8 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BChunk;
+import com.github.dirtpowered.dirtmv.data.transformers.block.Block;
+import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
@@ -36,6 +38,12 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import java.util.Arrays;
 
 public class BetaToV1_2ChunkTranslator extends PacketTranslator {
+
+    private ItemBlockDataTransformer blockDataTransformer;
+
+    BetaToV1_2ChunkTranslator(ItemBlockDataTransformer blockDataTransformer) {
+        this.blockDataTransformer = blockDataTransformer;
+    }
 
     @Override
     public PacketData translate(ServerSession session, PacketData data) {
@@ -84,8 +92,13 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                                 groundUpContinuous = false;
                             }
 
-                            v1_2ChunkStorage.setBlockId(posX, posY, posZ, betaChunkStorage.getBlockId(posX, posY, posZ));
-                            v1_2ChunkStorage.setBlockMetadata(posX, posY, posZ, betaChunkStorage.getBlockData(posX, posY, posZ));
+                            int oldBlockId = betaChunkStorage.getBlockId(posX, posY, posZ);
+                            int oldBlockData = betaChunkStorage.getBlockData(posX, posY, posZ);
+
+                            Block replacement = blockDataTransformer.replaceBlock(oldBlockId, oldBlockData);
+
+                            v1_2ChunkStorage.setBlockId(posX, posY, posZ, replacement.getBlockId());
+                            v1_2ChunkStorage.setBlockMetadata(posX, posY, posZ, replacement.getBlockData());
                             v1_2ChunkStorage.setBlockLight(posX, posY, posZ, betaChunkStorage.getBlockLight(posX, posY, posZ));
                             v1_2ChunkStorage.setSkyLight(posX, posY, posZ, betaChunkStorage.getSkyLight(posX, posY, posZ));
                         }
