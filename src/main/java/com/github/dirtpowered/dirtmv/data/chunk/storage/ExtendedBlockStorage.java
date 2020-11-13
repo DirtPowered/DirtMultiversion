@@ -42,7 +42,10 @@ public class ExtendedBlockStorage {
     @Getter
     private NibbleArray skylightArray;
 
-    public ExtendedBlockStorage(boolean skylight) {
+    private boolean old;
+
+    public ExtendedBlockStorage(boolean skylight, boolean old) {
+        this.old = old;
         this.blockLSBArray = new byte[4096];
         this.blockMetadataArray = new NibbleArray(this.blockLSBArray.length, 4);
         this.blockLightArray = new NibbleArray(this.blockLSBArray.length, 4);
@@ -85,7 +88,7 @@ public class ExtendedBlockStorage {
     }
 
     public boolean isEmpty() {
-        return this.blockMSBArray == null;
+        return !old && this.blockMSBArray == null;
     }
 
     public void clearMSBArray() {
