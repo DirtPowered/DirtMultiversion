@@ -7,6 +7,9 @@
     <groupId>DirtMultiversion</groupId>
     <artifactId>DirtMultiversion</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
     <repositories>
         <repository>
             <id>jitpack.io</id>
@@ -46,6 +49,7 @@
                 <configuration>
                     <source>8</source>
                     <target>8</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
