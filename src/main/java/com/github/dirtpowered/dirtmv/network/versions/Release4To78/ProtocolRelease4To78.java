@@ -26,8 +26,12 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_5Team;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
+import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
@@ -36,6 +40,7 @@ import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release4To78.item.ItemRemapper;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import com.google.common.base.Charsets;
@@ -48,11 +53,13 @@ import java.util.UUID;
 public class ProtocolRelease4To78 extends ServerProtocol {
 
     private SoundRemapper soundRemapper;
+    private ItemBlockDataTransformer itemRemapper;
 
     public ProtocolRelease4To78() {
         super(MinecraftVersion.R1_7_2, MinecraftVersion.R1_6_4);
 
         soundRemapper = new SoundRemapper("1_6To1_7SoundMappings");
+        itemRemapper = new ItemRemapper();
     }
 
     private String getOfflineUuid(String username) {
@@ -377,10 +384,23 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                WatchableObject[] metadataArray = data.read(Type.V1_4R_METADATA, 1);
+
+                for (int i = 0; i < metadataArray.length; i++) {
+                    WatchableObject watchableObject = metadataArray[i];
+                    if (watchableObject.getType() == MetadataType.ITEM) {
+                        ItemStack obj = (ItemStack) watchableObject.getValue();
+
+                        if (obj != null) {
+                            obj = itemRemapper.replaceItem(obj);
+                        }
+                        metadataArray[i] = new WatchableObject(MetadataType.ITEM, 10, obj);
+                    }
+                }
 
                 return PacketUtil.createPacket(0x1C, new TypeHolder[] {
                         data.read(0),
-                        set(Type.V1_7R_METADATA, data.read(Type.V1_4R_METADATA, 1))
+                        set(Type.V1_7R_METADATA, metadataArray)
                 });
             }
         });
@@ -765,6 +785,51 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x67 SC 0x2F (inventory set slot)
+        addTranslator(0x67, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack originalItem = data.read(Type.V1_3R_ITEM, 2);
+
+                if (originalItem == null)
+                    return new PacketData(0x2F, data.getObjects());
+
+                ItemStack itemStack = itemRemapper.replaceItem(originalItem);
+
+                return PacketUtil.createPacket(0x2F, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        set(Type.V1_3R_ITEM, itemStack)
+                });
+            }
+        });
+
+        // 0x68 SC 0x30 (inventory window items)
+        addTranslator(0x68, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack[] itemArray = data.read(Type.V1_3B_ITEM_ARRAY, 1);
+
+                for (int i = 0; i < itemArray.length; i++) {
+                    ItemStack originalItem = itemArray[i];
+                    ItemStack item = originalItem;
+
+                    if (originalItem != null) {
+                        item = itemRemapper.replaceItem(originalItem);
+                    }
+
+                    itemArray[i] = item;
+                }
+
+                return PacketUtil.createPacket(0x30, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.V1_3R_ITEM_ARRAY, itemArray)
+                });
+            }
+        });
+
         // 0xC8 SC 0x37 -> cancel (statistics)
         addTranslator(0xC8, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
@@ -848,12 +913,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
         // 0x16 SC 0x0D (item collect)
         addTranslator(0x16, 0x0D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // 0x67 SC 0x2F (inventory set slot)
-        addTranslator(0x67, 0x2F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // 0x68 SC 0x30 (inventory window items)
-        addTranslator(0x68, 0x30, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x17 CS 0xFA (custom payload)
         addTranslator(0x17, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {

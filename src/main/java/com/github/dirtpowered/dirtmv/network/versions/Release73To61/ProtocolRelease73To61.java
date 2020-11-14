@@ -79,8 +79,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 int entityId = data.read(Type.INT, 0);
                 session.getUserData().setEntityId(entityId);
 
-                session.getUserData().getEntityTracker().addEntity(entityId, EntityType.HUMAN);
-
                 // send entity attributes (fixes fast movement)
                 session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());
                 session.sendPacket(getDefaultAttributes(entityId), PacketDirection.SERVER_TO_CLIENT, getFrom());

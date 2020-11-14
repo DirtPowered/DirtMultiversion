@@ -47,10 +47,11 @@ public abstract class ItemBlockDataTransformer {
         return getBlockReplacementsMap().getOrDefault(key, new Block(blockId, blockData));
     }
 
-    public Block replaceItem(ItemStack itemStack) {
+    public ItemStack replaceItem(ItemStack itemStack) {
         int key = (itemStack.getItemId() * 16) + itemStack.getData();
+        Block b = getItemReplacementsMap().getOrDefault(key, new Block(itemStack.getItemId(), itemStack.getData()));
 
-        return getItemReplacementsMap().getOrDefault(key, new Block(itemStack.getItemId(), itemStack.getData()));
+        return new ItemStack(b.getBlockId(), itemStack.getAmount(), b.getBlockData(), b.getNameTag(itemStack.getCompoundTag()));
     }
 
     protected void addBlockReplacement(int id, int data, Block to) {

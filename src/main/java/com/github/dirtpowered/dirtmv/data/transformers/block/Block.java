@@ -22,13 +22,43 @@
 
 package com.github.dirtpowered.dirtmv.data.transformers.block;
 
-import lombok.AllArgsConstructor;
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.StringTag;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
-public
-class Block {
+public class Block {
     private int blockId;
     private int blockData;
+    private String oldItemName;
+
+    public Block(int blockId, int blockData) {
+        this.blockId = blockId;
+        this.blockData = blockData;
+    }
+
+    public Block(int blockId, int blockData, String oldItemName) {
+        this.blockId = blockId;
+        this.blockData = blockData;
+        this.oldItemName = oldItemName;
+    }
+
+    CompoundTag getNameTag(CompoundTag originalTag) {
+        if (oldItemName == null || oldItemName.isEmpty()) {
+            return originalTag;
+        }
+
+        CompoundTag tag = originalTag;
+        if (tag == null) {
+            tag = new CompoundTag();
+        }
+
+        CompoundTag parent = new CompoundTag("display");
+
+        StringTag name = new StringTag("Name", "§r" + oldItemName);
+
+        parent.put("Name", name);
+        tag.put("display", parent);
+        return tag;
+    }
 }
