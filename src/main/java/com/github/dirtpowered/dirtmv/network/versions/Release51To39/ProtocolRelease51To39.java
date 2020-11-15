@@ -42,6 +42,7 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.mojang.nbt.CompoundTag;
 import io.netty.buffer.Unpooled;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -50,6 +51,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.WeakHashMap;
 
+@Log4j2
 public class ProtocolRelease51To39 extends ServerProtocol {
 
     private SoundRemapper soundRemapper;
@@ -396,6 +398,32 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 return PacketUtil.createPacket(0x38, new TypeHolder[]{
                         set(Type.V1_4CHUNK_BULK, oldChunk)
                 });
+            }
+        });
+
+        // block place
+        addTranslator(0x0F, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack item = data.read(Type.V1_3R_ITEM, 4);
+
+                if (item == null) return data;
+                int itemId = item.getItemId();
+
+                if (itemId >= 298 && itemId <= 317) {
+                    return PacketUtil.createPacket(0x66, new TypeHolder[] {
+                            set(Type.BYTE, (byte) 0),
+                            set(Type.SHORT, 0),
+                            set(Type.BYTE, (byte) 0),
+                            set(Type.SHORT, 0),
+                            set(Type.BYTE, (byte) 0),
+                            // fake item
+                            set(Type.V1_3R_ITEM, new ItemStack(256, 0, 0, null))
+                    });
+                }
+
+                return data;
             }
         });
     }
