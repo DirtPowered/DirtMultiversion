@@ -78,28 +78,6 @@ public class ProtocolRelease60To51 extends ServerProtocol {
             }
         });
 
-        // window items
-        addTranslator(0x68, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-                ItemStack[] itemArray = data.read(Type.V1_3R_ITEM_ARRAY, 1);
-                // TODO: Inventory cache
-                return data;
-            }
-        });
-
-        // set slot
-        addTranslator(0x67, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-                ItemStack item = data.read(Type.V1_3R_ITEM, 2);
-                // TODO: Inventory cache
-                return data;
-            }
-        });
-
         // window click
         addTranslator(0x66, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
@@ -147,13 +125,13 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                     return new PacketData(-1);
                 }
 
-                ItemStack cachedItem = null; // TODO: cache
-                ItemStack itemStack = item == null ? (slot < 0 ? null : cachedItem) : item;
+                // random item
+                ItemStack i = new ItemStack(352, 2, 0, null);
+
+                ItemStack itemStack = item == null ? (slot < 0 ? null : i) : item;
 
                 if (itemStack == null && !clickingOutside)
                     return new PacketData(-1);
-
-                //inventory.setLastSlot(slot);
 
                 return PacketUtil.createPacket(0x66, new TypeHolder[] {
                         data.read(0),
