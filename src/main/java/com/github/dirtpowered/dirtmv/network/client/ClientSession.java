@@ -66,7 +66,7 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        log.info("[{}] connected to remote server", getAddress());
+        log.info("[{}] connected to remote server", serverSession.getLogTag());
         serverSession.getMain().getSessionRegistry().addSession(key, new MultiSession(this, serverSession));
 
         callback.onComplete();
@@ -74,7 +74,7 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        log.info("[{}] disconnected from remote server", getAddress());
+        log.info("[{}] disconnected from remote server", serverSession.getLogTag());
         serverSession.getMain().getSessionRegistry().removeSession(key);
         channel.close();
 
@@ -88,10 +88,6 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
 
         // disconnect from proxy
         serverSession.disconnect(cause.getMessage());
-    }
-
-    private String getAddress() {
-        return channel.localAddress().toString();
     }
 
     /**

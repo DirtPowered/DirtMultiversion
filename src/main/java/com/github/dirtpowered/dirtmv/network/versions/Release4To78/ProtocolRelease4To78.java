@@ -394,7 +394,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                         if (obj != null) {
                             obj = itemRemapper.replaceItem(obj);
                         }
-                        metadataArray[i] = new WatchableObject(MetadataType.ITEM, 10, obj);
+                        metadataArray[i] = new WatchableObject(MetadataType.ITEM, watchableObject.getIndex(), obj);
                     }
                 }
 
@@ -810,7 +810,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ItemStack[] itemArray = data.read(Type.V1_3B_ITEM_ARRAY, 1);
+                ItemStack[] itemArray = data.read(Type.V1_3R_ITEM_ARRAY, 1);
 
                 for (int i = 0; i < itemArray.length; i++) {
                     ItemStack originalItem = itemArray[i];

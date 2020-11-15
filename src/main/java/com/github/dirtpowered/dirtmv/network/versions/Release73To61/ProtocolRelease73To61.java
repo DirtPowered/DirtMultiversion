@@ -221,7 +221,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 EntityType entityType = session.getUserData().getEntityTracker().getEntityById(entityId);
 
                 if (entityType == null) {
-                    log.warn("skipping translating metadata for {}. Entity is not tracked", entityId);
+                    log.warn("[{}] skipping translating metadata for {}. Entity is not tracked", session.getLogTag(), entityId);
                     return new PacketData(-1);
                 }
 

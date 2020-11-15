@@ -53,6 +53,11 @@ public class DefaultConfig implements Configuration {
     }
 
     @Override
+    public String preReleaseMOTD() {
+        return "A Beta 1.7 Minecraft Server";
+    }
+
+    @Override
     public boolean isDebugMode() {
         return false;
     }

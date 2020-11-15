@@ -52,6 +52,11 @@ public interface Configuration {
     MinecraftVersion getServerVersion();
 
     /**
+     * Message of the day for pre b1.8 versions
+     */
+    String preReleaseMOTD();
+
+    /**
      * Debug mode, printing all packets, additional info
      */
     boolean isDebugMode();

@@ -49,8 +49,10 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
 
+                String message = session.getMain().getConfiguration().preReleaseMOTD();
+
                 PacketData packetData = PacketUtil.createPacket(0xFF, new TypeHolder[]{
-                        set(Type.STRING, "A Minecraft Server§0§20")
+                        set(Type.STRING, message + "§0§20")
                 });
 
                 session.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, getFrom());

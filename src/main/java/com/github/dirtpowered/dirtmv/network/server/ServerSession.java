@@ -210,7 +210,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         if (message == null || message.isEmpty()) {
             channel.close();
         } else {
-            log.warn("disconnected with message: {}", message);
+            log.warn("[{}] disconnected with message: {}", getLogTag(), message);
             sendDisconnectPacket(message);
         }
 
@@ -237,5 +237,19 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     public void disconnect() {
         disconnect(StringUtil.EMPTY_STRING);
+    }
+
+
+    private String getAddress() {
+        return channel.localAddress().toString();
+    }
+
+    public String getLogTag() {
+        String tag = getAddress();
+        if (userData.getUsername() != null) {
+            tag = userData.getUsername();
+        }
+
+        return tag;
     }
 }
