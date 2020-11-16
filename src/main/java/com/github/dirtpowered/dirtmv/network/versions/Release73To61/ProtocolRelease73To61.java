@@ -372,17 +372,15 @@ public class ProtocolRelease73To61 extends ServerProtocol {
         addTranslator(0x1B, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 boolean dismount = data.read(Type.BOOLEAN, 3);
 
                 if (dismount) {
-                    PacketData useEntity = PacketUtil.createPacket(0x07, new TypeHolder[] {
+                    return PacketUtil.createPacket(0x07, new TypeHolder[] {
                         set(Type.INT, session.getUserData().getEntityId()),
                         set(Type.INT, session.getUserData().getVehicleEntityId()),
-                        set(Type.BYTE, 0),
+                        set(Type.BYTE, (byte) 0),
                     });
-
-                    session.sendPacket(useEntity, PacketDirection.CLIENT_TO_SERVER, getFrom());
                 }
 
                 return new PacketData(-1); // packet doesn't exist in 1.5
