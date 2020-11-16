@@ -141,7 +141,11 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         } else {
             ClientSession clientSession = getClientSession();
 
-            if (clientSession != null) {
+            if (target.getOpCode() == 2 /* handshake */ && !hasServerPingProtocol()) {
+                connectToServer();
+            }
+
+            if (clientSession != null && clientSession.getChannel().isActive()) {
                 clientSession.sendPacket(target);
                 return;
             }
@@ -163,18 +167,9 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        main.getScheduledExecutorService().execute(() -> client.createClient(key, () -> {
-            if (!initialPacketQueue.isEmpty()) {
-
-                initialPacketQueue.forEach(data -> {
-                    try {
-                        sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, null);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-        }));
+        if (hasServerPingProtocol()) {
+            connectToServer();
+        }
     }
 
     @Override
@@ -251,5 +246,26 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         }
 
         return tag;
+    }
+
+    private void connectToServer() {
+        if (getClientSession() == null) {
+            main.getScheduledExecutorService().execute(() -> client.createClient(key, () -> {
+                if (!initialPacketQueue.isEmpty()) {
+
+                    initialPacketQueue.forEach(data -> {
+                        try {
+                            sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, null);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            }));
+        }
+    }
+
+    private boolean hasServerPingProtocol() {
+        return main.getConfiguration().getServerVersion().getRegistryId() > 17;
     }
 }
