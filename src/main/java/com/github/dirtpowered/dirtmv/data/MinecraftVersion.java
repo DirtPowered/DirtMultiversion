@@ -43,7 +43,9 @@ public enum MinecraftVersion {
     R1_6_2(74, false),
     R1_6_4(78, false),
     R1_7_2(80, 4, true),
-    R1_7_6(90, 5, true);
+    R1_7_6(90, 5, true),
+    R1_8(100, 47, true);
+
 
     @Getter
     private int registryId;

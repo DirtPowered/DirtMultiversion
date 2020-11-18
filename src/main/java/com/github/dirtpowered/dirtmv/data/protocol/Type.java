@@ -32,6 +32,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_5.V1_5RProtoco
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
@@ -44,6 +45,8 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_5Team;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_2EntityAttributes;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8Chunk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8ChunkBulk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.mojang.nbt.CompoundTag;
 
@@ -347,6 +350,20 @@ public class Type {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_7_2RProtocol.METADATA.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<V1_8Chunk> V1_8R_CHUNK = new TypeObject<>(V1_8Chunk.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.CHUNK.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<V1_8ChunkBulk> V1_8R_CHUNK_BULK = new TypeObject<>(V1_8ChunkBulk.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.CHUNK_BULK.write(holder, packetOutput);
         }
     });
 }
