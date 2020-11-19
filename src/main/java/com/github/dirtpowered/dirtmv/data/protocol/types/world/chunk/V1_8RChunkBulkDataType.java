@@ -22,13 +22,13 @@
 
 package com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk;
 
+import com.github.dirtpowered.dirtmv.data.chunk.ChunkUtils;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8ChunkBulk;
-import com.github.dirtpowered.dirtmv.network.versions.Release47To5.ChunkUtils;
 
 import java.io.IOException;
 
