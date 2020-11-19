@@ -38,6 +38,11 @@ public class LegacyChunkTracker implements WorldTrackerImpl {
 
     @Override
     public void onBlockUpdate(int x, int y, int z, int typeId, int data) {
+        if (x < 0 || z < 0) {
+            // TODO: Fix block updates on negative coordinates
+            return;
+        }
+
         int chunkX = x / 16;
         int chunkZ = z / 16;
 
@@ -50,8 +55,8 @@ public class LegacyChunkTracker implements WorldTrackerImpl {
         if (chunkMap.containsKey(key)) {
             LegacyChunkPair chunkPair = chunkMap.get(key);
 
-            chunkPair.getOldChunk().setBlockId(newX, newY, newZ, typeId);
-            chunkPair.getOldChunk().setBlockMetadata(newX, newY, newZ, data);
+            chunkPair.getNewChunk().setBlockId(newX, newY, newZ, typeId);
+            chunkPair.getNewChunk().setBlockMetadata(newX, newY, newZ, data);
         }
     }
 
