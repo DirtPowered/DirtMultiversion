@@ -39,4 +39,8 @@ public class EntityTracker {
     public void removeEntity(int entityId) {
         entities.remove(entityId);
     }
+
+    public void purge() {
+        entities.clear();
+    }
 }

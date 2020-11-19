@@ -20,20 +20,16 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.chunk;
+package com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk;
 
-public class ChunkUtils {
+import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_2RChunkStorage;
+import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_3BChunkStorage;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-    public static int calculateDataSize(int bitCount, boolean skylight) {
-        int i = bitCount * 2 * 16 * 16 * 16;
-        int j = bitCount * 16 * 16 * 16 / 2;
-        int k = skylight ? bitCount * 16 * 16 * 16 / 2 : 0;
-        int biomeLength = 256;
-
-        return i + j + k + biomeLength;
-    }
-
-    public static long getChunkLongKey(int chunkX, int chunkZ) {
-        return (long) chunkX & 0xffffffffL | ((long) chunkZ & 0xffffffffL) << 32;
-    }
+@Data
+@AllArgsConstructor
+class LegacyChunkPair {
+    private V1_3BChunkStorage oldChunk;
+    private V1_2RChunkStorage newChunk;
 }

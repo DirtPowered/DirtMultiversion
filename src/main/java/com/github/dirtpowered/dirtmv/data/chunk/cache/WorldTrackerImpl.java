@@ -20,20 +20,13 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.chunk;
+package com.github.dirtpowered.dirtmv.data.chunk.cache;
 
-public class ChunkUtils {
+public interface WorldTrackerImpl {
 
-    public static int calculateDataSize(int bitCount, boolean skylight) {
-        int i = bitCount * 2 * 16 * 16 * 16;
-        int j = bitCount * 16 * 16 * 16 / 2;
-        int k = skylight ? bitCount * 16 * 16 * 16 / 2 : 0;
-        int biomeLength = 256;
+    void onBlockUpdate(int x, int y, int z, int typeId, int data);
 
-        return i + j + k + biomeLength;
-    }
+    void onChunkUnload(int chunkX, int chunkZ);
 
-    public static long getChunkLongKey(int chunkX, int chunkZ) {
-        return (long) chunkX & 0xffffffffL | ((long) chunkZ & 0xffffffffL) << 32;
-    }
+    void purge();
 }

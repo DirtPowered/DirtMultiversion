@@ -35,6 +35,8 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.BetaToV1_2ChunkTranslator;
+import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.LegacyChunkTracker;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -101,6 +103,11 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
+                LegacyChunkTracker legacyChunkTracker = session.getUserData().getLegacyChunkTracker();
+
+                int chunkX = data.read(Type.INT, 0);
+                int chunkZ = data.read(Type.INT, 1);
+
                 V1_3BMultiBlockArray blockArray = (V1_3BMultiBlockArray) data.read(2).getObject();
 
                 int totalDataSize = 4 * blockArray.getSize();
@@ -115,6 +122,12 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                     int blockData = blockArray.getMetadataArray()[i];
 
                     Block replacement = blockDataTransformer.replaceBlock(blockId, blockData);
+
+                    int blockX = (chunkX << 4) + (coordinate >> 12 & 15);
+                    int blockY = coordinate & 255;
+                    int blockZ = (chunkZ << 4) + (coordinate >> 8 & 15);
+
+                    legacyChunkTracker.onBlockUpdate(blockX, blockY, blockZ, replacement.getBlockId(), replacement.getBlockData());
 
                     dataOutputStream.writeShort(coordinate);
                     dataOutputStream.writeShort((short) ((replacement.getBlockId() & 4095) << 4 | replacement.getBlockData() & 15));
@@ -137,11 +150,17 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                LegacyChunkTracker legacyChunkTracker = session.getUserData().getLegacyChunkTracker();
+
+                int blockX = data.read(Type.INT, 0);
+                byte blockY = data.read(Type.BYTE, 1);
+                int blockZ = data.read(Type.INT, 2);
 
                 byte blockId = data.read(Type.BYTE, 3);
                 byte blockData = data.read(Type.BYTE, 4);
 
                 Block replacement = blockDataTransformer.replaceBlock(blockId, blockData);
+                legacyChunkTracker.onBlockUpdate(blockX, blockY, blockZ, replacement.getBlockId(), replacement.getBlockData());
 
                 return PacketUtil.createPacket(0x35, new TypeHolder[]{
                         data.read(0),
@@ -234,6 +253,25 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 });
 
                 session.sendPacket(rotationPacket, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                return data;
+            }
+        });
+
+        // chunk unload
+        addTranslator(0x32, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                LegacyChunkTracker legacyChunkTracker = session.getUserData().getLegacyChunkTracker();
+
+                int chunkX = data.read(Type.INT, 0);
+                int chunkZ = data.read(Type.INT, 1);
+
+                byte mode = data.read(Type.BYTE, 2);
+
+                if (mode == 0) {
+                    legacyChunkTracker.onChunkUnload(chunkX, chunkZ);
+                }
                 return data;
             }
         });
