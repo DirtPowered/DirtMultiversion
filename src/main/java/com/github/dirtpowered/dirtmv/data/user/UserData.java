@@ -27,7 +27,6 @@ import com.github.dirtpowered.dirtmv.data.entity.EntityTracker;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.LegacyChunkTracker;
 import lombok.Data;
 
 import javax.crypto.SecretKey;
@@ -47,7 +46,6 @@ public class UserData {
     private ProtocolState protocolState;
     private String address;
     private int port;
-    private LegacyChunkTracker legacyChunkTracker;
 
     public UserData() {
         this.clientVersion = MinecraftVersion.B1_5;
@@ -55,11 +53,9 @@ public class UserData {
         this.preNettyProtocolState = PreNettyProtocolState.STATUS;
         this.protocolState = ProtocolState.HANDSHAKE;
         this.entityTracker = new EntityTracker();
-        this.legacyChunkTracker = new LegacyChunkTracker();
     }
 
     public void clear() {
         this.entityTracker.purge();
-        this.legacyChunkTracker.purge();
     }
 }

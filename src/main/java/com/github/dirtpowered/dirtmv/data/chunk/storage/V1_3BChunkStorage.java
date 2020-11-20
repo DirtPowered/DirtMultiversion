@@ -26,9 +26,15 @@ import com.github.dirtpowered.dirtmv.data.chunk.Chunk;
 import com.github.dirtpowered.dirtmv.data.chunk.NibbleArray;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 public class V1_3BChunkStorage implements Chunk {
 
     private final static byte[] EMPTY_CHUNK = new byte[16 * 16 * 128];
+
+    static {
+        Arrays.fill(EMPTY_CHUNK, (byte) -1);
+    }
 
     private byte[] blockArray;
     private NibbleArray blockDataArray;
@@ -91,7 +97,20 @@ public class V1_3BChunkStorage implements Chunk {
         this.skyLightArray.setNibble(x, y, z, value);
     }
 
-    public int setChunkData(byte[] data, int x, int y, int z, int xSize, int ySize, int zSize, int totalSize) {
+    public int setChunkData(byte[] data, int x, int y, int z, int xSize, int ySize, int zSize, int totalSize, boolean full) {
+        if (full) {
+            int metadataOffset = this.blockArray.length;
+            int blockLightOffset = this.blockArray.length + this.blockDataArray.getData().length;
+            int skyLightOffset = data.length - blockLightArray.getData().length;
+
+            System.arraycopy(data, 0, this.blockArray, 0, this.blockArray.length);
+            System.arraycopy(data, metadataOffset, this.blockDataArray.getData(), 0, this.blockDataArray.getData().length);
+            System.arraycopy(data, blockLightOffset, this.blockLightArray.getData(), 0, this.blockLightArray.getData().length);
+            System.arraycopy(data, skyLightOffset, this.skyLightArray.getData(), 0, this.skyLightArray.getData().length);
+
+            return 0;
+        }
+
         for (int i = x; i < xSize; ++i) {
             for (int j = z; j < zSize; ++j) {
                 int index = i << 11 | j << 7 | y;
