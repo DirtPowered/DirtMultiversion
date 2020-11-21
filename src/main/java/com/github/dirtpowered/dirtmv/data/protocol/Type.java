@@ -51,6 +51,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.mojang.nbt.CompoundTag;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class Type {
     public static final TypeObject<Byte> BYTE = new TypeObject<>(Byte.class, new TypeHandler() {
@@ -364,6 +365,13 @@ public class Type {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_8RProtocol.CHUNK_BULK.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<UUID> UUID = new TypeObject<>(UUID.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.UUID.write(holder, packetOutput);
         }
     });
 }

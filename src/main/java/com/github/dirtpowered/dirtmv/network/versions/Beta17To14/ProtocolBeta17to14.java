@@ -102,7 +102,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x08, new TypeHolder[]{
                         data.read(0),
-                        set(Type.SHORT, 6),
+                        set(Type.SHORT, (short) 6),
                         set(Type.FLOAT, 0.0F),
 
                 });

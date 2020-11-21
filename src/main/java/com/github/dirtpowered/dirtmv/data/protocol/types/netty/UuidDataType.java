@@ -20,33 +20,33 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8;
+package com.github.dirtpowered.dirtmv.data.protocol.types.netty;
 
-import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
-import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
-import com.github.dirtpowered.dirtmv.data.protocol.types.netty.UuidDataType;
-import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_8RChunkBulkDataType;
-import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_8RChunkDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 
-public class V1_8RProtocol extends BaseProtocol {
+import java.io.IOException;
+import java.util.UUID;
 
-    public final static DataType CHUNK;
-    public final static DataType CHUNK_BULK;
-    public final static DataType UUID;
+public class UuidDataType extends DataType<UUID> {
 
-    private static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
-
-    static {
-        CHUNK = new V1_8RChunkDataType();
-        CHUNK_BULK = new V1_8RChunkBulkDataType();
-        UUID = new UuidDataType();
-
-        STATE_DEPENDED_PROTOCOL = new V1_8ProtocolDefinitions();
+    public UuidDataType() {
+        super(Type.UUID);
     }
 
     @Override
-    public void registerPackets() {
-        setStateDependedProtocol(STATE_DEPENDED_PROTOCOL);
+    public UUID read(PacketInput packetInput) {
+        return new UUID(packetInput.readLong(), packetInput.readLong());
+    }
+
+    @Override
+    public void write(TypeHolder typeHolder, PacketOutput packetOutput) throws IOException {
+        UUID uuid = (UUID) typeHolder.getObject();
+
+        packetOutput.writeLong(uuid.getMostSignificantBits());
+        packetOutput.writeLong(uuid.getLeastSignificantBits());
     }
 }

@@ -250,10 +250,10 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x23, new TypeHolder[] {
                         data.read(0), // x
-                        set(Type.UNSIGNED_BYTE, (int) data.read(Type.BYTE, 1)), // y
+                        set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 1).shortValue()), // y
                         data.read(2), // z
-                        set(Type.VAR_INT, (int) data.read(Type.SHORT, 3)), // type
-                        set(Type.UNSIGNED_BYTE, (int) data.read(Type.BYTE, 4)) // data
+                        set(Type.VAR_INT, data.read(Type.SHORT, 3).intValue()), // type
+                        set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 4).shortValue()) // data
                 });
             }
         });

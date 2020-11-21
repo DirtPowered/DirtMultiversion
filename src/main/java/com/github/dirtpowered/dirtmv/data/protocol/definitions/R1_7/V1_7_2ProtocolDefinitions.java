@@ -323,6 +323,15 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.UNSIGNED_BYTE
         });
 
+        // block break animation
+        addPacket(0x25, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
+                V1_7_2RProtocol.VAR_INT,
+                BaseProtocol.INT,
+                BaseProtocol.INT,
+                BaseProtocol.INT,
+                BaseProtocol.UNSIGNED_BYTE
+        });
+
         // chunk bulk
         addPacket(0x26, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
                 V1_4_6RProtocol.CHUNK_BULK, // chunk bulk

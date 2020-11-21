@@ -54,6 +54,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Release23To22.ProtocolRele
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.ProtocolRelease28To23;
 import com.github.dirtpowered.dirtmv.network.versions.Release29To28.ProtocolRelease29To28;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.ProtocolRelease39To29;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.ProtocolRelease47To5;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ProtocolRelease4To78;
 import com.github.dirtpowered.dirtmv.network.versions.Release51To39.ProtocolRelease51To39;
 import com.github.dirtpowered.dirtmv.network.versions.Release5To4.ProtocolRelease5To4;
@@ -103,6 +104,7 @@ public class DirtMultiVersion implements Runnable {
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_7_6, new V1_7_6RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_8, new V1_8RProtocol());
 
+        translatorRegistry.registerProtocol(new ProtocolRelease47To5());
         translatorRegistry.registerProtocol(new ProtocolRelease5To4());
         translatorRegistry.registerProtocol(new ProtocolRelease4To78());
         translatorRegistry.registerProtocol(new ProtocolRelease78To74());

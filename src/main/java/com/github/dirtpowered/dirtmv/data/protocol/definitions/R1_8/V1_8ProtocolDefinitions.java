@@ -179,8 +179,7 @@ public class V1_8ProtocolDefinitions extends StateDependedProtocol {
         // player spawn
         addPacket(0x0C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
                 V1_7_2RProtocol.VAR_INT, // entity id
-                BaseProtocol.LONG, // uuid
-                BaseProtocol.LONG, // uuid
+                V1_8RProtocol.UUID, // uuid
                 BaseProtocol.INT, // x
                 BaseProtocol.INT, // y
                 BaseProtocol.INT, // z
@@ -426,9 +425,78 @@ public class V1_8ProtocolDefinitions extends StateDependedProtocol {
                 V1_7_2RProtocol.VAR_INT, // param
         });
 
+        // player input
+        addPacket(0x0C, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.FLOAT,
+                BaseProtocol.FLOAT,
+                BaseProtocol.BYTE
+        });
+
+        // close window
+        addPacket(0x0D, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE, // window id
+        });
+
+        // click window
+
+        // confirm transaction
+        addPacket(0x0F, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE,
+                BaseProtocol.SHORT,
+                BaseProtocol.BYTE
+        });
+
+        // creative item get
+
+        // enchant slot selection
+        addPacket(0x11, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE, // id
+                BaseProtocol.BYTE // button
+        });
+
+        // set sign text
+        addPacket(0x12, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.LONG, // encoded block position
+                V1_7_2RProtocol.STRING,
+                V1_7_2RProtocol.STRING,
+                V1_7_2RProtocol.STRING,
+                V1_7_2RProtocol.STRING,
+        });
+
+        // player abilities
+        addPacket(0x13, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE,
+                BaseProtocol.FLOAT,
+                BaseProtocol.FLOAT
+        });
+
+        // tab complete
+
+        // client settings
+        addPacket(0x15, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                V1_7_2RProtocol.STRING,
+                BaseProtocol.BYTE,
+                BaseProtocol.BYTE, // chat visibility
+                BaseProtocol.BOOLEAN,
+                BaseProtocol.UNSIGNED_BYTE
+        });
+
         // client status
         addPacket(0x16, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
                 BaseProtocol.BYTE // action
+        });
+
+        // custom payload
+
+        // spectate
+        addPacket(0x18, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                V1_8RProtocol.UUID
+        });
+
+        // resource pack status
+        addPacket(0x19, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                V1_7_2RProtocol.STRING,
+                V1_7_2RProtocol.VAR_INT // action
         });
     }
 }
