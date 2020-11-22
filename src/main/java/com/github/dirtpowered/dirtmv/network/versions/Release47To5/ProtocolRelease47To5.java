@@ -164,6 +164,41 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // spawn painting
+        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int x = data.read(Type.INT, 2);
+                int y = data.read(Type.INT, 3);
+                int z = data.read(Type.INT, 4);
+
+                int direction = data.read(Type.INT, 5);
+
+                switch (direction) {
+                    case 0:
+                        z += 1;
+                        break;
+                    case 1:
+                        x -= 1;
+                        break;
+                    case 2:
+                        z -= 1;
+                        break;
+                    case 3:
+                        x += 1;
+                        break;
+                }
+
+                return PacketUtil.createPacket(0x10, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        set(Type.LONG, toBlockPosition(x, y, z)),
+                        set(Type.BYTE, data.read(Type.INT, 5).byteValue())
+                });
+            }
+        });
+
         // chunk data
         addTranslator(0x21, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new V1_3ToV1_8ChunkTranslator());
 
@@ -353,9 +388,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // spawn player
         addTranslator(0x0C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // spawn painting
-        addTranslator(0x10, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // entity destroy
         addTranslator(0x13, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
