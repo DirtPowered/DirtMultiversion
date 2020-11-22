@@ -58,9 +58,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                if (data.getObjects().length < 3) {
-                    return new PacketData(-1);
-                }
 
                 return new PacketData(-1); // since 1.3 handshake is one-way (client -> server)
             }
@@ -71,6 +68,9 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
+                if (data.getObjects().length < 3)
+                    return new PacketData(-1);
+
                 String username = data.read(Type.STRING, 1);
                 session.getUserData().setUsername(username);
 
@@ -78,7 +78,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 // server -> client
                 session.sendPacket(encryptRequest, PacketDirection.SERVER_TO_CLIENT, getFrom());
-
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
                         set(Type.STRING, username)
                 });
