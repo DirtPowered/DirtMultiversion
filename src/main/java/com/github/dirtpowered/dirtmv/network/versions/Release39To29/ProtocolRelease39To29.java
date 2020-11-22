@@ -178,6 +178,11 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                byte mode = data.read(Type.BYTE, 2);
+
+                if (mode == 1) {
+                    return new PacketData(-1);
+                }
 
                 return PacketUtil.createPacket(0x33, new TypeHolder[] {
                         data.read(0),
