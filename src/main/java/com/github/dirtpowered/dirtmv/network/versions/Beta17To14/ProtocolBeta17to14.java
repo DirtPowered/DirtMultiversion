@@ -29,7 +29,9 @@ import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
+import com.github.dirtpowered.dirtmv.data.utils.StringUtils;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
 import java.io.IOException;
@@ -65,6 +67,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                session.getUserData().setUsername(data.read(Type.STRING, 1));
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         set(Type.INT, 14), // INT
@@ -79,7 +82,15 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) {
+            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+                UserData userData = session.getUserData();
+                userData.setTabListCache(new PlayerTabListCache());
+
+                // add default tab entry
+                String username = userData.getUsername();
+                String colored = StringUtils.safeSubstring("§6" + username, 0, 16);
+
+                session.sendPacket(createTabEntryPacket(colored, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0), // INT - entityId
@@ -176,6 +187,50 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
                 return data;
             }
+        });
+
+        // named entity spawn
+        addTranslator(0x14, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+                int entityId = data.read(Type.INT, 0);
+                String username = data.read(Type.STRING, 1);
+
+                PlayerTabListCache cache = session.getUserData().getTabListCache();
+
+                session.sendPacket(createTabEntryPacket(username, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
+                cache.getTabPlayers().put(entityId, username);
+                return data;
+            }
+        });
+
+        // entity destroy
+        addTranslator(0x1D, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+                int entityId = data.read(Type.INT, 0);
+
+                PlayerTabListCache cache = session.getUserData().getTabListCache();
+
+                if (cache.getTabPlayers().containsKey(entityId)) {
+                    String username = cache.getTabPlayers().get(entityId);
+
+                    session.sendPacket(createTabEntryPacket(username, false), PacketDirection.SERVER_TO_CLIENT, getFrom());
+                    cache.getTabPlayers().remove(entityId);
+                }
+                return data;
+            }
+        });
+    }
+
+    private PacketData createTabEntryPacket(String username, boolean online) {
+
+        return PacketUtil.createPacket(0xC9, new TypeHolder[]{
+                set(Type.STRING, username),
+                set(Type.BYTE, (byte) (online ? 1 : 0)),
+                set(Type.SHORT, (short) 0)
         });
     }
 }

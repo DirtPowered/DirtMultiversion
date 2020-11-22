@@ -27,6 +27,7 @@ import com.github.dirtpowered.dirtmv.data.entity.EntityTracker;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
+import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.PlayerTabListCache;
 import lombok.Data;
 
 import javax.crypto.SecretKey;
@@ -46,6 +47,7 @@ public class UserData {
     private ProtocolState protocolState;
     private String address;
     private int port;
+    private PlayerTabListCache tabListCache;
 
     public UserData() {
         this.clientVersion = MinecraftVersion.B1_5;
@@ -57,5 +59,8 @@ public class UserData {
 
     public void clear() {
         this.entityTracker.purge();
+        if (tabListCache != null) {
+            tabListCache.getTabPlayers().clear();
+        }
     }
 }

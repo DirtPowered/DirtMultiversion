@@ -20,39 +20,19 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.utils;
+package com.github.dirtpowered.dirtmv.network.versions.Beta17To14;
 
-public class StringUtils {
+import lombok.Getter;
 
-    public static String intToHexStr(int i) {
-        return "0x" + String.format("%2s", Integer.toHexString(i)).replace(' ', '0').toUpperCase();
-    }
+import java.util.HashMap;
+import java.util.Map;
 
-    public static String safeSubstring(String str, int start, int end) {
-        if (end < 0) {
-            end += str.length();
-        }
+public class PlayerTabListCache {
 
-        if (start < 0) {
-            start += str.length();
-        }
+    @Getter
+    private Map<Integer, String> tabPlayers;
 
-        if (end > str.length()) {
-            end = str.length();
-        }
-
-        if (start > end) {
-            return "";
-        } else {
-            if (start < 0) {
-                start = 0;
-            }
-
-            if (end < 0) {
-                end = 0;
-            }
-
-            return str.substring(start, end);
-        }
+    PlayerTabListCache() {
+        this.tabPlayers = new HashMap<>();
     }
 }
