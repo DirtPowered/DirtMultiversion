@@ -426,5 +426,39 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 return data;
             }
         });
+
+        // spawn painting
+        addTranslator(0x19, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int direction = data.read(Type.INT, 5);
+                int correctedDirection = 0;
+
+                switch (direction) {
+                    case 0:
+                        correctedDirection = 2;
+                        break;
+                    case 1:
+                        correctedDirection = 1;
+                        break;
+                    case 2:
+                        correctedDirection = 0;
+                        break;
+                    case 3:
+                        correctedDirection = 3;
+                        break;
+                }
+
+                return PacketUtil.createPacket(0x19, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.INT, correctedDirection)
+                });
+            }
+        });
     }
 }
