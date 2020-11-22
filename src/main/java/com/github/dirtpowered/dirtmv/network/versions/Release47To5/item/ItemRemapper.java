@@ -20,33 +20,24 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.protocol.io.model;
+package com.github.dirtpowered.dirtmv.network.versions.Release47To5.item;
 
-import io.netty.buffer.ByteBuf;
+import com.github.dirtpowered.dirtmv.data.transformers.block.Block;
+import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 
-public interface PacketOutput {
+public class ItemRemapper extends ItemBlockDataTransformer {
 
-    void writeInt(int intValue);
-
-    void writeVarInt(int intValue);
-
-    void writeByte(int byteValue);
-
-    void writeBoolean(boolean booleanValue);
-
-    void writeShort(int shortValue);
-
-    void writeChar(int charValue);
-
-    void writeLong(long longValue);
-
-    void writeFloat(float floatValue);
-
-    void writeDouble(double doubleValue);
-
-    void writeBytes(byte[] byteArrayValue);
-
-    void writeBytes(byte[] byteArray, int length);
-
-    ByteBuf getBuffer();
+    @Override
+    public void registerReplacements() {
+        addItemReplacement(8, 0, new Block(326, 0, "Water"));
+        addItemReplacement(9, 0, new Block(326, 0, "Stationary Water"));
+        addItemReplacement(10, 0, new Block(326, 0, "Lava"));
+        addItemReplacement(11, 0, new Block(326, 0, "Stationary lava"));
+        addItemReplacement(51, 0, new Block(385, 0, "Fire"));
+        addItemReplacement(90, 0, new Block(160, 10, "Nether portal"));
+        addItemReplacement(119, 0, new Block(399, 0, "End portal"));
+        addItemReplacement(127, 0, new Block(351, 3, "Cocoa"));
+        addItemReplacement(141, 0, new Block(391, 0, "Carrots"));
+        addItemReplacement(142, 0, new Block(392, 0, "Potato"));
+    }
 }

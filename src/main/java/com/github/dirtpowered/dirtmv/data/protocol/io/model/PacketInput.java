@@ -22,6 +22,8 @@
 
 package com.github.dirtpowered.dirtmv.data.protocol.io.model;
 
+import io.netty.buffer.ByteBuf;
+
 public interface PacketInput {
 
     int readInt();
@@ -47,4 +49,6 @@ public interface PacketInput {
     double readDouble();
 
     byte[] readBytes(int length);
+
+    ByteBuf getBuffer();
 }

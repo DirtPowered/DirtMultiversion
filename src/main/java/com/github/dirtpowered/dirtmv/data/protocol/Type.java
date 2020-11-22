@@ -263,6 +263,7 @@ public class Type {
             V1_0RProtocol.ITEM.write(holder, packetOutput);
         }
     });
+
     public static final TypeObject<ItemStack> V1_3R_ITEM = new TypeObject<>(ItemStack.class, new TypeHandler() {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
@@ -374,4 +375,19 @@ public class Type {
             V1_8RProtocol.UUID.write(holder, packetOutput);
         }
     });
+
+    public static final TypeObject<ItemStack> V1_8R_ITEM = new TypeObject<>(ItemStack.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.ITEM.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<ItemStack[]> V1_8R_ITEM_ARRAY = new TypeObject<>(ItemStack[].class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.ITEM_ARRAY.write(holder, packetOutput);
+        }
+    });
+
 }

@@ -96,6 +96,7 @@ public class NettyOutputWrapper implements PacketOutput {
         buf.writeBytes(byteArray, 0, length);
     }
 
+    @Override
     public ByteBuf getBuffer() {
         return buf;
     }

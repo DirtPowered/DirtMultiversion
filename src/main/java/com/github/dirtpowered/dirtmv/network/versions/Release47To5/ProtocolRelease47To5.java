@@ -26,19 +26,26 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRemapper;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.google.gson.Gson;
 
 public class ProtocolRelease47To5 extends ServerProtocol {
 
+    private ItemBlockDataTransformer itemRemapper;
+
     public ProtocolRelease47To5() {
         super(MinecraftVersion.R1_8, MinecraftVersion.R1_7_6);
+
+        itemRemapper = new ItemRemapper();
     }
 
     private long toBlockPosition(int x, int y, int z) {
@@ -191,6 +198,51 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // chunk bulk
         addTranslator(0x26, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
+        // set slot
+        addTranslator(0x2F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack originalItem = data.read(Type.V1_3R_ITEM, 2);
+
+                if (originalItem == null)
+                    return new PacketData(0x2F, data.getObjects());
+
+                ItemStack itemStack = itemRemapper.replaceItem(originalItem);
+
+                return PacketUtil.createPacket(0x2F, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        set(Type.V1_8R_ITEM, itemStack)
+                });
+            }
+        });
+
+        // window items
+        addTranslator(0x30, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack[] itemArray = data.read(Type.V1_3R_ITEM_ARRAY, 1);
+
+                for (int i = 0; i < itemArray.length; i++) {
+                    ItemStack originalItem = itemArray[i];
+                    ItemStack item = originalItem;
+
+                    if (originalItem != null) {
+                        item = itemRemapper.replaceItem(originalItem);
+                    }
+
+                    itemArray[i] = item;
+                }
+
+                return PacketUtil.createPacket(0x30, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.V1_8R_ITEM_ARRAY, itemArray)
+                });
+            }
+        });
 
         // client packets
 
@@ -345,12 +397,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // sound effect
         addTranslator(0x29, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // set slot
-        addTranslator(0x2F, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // window items
-        addTranslator(0x30, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // update tile entity
         addTranslator(0x35, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);

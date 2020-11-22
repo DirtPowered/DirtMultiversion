@@ -125,6 +125,9 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
                 V1_2MultiBlockArray newFormat = new V1_2MultiBlockArray(blockArray.getSize(), b.length, b);
 
+                dataOutputStream.close();
+                byteArrayOutputStream.close();
+
                 return PacketUtil.createPacket(0x34, new TypeHolder[]{
                         data.read(0),
                         data.read(1),

@@ -33,7 +33,6 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release22To17.item.LegacyItemList;
-import com.mojang.nbt.CompoundTag;
 
 public class ProtocolRelease22To17 extends ServerProtocol {
 
@@ -134,7 +133,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 ItemStack item = data.read(Type.V1_3B_ITEM, 2);
 
                 if (item != null && LegacyItemList.isEnchantable(item.getItemId()))
-                    item.setCompoundTag(new CompoundTag("tag"));
+                    item.setCompoundTag(null);
 
                 return PacketUtil.createPacket(0x67, new TypeHolder[]{
                         data.read(0),
@@ -153,7 +152,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
                 for (ItemStack item : items) {
                     if (item != null && LegacyItemList.isEnchantable(item.getItemId())) {
-                        item.setCompoundTag(new CompoundTag("tag"));
+                        item.setCompoundTag(null);
                     }
                 }
 

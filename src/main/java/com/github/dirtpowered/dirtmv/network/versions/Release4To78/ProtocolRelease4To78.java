@@ -1040,6 +1040,22 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x07 CS 0x0E (block digging)
+        addTranslator(0x07, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0E, new TypeHolder[]{
+                        set(Type.BYTE, data.read(Type.UNSIGNED_BYTE, 0).byteValue()),
+                        data.read(1),
+                        set(Type.BYTE, data.read(Type.UNSIGNED_BYTE, 2).byteValue()),
+                        data.read(3),
+                        set(Type.BYTE, data.read(Type.UNSIGNED_BYTE, 4).byteValue())
+                });
+            }
+        });
+
         // 0x0F CS 0x6A (confirm transaction)
         addTranslator(0x0F, 0x6A, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
 
@@ -1069,9 +1085,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
         // 0x06 CS 0x0D (player position look)
         addTranslator(0x06, 0x0D, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
-
-        // 0x07 CS 0x0E (block digging)
-        addTranslator(0x07, 0x0E, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
 
         // 0x0A CS 0x12 (player animation)
         addTranslator(0x0A, 0x12, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);

@@ -157,6 +157,9 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                     byte[] bytes = baos.toByteArray();
                     V1_2MultiBlockArray blockArray = new V1_2MultiBlockArray(slicedData.size(), bytes.length, bytes);
 
+                    dos.close();
+                    baos.close();
+
                     PacketData multiBlockChange = PacketUtil.createPacket(0x34, new TypeHolder[]{
                             new TypeHolder(Type.INT, chunkX),
                             new TypeHolder(Type.INT, chunkZ),

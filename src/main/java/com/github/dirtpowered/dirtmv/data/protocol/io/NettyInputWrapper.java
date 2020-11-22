@@ -110,4 +110,9 @@ public class NettyInputWrapper implements PacketInput {
         buf.readBytes(b, 0, length);
         return b;
     }
+
+    @Override
+    public ByteBuf getBuffer() {
+        return buf;
+    }
 }

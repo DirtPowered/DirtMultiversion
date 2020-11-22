@@ -25,7 +25,7 @@ public class CompoundTag extends Tag {
         super(name);
     }
 
-    void write(DataOutput dos) throws IOException {
+    public void write(DataOutput dos) throws IOException {
         for (Tag tag : tags.values()) {
             Tag.writeNamedTag(tag, dos);
         }
