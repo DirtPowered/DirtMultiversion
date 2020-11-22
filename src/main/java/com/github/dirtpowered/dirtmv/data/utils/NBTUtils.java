@@ -24,7 +24,6 @@ package com.github.dirtpowered.dirtmv.data.utils;
 
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
-import com.google.common.base.Preconditions;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.NbtIo;
 import io.netty.buffer.ByteBuf;
@@ -67,7 +66,6 @@ public class NBTUtils {
 
     public static CompoundTag readNBTUncompressed(PacketInput packetInput) {
         ByteBuf buf = packetInput.getBuffer();
-        Preconditions.checkArgument(buf.readableBytes() <= 2097152, "NBT too big");
 
         int readerIndex = buf.readerIndex();
         byte tagId = packetInput.readByte();

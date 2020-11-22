@@ -184,13 +184,13 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                     return new PacketData(-1);
                 }
 
+                int chunkX = data.read(Type.INT, 0);
+                int chunkZ = data.read(Type.INT, 1);
+
+                V1_2Chunk chunk = new V1_2Chunk(chunkX, chunkZ, true, (short) 0, (short) 0, 0, new byte[0]);
+
                 return PacketUtil.createPacket(0x33, new TypeHolder[] {
-                        data.read(0),
-                        data.read(1),
-                        set(Type.BYTE, 1),
-                        set(Type.SHORT, 0),
-                        set(Type.SHORT, 0),
-                        set(Type.INT_BYTE_ARRAY, new byte[0])
+                        set(Type.V1_3_CHUNK, chunk)
                 });
             }
         });

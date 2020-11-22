@@ -34,6 +34,7 @@ import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRemapper;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.google.gson.Gson;
@@ -162,6 +163,9 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 });
             }
         });
+
+        // chunk data
+        addTranslator(0x21, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new V1_3ToV1_8ChunkTranslator());
 
         // block change
         addTranslator(0x23, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
@@ -382,9 +386,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // entity metadata
         addTranslator(0x1C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // chunk data
-        addTranslator(0x21, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // multi block change
         addTranslator(0x22, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
