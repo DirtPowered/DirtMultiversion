@@ -31,6 +31,7 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release23To22.chat.ChatFilter;
 
 public class ProtocolRelease23To22 extends ServerProtocol {
 
@@ -117,6 +118,20 @@ public class ProtocolRelease23To22 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 return new PacketData(-1); // cancel packet
+            }
+        });
+
+        // chat
+        addTranslator(0x03, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                String filteredMessage = ChatFilter.filterChat(data.read(Type.STRING, 0));
+
+                return PacketUtil.createPacket(0x03, new TypeHolder[] {
+                        set(Type.STRING, filteredMessage)
+                });
             }
         });
     }
