@@ -32,6 +32,7 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
@@ -283,6 +284,45 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // update sign
+        addTranslator(0x33, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int x = data.read(Type.INT, 0);
+                short y = data.read(Type.SHORT, 1);
+                int z = data.read(Type.INT, 2);
+
+                String[] lines = new String[4];
+                for (int i = 0; i < 4; i++) {
+                    lines[i] = ChatUtils.legacyToJsonString(data.read(Type.V1_7_STRING, 3 + i));
+                }
+
+                return PacketUtil.createPacket(0x33, new TypeHolder[] {
+                        set(Type.LONG, toBlockPosition(x, y, z)),
+                        set(Type.V1_7_STRING, lines[0]),
+                        set(Type.V1_7_STRING, lines[1]),
+                        set(Type.V1_7_STRING, lines[2]),
+                        set(Type.V1_7_STRING, lines[3]),
+                });
+            }
+        });
+
+        // sign editor
+        addTranslator(0x36, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int x = data.read(Type.INT, 0);
+                int y = data.read(Type.INT, 1);
+                int z = data.read(Type.INT, 2);
+
+                return PacketUtil.createPacket(0x36, new TypeHolder[] {
+                        set(Type.LONG, toBlockPosition(x, y, z))
+                });
+            }
+        });
+
         // client packets
 
         // keep alive
@@ -353,6 +393,19 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         data.read(3),
                         data.read(4),
                         set(Type.BYTE, data.read(Type.UNSIGNED_BYTE, 5).byteValue())
+                });
+            }
+        });
+
+        // animation
+        addTranslator(0x0A, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0A, new TypeHolder[] {
+                        set(Type.INT, 0),
+                        set(Type.BYTE, (byte) 1)
                 });
             }
         });
