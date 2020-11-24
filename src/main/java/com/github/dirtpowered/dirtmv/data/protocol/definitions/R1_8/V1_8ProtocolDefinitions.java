@@ -408,7 +408,15 @@ public class V1_8ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.BYTE
         });
 
-        // 0x08 - place block
+        // place block
+        addPacket(0x08, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.LONG, // encoded position
+                BaseProtocol.UNSIGNED_BYTE, // direction
+                V1_8RProtocol.ITEM,
+                BaseProtocol.UNSIGNED_BYTE,
+                BaseProtocol.UNSIGNED_BYTE,
+                BaseProtocol.UNSIGNED_BYTE
+        });
 
         // held slot change
         addPacket(0x09, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{

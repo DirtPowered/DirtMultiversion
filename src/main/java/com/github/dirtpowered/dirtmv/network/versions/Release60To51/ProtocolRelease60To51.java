@@ -73,7 +73,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                         data.read(1),
                         data.read(2),
                         data.read(3),
-                        set(Type.BYTE, 1) // use original title
+                        set(Type.BYTE, 0) // use original title
                 });
             }
         });

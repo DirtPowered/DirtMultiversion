@@ -26,15 +26,9 @@ import com.github.dirtpowered.dirtmv.data.chunk.Chunk;
 import com.github.dirtpowered.dirtmv.data.chunk.NibbleArray;
 import lombok.Getter;
 
-import java.util.Arrays;
-
 public class V1_3BChunkStorage implements Chunk {
 
     private final static byte[] EMPTY_CHUNK = new byte[16 * 16 * 128];
-
-    static {
-        Arrays.fill(EMPTY_CHUNK, (byte) -1);
-    }
 
     private byte[] blockArray;
     private NibbleArray blockDataArray;

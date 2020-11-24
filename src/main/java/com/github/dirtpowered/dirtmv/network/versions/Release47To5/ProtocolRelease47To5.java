@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
@@ -36,6 +37,7 @@ import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.InventoryUtils;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRemapper;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.google.gson.Gson;
@@ -52,6 +54,14 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
     private long toBlockPosition(int x, int y, int z) {
         return (((long) x & 0x3FFFFFF) << 38) | ((((long) y) & 0xFFF) << 26) | (((long) z) & 0x3FFFFFF);
+    }
+
+    private BlockLocation fromBlockPosition(long encodedPosition) {
+        int x = (int) (encodedPosition >> 38);
+        int y = (int) ((encodedPosition >> 26) & 4095);
+        int z = (int) ((encodedPosition << 38) >> 38);
+
+        return new BlockLocation(x, y, z);
     }
 
     @Override
@@ -203,6 +213,9 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         // chunk data
         addTranslator(0x21, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new V1_3ToV1_8ChunkTranslator());
 
+        // chunk bulk
+        addTranslator(0x26, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
         // block change
         addTranslator(0x23, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
@@ -235,9 +248,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 });
             }
         });
-
-        // chunk bulk
-        addTranslator(0x26, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // set slot
         addTranslator(0x2F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
@@ -284,6 +294,27 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // open window
+        addTranslator(0x2D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                short type = data.read(Type.UNSIGNED_BYTE, 1);
+                String title = data.read(Type.V1_7_STRING, 2);
+
+                short slots = data.read(Type.UNSIGNED_BYTE, 3);
+                // non storage inventories have always 0 slots
+                slots = InventoryUtils.isNonStorageInventory(type) ? 0 : slots;
+
+                return PacketUtil.createPacket(0x2D, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.V1_7_STRING, InventoryUtils.getNamedTypeFromId(type)),
+                        set(Type.V1_7_STRING, InventoryUtils.addTranslateComponent(title)),
+                        set(Type.UNSIGNED_BYTE, slots)
+                });
+            }
+        });
+
         // update sign
         addTranslator(0x33, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
@@ -319,6 +350,33 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x36, new TypeHolder[] {
                         set(Type.LONG, toBlockPosition(x, y, z))
+                });
+            }
+        });
+
+        // set experience
+        addTranslator(0x1F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x1F, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.VAR_INT, data.read(Type.SHORT, 1).intValue()),
+                        set(Type.VAR_INT, data.read(Type.SHORT, 2).intValue())
+                });
+            }
+        });
+
+        // collect item
+        addTranslator(0x0D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0D, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        set(Type.VAR_INT, data.read(Type.INT, 1))
                 });
             }
         });
@@ -397,6 +455,47 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // player digging
+        addTranslator(0x07, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                long encodedPosition = data.read(Type.LONG, 1);
+
+                BlockLocation l = fromBlockPosition(encodedPosition);
+
+                return PacketUtil.createPacket(0x07, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.INT, l.getX()),
+                        set(Type.UNSIGNED_BYTE, (short) l.getY()),
+                        set(Type.INT, l.getZ()),
+                        set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 2).shortValue())
+                });
+            }
+        });
+
+        // place block
+        addTranslator(0x08, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                long encodedPosition = data.read(Type.LONG, 0);
+
+                BlockLocation l = fromBlockPosition(encodedPosition);
+
+                return PacketUtil.createPacket(0x08, new TypeHolder[]{
+                        set(Type.INT, l.getX()),
+                        set(Type.UNSIGNED_BYTE, (short) l.getY()),
+                        set(Type.INT, l.getZ()),
+                        data.read(1),
+                        set(Type.V1_3R_ITEM, data.read(Type.V1_3R_ITEM, 2)),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                });
+            }
+        });
+
         // animation
         addTranslator(0x0A, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
@@ -406,6 +505,21 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 return PacketUtil.createPacket(0x0A, new TypeHolder[] {
                         set(Type.INT, 0),
                         set(Type.BYTE, (byte) 1)
+                });
+            }
+        });
+
+        // entity action
+        addTranslator(0x0B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int action = data.read(Type.VAR_INT, 1);
+
+                return PacketUtil.createPacket(0x0B, new TypeHolder[]{
+                        set(Type.INT, data.read(Type.VAR_INT, 0)),
+                        set(Type.BYTE, (byte) action + 1),
+                        set(Type.INT, data.read(Type.VAR_INT, 0)),
                 });
             }
         });
@@ -427,14 +541,11 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // block action
+        addTranslator(0x24, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
         // entity equipment
         addTranslator(0x04, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // respawn
-        addTranslator(0x07, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // collect item
-        addTranslator(0x0D, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // spawn mob
         addTranslator(0x0F, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
@@ -474,9 +585,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // multi block change
         addTranslator(0x22, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // set experience
-        addTranslator(0x1F, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // effect
         addTranslator(0x28, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);

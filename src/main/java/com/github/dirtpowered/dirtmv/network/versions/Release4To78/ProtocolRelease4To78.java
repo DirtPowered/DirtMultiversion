@@ -432,10 +432,10 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x2D, new TypeHolder[] {
-                        data.read(0),
-                        data.read(1),
+                        set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 0).shortValue()),
+                        set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 1).shortValue()),
                         set(Type.V1_7_STRING, data.read(Type.STRING, 2)),
-                        data.read(3),
+                        set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 3).shortValue()),
                         data.read(4)
                 });
             }

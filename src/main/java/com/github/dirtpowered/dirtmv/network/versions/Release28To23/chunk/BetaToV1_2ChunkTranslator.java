@@ -216,13 +216,10 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                         for (int posZ = startZ; posZ < newZSize; posZ++) {
                             int oldBlockId = oldChunk.getBlockId(posX, posY, posZ);
 
-                            if (oldBlockId != -1) {
-                                int oldBlockData = oldChunk.getBlockData(posX, posY, posZ);
+                            int oldBlockData = oldChunk.getBlockData(posX, posY, posZ);
 
-                                Block b = blockDataTransformer.replaceBlock(oldBlockId, oldBlockData);
-
-                                worldBlocks.add(new WorldBlock(x + (posX - startX), posY, z + (posZ - startZ), b.getBlockId(), b.getBlockData()));
-                            }
+                            Block b = blockDataTransformer.replaceBlock(oldBlockId, oldBlockData);
+                            worldBlocks.add(new WorldBlock(x + (posX - startX), posY, z + (posZ - startZ), b.getBlockId(), b.getBlockData()));
                         }
                     }
                 }
