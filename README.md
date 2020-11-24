@@ -23,7 +23,6 @@ Proxy that allows connecting to almost all minecraft versions. Work in progress
 - [ ] Release 1.8
 
 ### Bugs
-- [x] Experience translation (b1.8 -> r1.0)
 - [x] all listed above protocols are unfinished, buggy
 - [x] and many more ...
 

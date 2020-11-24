@@ -112,15 +112,15 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                float exp = 0.0F; // TODO convert progress
+                float exp = data.read(Type.BYTE, 0).floatValue();
+                int level = data.read(Type.BYTE, 1).intValue();
 
-                short level = data.read(Type.BYTE, 1).shortValue();
-                short totalExperience = data.read(Type.BYTE, 0).shortValue();
+                exp = (exp - 1) / (10 * level);
 
                 return PacketUtil.createPacket(0x2B, new TypeHolder[]{
                         set(Type.FLOAT, exp),
                         set(Type.SHORT, level),
-                        set(Type.SHORT, totalExperience)
+                        set(Type.SHORT, level)
                 });
             }
         });
