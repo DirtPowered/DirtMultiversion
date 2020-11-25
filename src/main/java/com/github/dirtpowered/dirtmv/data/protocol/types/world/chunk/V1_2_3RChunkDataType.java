@@ -80,7 +80,7 @@ public class V1_2_3RChunkDataType extends DataType<V1_2Chunk> {
             inflater.end();
         }
 
-        return new V1_2Chunk(chunkX, chunkZ, groundUp, primaryBitmap, additionalBitmap, compressedDataSize, chunk);
+        return new V1_2Chunk(chunkX, chunkZ, groundUp, primaryBitmap, additionalBitmap, compressedDataSize, chunk, null);
     }
 
     @Override

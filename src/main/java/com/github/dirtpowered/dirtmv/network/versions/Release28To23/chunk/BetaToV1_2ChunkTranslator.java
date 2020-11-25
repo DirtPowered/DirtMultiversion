@@ -72,7 +72,7 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
         if (groundUp) {
             V1_3BChunkStorage oldChunkStorage = new V1_3BChunkStorage(chunkX, chunkZ);
-            V1_2RChunkStorage newChunkStorage = new V1_2RChunkStorage(chunkX, chunkZ);
+            V1_2RChunkStorage newChunkStorage = new V1_2RChunkStorage(true, true, chunkX, chunkZ);
 
             oldChunkStorage.setChunkData(
                     oldChunk.getChunk(),
@@ -98,6 +98,11 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                         newChunkStorage.setBlockMetadata(x, y, z, replacement.getBlockData());
                         newChunkStorage.setBlockLight(x, y, z, oldChunkStorage.getBlockLight(x, y, z));
                         newChunkStorage.setSkyLight(x, y, z, oldChunkStorage.getSkyLight(x, y, z));
+
+                        // fix chest lighting
+                        if (replacement.getBlockId() == 54) {
+                            newChunkStorage.setSkyLight(x, y, z, 15);
+                        }
                     }
                 }
             }
@@ -117,7 +122,8 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                             (short) newChunkStorage.getPrimaryBitmap(),
                             (short) 0,
                             newChunkStorage.getCompressedSize(),
-                            compressedData
+                            compressedData,
+                            newChunkStorage
                     ))
             });
         } else {

@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.data.protocol.objects;
 
+import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_2RChunkStorage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -35,4 +36,5 @@ public class V1_2Chunk {
     private short additionalBitmap;
     private int compressedDataSize;
     private byte[] data;
+    private V1_2RChunkStorage storage;
 }

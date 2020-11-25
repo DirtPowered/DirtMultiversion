@@ -24,39 +24,30 @@ package com.github.dirtpowered.dirtmv.data.chunk.storage;
 
 import com.github.dirtpowered.dirtmv.data.chunk.Chunk;
 import com.github.dirtpowered.dirtmv.data.chunk.NibbleArray;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.zip.Deflater;
 
+@Data
 public class V1_2RChunkStorage implements Chunk {
-
-    @Getter
     private int primaryBitmap;
-
-    @Getter
     private int compressedSize;
-
-    @Getter
     private int chunkX;
-
-    @Getter
     private int chunkZ;
-
-    @Getter
-    @Setter
     private byte[] biomeData;
-
+    private boolean skylight;
     private ExtendedBlockStorage[] columnStorage;
 
-    public V1_2RChunkStorage(int chunkX, int chunkZ) {
+    public V1_2RChunkStorage(boolean skylight, boolean old, int chunkX, int chunkZ) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
+
+        this.skylight = skylight;
 
         this.columnStorage = new ExtendedBlockStorage[16];
 
         for (int i = 0; i < 16; i++) {
-            this.columnStorage[i] = new ExtendedBlockStorage(true, true);
+            this.columnStorage[i] = new ExtendedBlockStorage(skylight, old);
         }
 
         this.biomeData = new byte[256];

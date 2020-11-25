@@ -711,8 +711,8 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x0B, new TypeHolder[]{
                         set(Type.INT, data.read(Type.VAR_INT, 0)),
-                        set(Type.BYTE, (byte) action + 1),
-                        set(Type.INT, data.read(Type.VAR_INT, 0)),
+                        set(Type.BYTE, (byte) (action + 1)),
+                        set(Type.INT, data.read(Type.VAR_INT, 2)),
                 });
             }
         });

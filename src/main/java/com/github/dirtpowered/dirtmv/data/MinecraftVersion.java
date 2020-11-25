@@ -84,6 +84,6 @@ public enum MinecraftVersion {
             }
         }
 
-        return R1_7_6;
+        return R1_8;
     }
 }

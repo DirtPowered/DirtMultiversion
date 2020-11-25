@@ -263,6 +263,9 @@ public class ProtocolRelease28To23 extends ServerProtocol {
             addBlockReplacement(71, 13, new Block(71, 8));
             addBlockReplacement(71, 14, new Block(71, 8));
             addBlockReplacement(71, 15, new Block(71, 8));
+
+            // chest
+            addBlockReplacement(54, 0, new Block(54, 2));
         }
     }
 }
