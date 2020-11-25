@@ -30,11 +30,13 @@ import com.github.dirtpowered.dirtmv.data.protocol.TypeObject;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Rotation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 
 import java.io.IOException;
@@ -70,7 +72,7 @@ public class MetadataDataType extends DataType<WatchableObject[]> {
                     value = new WatchableObject(type, index, BaseProtocol.FLOAT.read(packetInput));
                     break;
                 case STRING:
-                    if (getType() == Type.V1_7R_METADATA) {
+                    if (getType() == Type.V1_7R_METADATA || getType() == Type.V1_8R_METADATA) {
                         value = new WatchableObject(type, index, V1_7_2RProtocol.STRING.read(packetInput));
                     } else {
                         value = new WatchableObject(type, index, BaseProtocol.STRING.read(packetInput));
@@ -81,6 +83,8 @@ public class MetadataDataType extends DataType<WatchableObject[]> {
 
                     if (getType() == Type.V1_4R_METADATA || getType() == Type.V1_7R_METADATA) {
                         itemStack = (ItemStack) V1_3_1RProtocol.ITEM.read(packetInput);
+                    } else if (getType() == Type.V1_8R_METADATA) {
+                        itemStack = (ItemStack) V1_8RProtocol.ITEM.read(packetInput);
                     } else {
                         itemStack = (ItemStack) V1_3BProtocol.ITEM.read(packetInput);
                     }
@@ -92,6 +96,13 @@ public class MetadataDataType extends DataType<WatchableObject[]> {
                     int z = packetInput.readInt();
 
                     value = new WatchableObject(type, index, new BlockLocation(x, y, z));
+                    break;
+                case ROTATION:
+                    float rX = packetInput.readFloat();
+                    float rY = packetInput.readFloat();
+                    float rZ = packetInput.readFloat();
+
+                    value = new WatchableObject(type, index, new Rotation(rX, rY, rZ));
                     break;
             }
 
@@ -127,7 +138,7 @@ public class MetadataDataType extends DataType<WatchableObject[]> {
                     BaseProtocol.FLOAT.write(new TypeHolder(Type.FLOAT, watchableObject.getValue()), packetOutput);
                     break;
                 case STRING:
-                    if (getType() == Type.V1_7R_METADATA) {
+                    if (getType() == Type.V1_7R_METADATA || getType() == Type.V1_8R_METADATA) {
                         V1_7_2RProtocol.STRING.write(new TypeHolder(Type.V1_7_STRING, watchableObject.getValue()), packetOutput);
                     } else {
                         BaseProtocol.STRING.write(new TypeHolder(Type.STRING, watchableObject.getValue()), packetOutput);
@@ -136,6 +147,8 @@ public class MetadataDataType extends DataType<WatchableObject[]> {
                 case ITEM:
                     if (getType() == Type.V1_4R_METADATA || getType() == Type.V1_7R_METADATA) {
                         V1_3_1RProtocol.ITEM.write(new TypeHolder(Type.V1_3R_ITEM, watchableObject.getValue()), packetOutput);
+                    } else if (getType() == Type.V1_8R_METADATA) {
+                        V1_8RProtocol.ITEM.write(new TypeHolder(Type.V1_8R_ITEM, watchableObject.getValue()), packetOutput);
                     } else {
                         V1_3BProtocol.ITEM.write(new TypeHolder(Type.V1_3B_ITEM, watchableObject.getValue()), packetOutput);
                     }
@@ -146,6 +159,13 @@ public class MetadataDataType extends DataType<WatchableObject[]> {
                     packetOutput.writeInt(location.getX());
                     packetOutput.writeInt(location.getY());
                     packetOutput.writeInt(location.getZ());
+                    break;
+                case ROTATION:
+                    Rotation rotation = (Rotation) watchableObject.getValue();
+
+                    packetOutput.writeFloat(rotation.getX());
+                    packetOutput.writeFloat(rotation.getY());
+                    packetOutput.writeFloat(rotation.getZ());
                     break;
             }
         }

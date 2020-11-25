@@ -28,6 +28,8 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
@@ -41,6 +43,9 @@ import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.Inv
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRemapper;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.google.gson.Gson;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ProtocolRelease47To5 extends ServerProtocol {
 
@@ -139,7 +144,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x06, new TypeHolder[]{
                         data.read(0),
-                        set(Type.VAR_INT, data.read(Type.SHORT, 1)),
+                        set(Type.VAR_INT, (int) data.read(Type.SHORT, 1)),
                         data.read(2)
                 });
             }
@@ -232,6 +237,24 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // block action
+        addTranslator(0x24, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int x = data.read(Type.INT, 0);
+                short y = data.read(Type.SHORT, 1);
+                int z = data.read(Type.INT, 2);
+
+                return PacketUtil.createPacket(0x24, new TypeHolder[]{
+                        set(Type.LONG, toBlockPosition(x, y, z)),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5)
+                });
+            }
+        });
+
         // block break animation
         addTranslator(0x25, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
@@ -245,6 +268,24 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         data.read(0),
                         set(Type.LONG, toBlockPosition(x, y, z)),
                         data.read(4)
+                });
+            }
+        });
+
+        // effect
+        addTranslator(0x28, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int x = data.read(Type.INT, 1);
+                short y = data.read(Type.SHORT, 2);
+                int z = data.read(Type.INT, 3);
+
+                return PacketUtil.createPacket(0x28, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.LONG, toBlockPosition(x, y, z)),
+                        data.read(4),
+                        data.read(5)
                 });
             }
         });
@@ -381,6 +422,158 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // entity equipment
+        addTranslator(0x04, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x04, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        data.read(1),
+                        set(Type.V1_8R_ITEM, data.read(Type.V1_3R_ITEM, 2)),
+                });
+            }
+        });
+
+        // spawn mob
+        addTranslator(0x0F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                // TODO: Medatata translator
+                List<WatchableObject> defaultMetadata = Arrays.asList(
+                        new WatchableObject(MetadataType.BYTE, 0, (byte) 0),
+                        new WatchableObject(MetadataType.SHORT, 1, 300),
+                        new WatchableObject(MetadataType.BYTE, 3, (byte) 1),
+                        new WatchableObject(MetadataType.STRING, 2, "I'm too lazy to translate metadata"),
+                        new WatchableObject(MetadataType.BYTE, 4, (byte) 0)
+                );
+
+                return PacketUtil.createPacket(0x0F, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        data.read(8),
+                        data.read(9),
+                        data.read(10),
+                        set(Type.V1_8R_METADATA, defaultMetadata.toArray(new WatchableObject[0]))
+                });
+            }
+        });
+
+        // entity velocity
+        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x12, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3)
+                });
+            }
+        });
+
+        // entity
+        addTranslator(0x14, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x14, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0))
+                });
+            }
+        });
+
+        // entity relative move
+        addTranslator(0x15, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x15, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        set(Type.BOOLEAN, true)
+                });
+            }
+        });
+
+        // entity look
+        addTranslator(0x16, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x16, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        data.read(1),
+                        data.read(2),
+                        set(Type.BOOLEAN, true)
+                });
+            }
+        });
+
+        // entity look move
+        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x17, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        set(Type.BOOLEAN, true)
+                });
+            }
+        });
+
+        // entity teleport
+        addTranslator(0x18, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x18, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        set(Type.BOOLEAN, true)
+                });
+            }
+        });
+
+        // entity head look
+        addTranslator(0x19, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x19, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        data.read(1),
+                });
+            }
+        });
+
         // client packets
 
         // keep alive
@@ -488,7 +681,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         set(Type.UNSIGNED_BYTE, (short) l.getY()),
                         set(Type.INT, l.getZ()),
                         data.read(1),
-                        set(Type.V1_3R_ITEM, data.read(Type.V1_3R_ITEM, 2)),
+                        set(Type.V1_3R_ITEM, data.read(Type.V1_8R_ITEM, 2)),
                         data.read(3),
                         data.read(4),
                         data.read(5),
@@ -524,6 +717,37 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // window click
+        addTranslator(0x0E, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x0E, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.V1_3R_ITEM, data.read(Type.V1_8B_ITEM, 5))
+
+                });
+            }
+        });
+
+        // creative item get
+        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x10, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.V1_3R_ITEM, data.read(Type.V1_8B_ITEM, 1))
+                });
+            }
+        });
+
         // client settings
         addTranslator(0x15, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
@@ -541,41 +765,11 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
-        // block action
-        addTranslator(0x24, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // entity equipment
-        addTranslator(0x04, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // spawn mob
-        addTranslator(0x0F, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
         // spawn player
         addTranslator(0x0C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // entity destroy
         addTranslator(0x13, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // entity
-        addTranslator(0x14, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // entity relative move
-        addTranslator(0x15, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // entity look
-        addTranslator(0x16, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // entity look move
-        addTranslator(0x17, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // entity teleport
-        addTranslator(0x18, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // entity head look
-        addTranslator(0x19, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // entity velocity
-        addTranslator(0x12, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // entity attributes
         addTranslator(0x20, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
@@ -585,12 +779,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // multi block change
         addTranslator(0x22, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // effect
-        addTranslator(0x28, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // sound effect
-        addTranslator(0x29, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // update tile entity
         addTranslator(0x35, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);

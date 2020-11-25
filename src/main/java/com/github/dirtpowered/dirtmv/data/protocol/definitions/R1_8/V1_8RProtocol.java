@@ -27,6 +27,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.types.ItemArrayDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.entity.MetadataDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.item.V1_8RItemDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.UuidDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_8RChunkBulkDataType;
@@ -39,6 +40,7 @@ public class V1_8RProtocol extends BaseProtocol {
     public final static DataType UUID;
     public final static DataType ITEM;
     public final static DataType ITEM_ARRAY;
+    public final static DataType METADATA;
 
     private static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
 
@@ -48,6 +50,7 @@ public class V1_8RProtocol extends BaseProtocol {
         UUID = new UuidDataType();
         ITEM = new V1_8RItemDataType();
         ITEM_ARRAY = new ItemArrayDataType(Type.V1_8R_ITEM_ARRAY, ITEM);
+        METADATA = new MetadataDataType(Type.V1_8R_METADATA);
 
         STATE_DEPENDED_PROTOCOL = new V1_8ProtocolDefinitions();
     }

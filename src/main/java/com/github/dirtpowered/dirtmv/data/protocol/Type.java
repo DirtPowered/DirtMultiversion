@@ -390,4 +390,10 @@ public class Type {
         }
     });
 
+    public static final TypeObject<WatchableObject[]> V1_8R_METADATA = new TypeObject<>(WatchableObject[].class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.METADATA.write(holder, packetOutput);
+        }
+    });
 }

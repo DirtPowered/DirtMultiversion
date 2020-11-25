@@ -446,6 +446,14 @@ public class V1_8ProtocolDefinitions extends StateDependedProtocol {
         });
 
         // click window
+        addPacket(0x0E, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.BYTE,
+                BaseProtocol.SHORT,
+                BaseProtocol.BYTE,
+                BaseProtocol.SHORT,
+                BaseProtocol.BYTE,
+                V1_8RProtocol.ITEM
+        });
 
         // confirm transaction
         addPacket(0x0F, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
@@ -455,6 +463,10 @@ public class V1_8ProtocolDefinitions extends StateDependedProtocol {
         });
 
         // creative item get
+        addPacket(0x10, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                BaseProtocol.SHORT,
+                V1_8RProtocol.ITEM
+        });
 
         // enchant slot selection
         addPacket(0x11, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
