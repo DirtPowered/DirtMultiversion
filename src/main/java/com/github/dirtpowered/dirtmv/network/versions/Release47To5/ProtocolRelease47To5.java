@@ -158,7 +158,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x08, new TypeHolder[]{
                         data.read(0),
-                        data.read(1),
+                        set(Type.DOUBLE, data.read(Type.DOUBLE, 1) - 1.62D),
                         data.read(2),
                         data.read(3),
                         data.read(4),
