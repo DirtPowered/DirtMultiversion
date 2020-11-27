@@ -33,10 +33,11 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.SoundEmulation;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.SoundType;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
 
 import java.io.IOException;
 
-public class EntityEvent {
+public class WorldEntityEvent {
 
     public static void onDamage(ServerSession session, int entityId) {
         playSound(session, entityId, SoundType.HURT);
@@ -49,6 +50,10 @@ public class EntityEvent {
     // TODO: ambient sounds
     public static void onUpdate(ServerSession session, int entityId) {
         playSound(session, entityId, SoundType.IDLE);
+    }
+
+    public static void onCustomAction(ServerSession session, int entityId) {
+        playSound(session, entityId, SoundType.CUSTOM);
     }
 
     private static void playSound(ServerSession session, int entityId, SoundType type) {
@@ -68,20 +73,28 @@ public class EntityEvent {
                 return;
 
             BlockLocation loc = e.getLocation();
-            PacketData namedSound = PacketUtil.createPacket(0x3E, new TypeHolder[]{
-                    new TypeHolder(Type.STRING, sound),
-                    new TypeHolder(Type.INT, loc.getX() * 8),
-                    new TypeHolder(Type.INT, loc.getY() * 8),
-                    new TypeHolder(Type.INT, loc.getZ() * 8),
-                    new TypeHolder(Type.FLOAT, 0.75F),
-                    new TypeHolder(Type.UNSIGNED_BYTE, (short) 63),
-            });
+            playSoundAt(session, loc, sound);
+        }
+    }
 
-            try {
-                session.sendPacket(namedSound, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_3_1);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+    public static void playSoundAt(ServerSession session, BlockLocation loc, WorldSound sound) {
+        playSoundAt(session, loc, sound.getSoundName());
+    }
+
+    private static void playSoundAt(ServerSession session, BlockLocation loc, String sound) {
+        PacketData namedSound = PacketUtil.createPacket(0x3E, new TypeHolder[]{
+                new TypeHolder(Type.STRING, sound),
+                new TypeHolder(Type.INT, loc.getX() * 8),
+                new TypeHolder(Type.INT, loc.getY() * 8),
+                new TypeHolder(Type.INT, loc.getZ() * 8),
+                new TypeHolder(Type.FLOAT, 0.75F),
+                new TypeHolder(Type.UNSIGNED_BYTE, (short) 63),
+        });
+
+        try {
+            session.sendPacket(namedSound, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_3_1);
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
     }
 }

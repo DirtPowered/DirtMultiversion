@@ -29,7 +29,7 @@ import java.util.Map;
 public class ProtocolStorage {
     private Map<Class, Object> savedObjects = new HashMap<>();
 
-    private boolean hasObject(Class key) {
+    public boolean hasObject(Class key) {
         return savedObjects.containsKey(key);
     }
 

@@ -40,8 +40,9 @@ import com.github.dirtpowered.dirtmv.data.utils.EncryptionUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.Entity;
-import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.EntityEvent;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.EntityTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.WorldEntityEvent;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
 import com.mojang.nbt.CompoundTag;
 import lombok.SneakyThrows;
 
@@ -351,11 +352,11 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 byte status = data.read(Type.BYTE, 1);
 
                 if (status == 2) { // hurt
-                    EntityEvent.onDamage(session, entityId);
+                    WorldEntityEvent.onDamage(session, entityId);
                 }
 
                 if (status == 3) { // death
-                    EntityEvent.onDeath(session, entityId);
+                    WorldEntityEvent.onDeath(session, entityId);
                 }
 
                 return data;
@@ -395,6 +396,23 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 byte type = data.read(Type.BYTE, 1);
 
                 switch (type) {
+                    case 50:
+                        // cache primed tnt entity
+                        EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                        if (tracker != null) {
+                            int entityId = data.read(Type.INT, 0);
+                            int x = data.read(Type.INT, 2) / 32;
+                            int y = data.read(Type.INT, 3) / 32;
+                            int z = data.read(Type.INT, 4) / 32;
+
+                            BlockLocation b = new BlockLocation(x, y, z);
+
+                            Entity primedTNT = new Entity(entityId, b, EntityType.PRIMED_TNT);
+                            tracker.addEntity(entityId, primedTNT);
+
+                            WorldEntityEvent.onCustomAction(session, entityId);
+                        }
+                        break;
                     case 70:
                         throwerId = 12;
                         break;
@@ -487,6 +505,12 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                int x = data.read(Type.DOUBLE, 0).intValue();
+                int y = data.read(Type.DOUBLE, 1).intValue();
+                int z = data.read(Type.DOUBLE, 2).intValue();
+
+                BlockLocation loc = new BlockLocation(x, y, z);
+                WorldEntityEvent.playSoundAt(session, loc, WorldSound.RANDOM_EXPLODE);
 
                 return PacketUtil.createPacket(0x3C, new TypeHolder[]{
                         data.read(0),

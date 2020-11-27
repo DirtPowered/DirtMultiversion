@@ -35,7 +35,7 @@ public class SoundEmulation {
                 WorldSound.MOB_PIG, // idle
                 WorldSound.NO_SOUND, // hurt
                 WorldSound.MOB_PIG_DEATH, // death
-                WorldSound.NO_SOUND, // custom (not used currently)
+                WorldSound.NO_SOUND, // custom
         };
 
         // sheep sounds
@@ -172,6 +172,14 @@ public class SoundEmulation {
                 WorldSound.MOB_BLAZE_HURT,
                 WorldSound.MOB_BLAZE_DEATH,
                 WorldSound.NO_SOUND
+        };
+
+        // primed tnt sounds
+        ENTITY_SOUNDS[20] = new WorldSound[]{
+                WorldSound.NO_SOUND,
+                WorldSound.NO_SOUND,
+                WorldSound.NO_SOUND,
+                WorldSound.RANDOM_FUSE
         };
     }
 
