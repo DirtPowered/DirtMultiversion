@@ -57,7 +57,7 @@ public enum EntityType {
     HORSE(100, true),
     VILLAGER(120, true),
     HUMAN(-1, true),
-    ITEM(-2, false),
+    ITEM(1, false),
     PRIMED_TNT(20, false);
 
     @Getter

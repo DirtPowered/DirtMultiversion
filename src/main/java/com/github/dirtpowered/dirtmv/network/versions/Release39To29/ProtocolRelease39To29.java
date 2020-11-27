@@ -525,6 +525,46 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             }
         });
 
+        // item collect
+        addTranslator(0x16, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    int entityId = data.read(Type.INT, 0);
+
+                    Entity itemPickup = tracker.getEntity(entityId);
+                    if (itemPickup != null) {
+                        WorldEntityEvent.playSoundAt(session, itemPickup.getLocation(), WorldSound.RANDOM_POP);
+                    }
+                }
+                return data;
+            }
+        });
+
+        // pickup spawn
+        addTranslator(0x15, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    int entityId = data.read(Type.INT, 0);
+                    int x = data.read(Type.INT, 4) / 32;
+                    int y = data.read(Type.INT, 5) / 32;
+                    int z = data.read(Type.INT, 6) / 32;
+
+                    BlockLocation b = new BlockLocation(x, y, z);
+
+                    Entity itemPickup = new Entity(entityId, b, EntityType.ITEM);
+                    tracker.addEntity(entityId, itemPickup);
+                }
+
+                return data;
+            }
+        });
+
         // player abilities
         addTranslator(0xCA, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 

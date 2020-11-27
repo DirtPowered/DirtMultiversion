@@ -25,6 +25,7 @@ package com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound;
 public enum WorldSound {
     RANDOM_FUSE("random.fuse"),
     RANDOM_EXPLODE("random.explode"),
+    RANDOM_POP("random.pop"),
     MOB_ZOMBIE("mob.zombie"),
     MOB_ZOMBIE_HURT("mob.zombiehurt"),
     MOB_ZOMBIE_DEATH("mob.zombiedeath"),
