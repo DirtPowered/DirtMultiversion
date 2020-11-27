@@ -23,9 +23,11 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release39To29;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
@@ -37,6 +39,9 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.EncryptionUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.Entity;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.EntityEvent;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.EntityTracker;
 import com.mojang.nbt.CompoundTag;
 import lombok.SneakyThrows;
 
@@ -140,6 +145,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                session.getUserData().getProtocolStorage().set(EntityTracker.class, new EntityTracker());
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0),
@@ -288,6 +294,11 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = data.read(Type.INT, 0);
 
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    tracker.removeEntity(entityId);
+                }
+
                 return PacketUtil.createPacket(0x1D, new TypeHolder[]{
                         set(Type.BYTE_INT_ARRAY, new int[]{entityId})
                 });
@@ -299,6 +310,20 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                int entityId = data.read(Type.INT, 0);
+                EntityType entityType = EntityType.fromEntityTypeId(data.read(Type.BYTE, 1));
+
+                int x = data.read(Type.INT, 2) / 32;
+                int y = data.read(Type.INT, 3) / 32;
+                int z = data.read(Type.INT, 4) / 32;
+
+                BlockLocation location = new BlockLocation(x, y, z);
+                Entity entity = new Entity(entityId, location, entityType);
+
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    tracker.addEntity(entityId, entity);
+                }
 
                 return PacketUtil.createPacket(0x18, new TypeHolder[]{
                         data.read(0),
@@ -314,6 +339,48 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         set(Type.SHORT, 0),
                         data.read(8)
                 });
+            }
+        });
+
+        // entity status
+        addTranslator(0x26, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int entityId = data.read(Type.INT, 0);
+                byte status = data.read(Type.BYTE, 1);
+
+                if (status == 2) { // hurt
+                    EntityEvent.onDamage(session, entityId);
+                }
+
+                if (status == 3) { // death
+                    EntityEvent.onDeath(session, entityId);
+                }
+
+                return data;
+            }
+        });
+
+        // entity teleport
+        addTranslator(0x22, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int entityId = data.read(Type.INT, 0);
+
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    Entity e = tracker.getEntity(entityId);
+                    if (e != null) {
+                        int x = data.read(Type.INT, 1) / 32;
+                        int y = data.read(Type.INT, 2) / 32;
+                        int z = data.read(Type.INT, 3) / 32;
+                        e.setLocation(new BlockLocation(x, y, z));
+                    }
+                }
+
+                return data;
             }
         });
 
