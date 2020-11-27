@@ -36,11 +36,13 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.EncryptionUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.Entity;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.EntityTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.UpdateTask;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.WorldEntityEvent;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
 import com.mojang.nbt.CompoundTag;
@@ -50,6 +52,7 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class ProtocolRelease39To29 extends ServerProtocol {
 
@@ -146,7 +149,10 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                session.getUserData().getProtocolStorage().set(EntityTracker.class, new EntityTracker());
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+
+                storage.set(EntityTracker.class, new EntityTracker());
+                storage.set(UpdateTask.class, new UpdateTask(session));
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0),
@@ -536,9 +542,14 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                     Entity itemPickup = tracker.getEntity(entityId);
                     if (itemPickup != null) {
-                        WorldEntityEvent.playSoundAt(session, itemPickup.getLocation(), WorldSound.RANDOM_POP);
+
+                        Random shared = session.getMain().getSharedRandom();
+
+                        float pitch = ((shared.nextFloat() - shared.nextFloat()) * 0.7F + 1.0F) * 2.0F;
+                        WorldEntityEvent.playSoundAt(session, itemPickup.getLocation(), WorldSound.RANDOM_POP, 0.2F, pitch);
                     }
                 }
+
                 return data;
             }
         });

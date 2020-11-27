@@ -156,7 +156,11 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     @Override
     public void tick() {
-
+        for (Object o : userData.getProtocolStorage().getSavedObjects().values()) {
+            if (o instanceof Tickable) {
+                ((Tickable) o).tick();
+            }
+        }
     }
 
     @Override

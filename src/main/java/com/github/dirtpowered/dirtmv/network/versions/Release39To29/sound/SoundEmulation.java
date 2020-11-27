@@ -23,9 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound;
 
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 public class SoundEmulation {
     private final static WorldSound[][] ENTITY_SOUNDS = new WorldSound[256][];
 
@@ -95,7 +93,7 @@ public class SoundEmulation {
         };
 
         // spider sounds
-        ENTITY_SOUNDS[51] = new WorldSound[]{
+        ENTITY_SOUNDS[52] = new WorldSound[]{
                 WorldSound.MOB_SPIDER,
                 WorldSound.NO_SOUND,
                 WorldSound.MOB_SPIDER_DEATH,
@@ -188,7 +186,6 @@ public class SoundEmulation {
 
         WorldSound[] entitySounds = ENTITY_SOUNDS[entityType.getEntityTypeId()];
         if (entitySounds == null) {
-            log.warn("missing entity sound for {}", entityType);
             return soundName;
         }
 

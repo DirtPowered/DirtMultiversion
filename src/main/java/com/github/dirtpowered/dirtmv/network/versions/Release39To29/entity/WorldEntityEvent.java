@@ -34,8 +34,10 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.SoundEmulation;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.SoundType;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
+import com.google.common.primitives.Shorts;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class WorldEntityEvent {
 
@@ -47,7 +49,6 @@ public class WorldEntityEvent {
         playSound(session, entityId, SoundType.DEATH);
     }
 
-    // TODO: ambient sounds
     public static void onUpdate(ServerSession session, int entityId) {
         playSound(session, entityId, SoundType.IDLE);
     }
@@ -72,23 +73,33 @@ public class WorldEntityEvent {
             if (sound.isEmpty())
                 return;
 
+
             BlockLocation loc = e.getLocation();
-            playSoundAt(session, loc, sound);
+            Random shared = session.getMain().getSharedRandom();
+
+            float pitch = (shared.nextFloat() - shared.nextFloat()) * 0.2F + 1.0F;
+            playSoundAt(session, loc, sound, 0.75F, pitch);
         }
     }
 
     public static void playSoundAt(ServerSession session, BlockLocation loc, WorldSound sound) {
-        playSoundAt(session, loc, sound.getSoundName());
+        playSoundAt(session, loc, sound.getSoundName(), 0.75F, 1.0F);
     }
 
-    private static void playSoundAt(ServerSession session, BlockLocation loc, String sound) {
+    public static void playSoundAt(ServerSession session, BlockLocation loc, WorldSound sound, float vol, float pitch) {
+        playSoundAt(session, loc, sound.getSoundName(), vol, pitch);
+    }
+
+    private static void playSoundAt(ServerSession session, BlockLocation loc, String sound, float vol, float pitch) {
+        short correctedPitch = Shorts.constrainToRange((short) (pitch * 63.0F), (short) 0, (short) 255);
+
         PacketData namedSound = PacketUtil.createPacket(0x3E, new TypeHolder[]{
                 new TypeHolder(Type.STRING, sound),
                 new TypeHolder(Type.INT, loc.getX() * 8),
                 new TypeHolder(Type.INT, loc.getY() * 8),
                 new TypeHolder(Type.INT, loc.getZ() * 8),
-                new TypeHolder(Type.FLOAT, 0.75F),
-                new TypeHolder(Type.UNSIGNED_BYTE, (short) 63),
+                new TypeHolder(Type.FLOAT, vol),
+                new TypeHolder(Type.UNSIGNED_BYTE, correctedPitch),
         });
 
         try {

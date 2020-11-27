@@ -19,33 +19,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.github.dirtpowered.dirtmv.data.interfaces.Tickable;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
+import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
-public class EntityTracker {
+import java.util.Random;
 
-    private Map<Integer, Entity> entityMap = new ConcurrentHashMap<>();
+public class UpdateTask implements Tickable {
 
-    public void addEntity(int entityId, Entity entity) {
-        entityMap.putIfAbsent(entityId, entity);
+    private ServerSession serverSession;
+    private int soundTime;
+
+    public UpdateTask(ServerSession session) {
+        this.serverSession = session;
     }
 
-    public Entity getEntity(int entityId) {
-        return entityMap.get(entityId);
-    }
+    @Override
+    public void tick() {
+        ProtocolStorage storage = serverSession.getUserData().getProtocolStorage();
+        if (storage.hasObject(EntityTracker.class)) {
+            EntityTracker tracker = storage.get(EntityTracker.class);
 
-    public boolean isEntityTracked(int entityId) {
-        return entityMap.containsKey(entityId);
-    }
+            assert tracker != null;
+            Random shared = serverSession.getMain().getSharedRandom();
 
-    public void removeEntity(int entityId) {
-        entityMap.remove(entityId);
-    }
+            for (Integer eId : tracker.getTrackedEntities().keySet()) {
+                if (shared.nextInt(1000) < this.soundTime++) {
+                    WorldEntityEvent.onUpdate(serverSession, eId);
 
-    public Map<Integer, Entity> getTrackedEntities() {
-        return entityMap;
+                    this.soundTime = -80;
+                }
+            }
+        }
     }
 }

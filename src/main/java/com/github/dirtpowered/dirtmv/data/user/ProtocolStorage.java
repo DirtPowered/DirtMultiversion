@@ -46,4 +46,8 @@ public class ProtocolStorage {
     public void set(Class key, Object o) {
         savedObjects.put(key, o);
     }
+
+    public Map<Class, Object> getSavedObjects() {
+        return savedObjects;
+    }
 }
