@@ -167,21 +167,6 @@ public class ProtocolBeta11To10 extends ServerProtocol {
             }
         });
 
-        // open window
-        addTranslator(0x64, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-
-                return PacketUtil.createPacket(0x64, new TypeHolder[]{
-                        data.read(0),
-                        data.read(1),
-                        set(Type.STRING, data.read(Type.UTF8_STRING, 2)),
-                        data.read(3),
-                });
-            }
-        });
-
         // update sign
         addTranslator(0x82, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
