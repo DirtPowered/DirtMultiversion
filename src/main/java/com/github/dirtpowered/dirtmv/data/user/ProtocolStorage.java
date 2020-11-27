@@ -22,35 +22,28 @@
 
 package com.github.dirtpowered.dirtmv.data.user;
 
-import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
-import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
-import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import lombok.Data;
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.crypto.SecretKey;
+public class ProtocolStorage {
+    private Map<Class, Object> savedObjects = new HashMap<>();
 
-@Data
-public class UserData {
-    private MinecraftVersion clientVersion;
-    private boolean protocolDetected;
-    private PacketData proxyRequest;
-    private SecretKey secretKey;
-    private String username;
-    private PreNettyProtocolState preNettyProtocolState;
-    private int dimension;
-    private int entityId;
-    private int vehicleEntityId;
-    private ProtocolState protocolState;
-    private String address;
-    private int port;
-    private ProtocolStorage protocolStorage;
+    private boolean hasObject(Class key) {
+        return savedObjects.containsKey(key);
+    }
 
-    public UserData() {
-        this.protocolStorage = new ProtocolStorage();
-        this.clientVersion = MinecraftVersion.B1_5;
-        this.protocolDetected = false;
-        this.preNettyProtocolState = PreNettyProtocolState.STATUS;
-        this.protocolState = ProtocolState.HANDSHAKE;
+    @Nullable
+    public <T> T get(Class key) {
+        if (!hasObject(key)) {
+            String prefix = getClass().getSimpleName();
+            throw new IllegalArgumentException("[" + prefix + "] key '" + key.getSimpleName() + "' doesn't exist");
+        }
+
+        return (T) savedObjects.get(key);
+    }
+
+    public void set(Class key, Object o) {
+        savedObjects.put(key, o);
     }
 }

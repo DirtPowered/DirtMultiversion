@@ -84,7 +84,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
                 UserData userData = session.getUserData();
-                userData.setTabListCache(new PlayerTabListCache());
+                userData.getProtocolStorage().set(PlayerTabListCache.class, new PlayerTabListCache());
 
                 // add default tab entry
                 String username = userData.getUsername();
@@ -197,10 +197,11 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 int entityId = data.read(Type.INT, 0);
                 String username = data.read(Type.STRING, 1);
 
-                PlayerTabListCache cache = session.getUserData().getTabListCache();
-
-                session.sendPacket(createTabEntryPacket(username, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
-                cache.getTabPlayers().put(entityId, username);
+                PlayerTabListCache cache = session.getUserData().getProtocolStorage().get(PlayerTabListCache.class);
+                if (cache != null) {
+                    session.sendPacket(createTabEntryPacket(username, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
+                    cache.getTabPlayers().put(entityId, username);
+                }
                 return data;
             }
         });
@@ -212,9 +213,9 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
                 int entityId = data.read(Type.INT, 0);
 
-                PlayerTabListCache cache = session.getUserData().getTabListCache();
+                PlayerTabListCache cache = session.getUserData().getProtocolStorage().get(PlayerTabListCache.class);
 
-                if (cache.getTabPlayers().containsKey(entityId)) {
+                if (cache != null && cache.getTabPlayers().containsKey(entityId)) {
                     String username = cache.getTabPlayers().get(entityId);
 
                     session.sendPacket(createTabEntryPacket(username, false), PacketDirection.SERVER_TO_CLIENT, getFrom());

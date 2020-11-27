@@ -23,6 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release73To61;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.entity.EntityTracker;
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
@@ -78,6 +79,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
                 int entityId = data.read(Type.INT, 0);
                 session.getUserData().setEntityId(entityId);
+                session.getUserData().getProtocolStorage().set(EntityTracker.class, new EntityTracker());
 
                 // send entity attributes (fixes fast movement)
                 session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());
@@ -175,7 +177,10 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 EntityType entityType = EntityType.fromEntityTypeId(data.read(Type.BYTE, 1));
                 int entityId = data.read(Type.INT, 0);
 
-                session.getUserData().getEntityTracker().addEntity(entityId, entityType);
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    tracker.addEntity(entityId, entityType);
+                }
 
                 WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 11);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(entityType, oldMeta);
@@ -204,8 +209,11 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 int[] entities = data.read(Type.BYTE_INT_ARRAY, 0);
 
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
                 for (int entityId : entities) {
-                    session.getUserData().getEntityTracker().removeEntity(entityId);
+                    if (tracker != null) {
+                        tracker.removeEntity(entityId);
+                    }
                 }
 
                 return data;
@@ -218,7 +226,12 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = data.read(Type.INT, 0);
-                EntityType entityType = session.getUserData().getEntityTracker().getEntityById(entityId);
+
+                EntityType entityType = null;
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    entityType = tracker.getEntityById(entityId);
+                }
 
                 if (entityType == null) {
                     log.warn("[{}] skipping translating metadata for {}. Entity is not tracked", session.getLogTag(), entityId);
@@ -241,7 +254,11 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = data.read(Type.INT, 0);
-                session.getUserData().getEntityTracker().addEntity(entityId, EntityType.HUMAN);
+
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    tracker.addEntity(entityId, EntityType.HUMAN);
+                }
 
                 WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 8);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
@@ -267,7 +284,11 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 if (data.read(Type.BYTE, 1) == 0x02 /* item */) {
                     int entityId = data.read(Type.INT, 0);
-                    session.getUserData().getEntityTracker().addEntity(entityId, EntityType.ITEM);
+
+                    EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                    if (tracker != null) {
+                        tracker.addEntity(entityId, EntityType.ITEM);
+                    }
                 }
 
                 return data;

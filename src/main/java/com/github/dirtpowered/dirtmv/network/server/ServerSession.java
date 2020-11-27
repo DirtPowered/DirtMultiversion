@@ -210,7 +210,6 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         }
 
         initialPacketQueue.clear();
-        userData.clear();
     }
 
     private void sendDisconnectPacket(String message) {
