@@ -20,17 +20,15 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity;
+package com.github.dirtpowered.dirtmv.data.protocol.objects;
 
-import com.github.dirtpowered.dirtmv.data.entity.EntityType;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Entity {
-    private int entityId;
-    private Location location;
-    private EntityType entityType;
+public class Location {
+    private double x;
+    private double y;
+    private double z;
 }

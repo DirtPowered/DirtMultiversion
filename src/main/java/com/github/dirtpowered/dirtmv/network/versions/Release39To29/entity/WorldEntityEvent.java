@@ -26,7 +26,7 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
@@ -74,7 +74,7 @@ public class WorldEntityEvent {
                 return;
 
 
-            BlockLocation loc = e.getLocation();
+            Location loc = e.getLocation();
             Random shared = session.getMain().getSharedRandom();
 
             float pitch = (shared.nextFloat() - shared.nextFloat()) * 0.2F + 1.0F;
@@ -82,22 +82,22 @@ public class WorldEntityEvent {
         }
     }
 
-    public static void playSoundAt(ServerSession session, BlockLocation loc, WorldSound sound) {
+    public static void playSoundAt(ServerSession session, Location loc, WorldSound sound) {
         playSoundAt(session, loc, sound.getSoundName(), 0.75F, 1.0F);
     }
 
-    public static void playSoundAt(ServerSession session, BlockLocation loc, WorldSound sound, float vol, float pitch) {
+    public static void playSoundAt(ServerSession session, Location loc, WorldSound sound, float vol, float pitch) {
         playSoundAt(session, loc, sound.getSoundName(), vol, pitch);
     }
 
-    private static void playSoundAt(ServerSession session, BlockLocation loc, String sound, float vol, float pitch) {
+    private static void playSoundAt(ServerSession session, Location loc, String sound, float vol, float pitch) {
         short correctedPitch = Shorts.constrainToRange((short) (pitch * 63.0F), (short) 0, (short) 255);
 
         PacketData namedSound = PacketUtil.createPacket(0x3E, new TypeHolder[]{
                 new TypeHolder(Type.STRING, sound),
-                new TypeHolder(Type.INT, loc.getX() * 8),
-                new TypeHolder(Type.INT, loc.getY() * 8),
-                new TypeHolder(Type.INT, loc.getZ() * 8),
+                new TypeHolder(Type.INT, ((int) loc.getX()) * 8),
+                new TypeHolder(Type.INT, ((int) loc.getY()) * 8),
+                new TypeHolder(Type.INT, ((int) loc.getZ()) * 8),
                 new TypeHolder(Type.FLOAT, vol),
                 new TypeHolder(Type.UNSIGNED_BYTE, correctedPitch),
         });

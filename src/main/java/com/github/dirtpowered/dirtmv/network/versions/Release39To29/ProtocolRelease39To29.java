@@ -27,8 +27,8 @@ import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
@@ -320,11 +320,11 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 int entityId = data.read(Type.INT, 0);
                 EntityType entityType = EntityType.fromEntityTypeId(data.read(Type.BYTE, 1));
 
-                int x = data.read(Type.INT, 2) / 32;
-                int y = data.read(Type.INT, 3) / 32;
-                int z = data.read(Type.INT, 4) / 32;
+                double x = data.read(Type.INT, 2) / 32.0D;
+                double y = data.read(Type.INT, 3) / 32.0D;
+                double z = data.read(Type.INT, 4) / 32.0D;
 
-                BlockLocation location = new BlockLocation(x, y, z);
+                Location location = new Location(x, y, z);
                 Entity entity = new Entity(entityId, location, entityType);
 
                 EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
@@ -380,12 +380,40 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 if (tracker != null) {
                     Entity e = tracker.getEntity(entityId);
                     if (e != null) {
-                        int x = data.read(Type.INT, 1) / 32;
-                        int y = data.read(Type.INT, 2) / 32;
-                        int z = data.read(Type.INT, 3) / 32;
-                        e.setLocation(new BlockLocation(x, y, z));
+                        double x = data.read(Type.INT, 1) / 32.0D;
+                        double y = data.read(Type.INT, 2) / 32.0D;
+                        double z = data.read(Type.INT, 3) / 32.0D;
+
+                        e.setLocation(new Location(x, y, z));
                     }
                 }
+
+                return data;
+            }
+        });
+
+        // entity relative look move
+        addTranslator(0x21, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int entityId = data.read(Type.INT, 0);
+
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    Entity e = tracker.getEntity(entityId);
+                    if (e != null) {
+                        Location oldLoc = e.getLocation();
+
+                        double x = data.read(Type.BYTE, 1) / 32.0D;
+                        double y = data.read(Type.BYTE, 2) / 32.0D;
+                        double z = data.read(Type.BYTE, 3) / 32.0D;
+
+                        Location newLoc = new Location(oldLoc.getX() + x, oldLoc.getY() + y, oldLoc.getZ() + z);
+                        e.setLocation(newLoc);
+                    }
+                }
+
 
                 return data;
             }
@@ -407,11 +435,11 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
                         if (tracker != null) {
                             int entityId = data.read(Type.INT, 0);
-                            int x = data.read(Type.INT, 2) / 32;
-                            int y = data.read(Type.INT, 3) / 32;
-                            int z = data.read(Type.INT, 4) / 32;
+                            double x = data.read(Type.INT, 2) / 32.0D;
+                            double y = data.read(Type.INT, 3) / 32.0D;
+                            double z = data.read(Type.INT, 4) / 32.0D;
 
-                            BlockLocation b = new BlockLocation(x, y, z);
+                            Location b = new Location(x, y, z);
 
                             Entity primedTNT = new Entity(entityId, b, EntityType.PRIMED_TNT);
                             tracker.addEntity(entityId, primedTNT);
@@ -511,11 +539,11 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                int x = data.read(Type.DOUBLE, 0).intValue();
-                int y = data.read(Type.DOUBLE, 1).intValue();
-                int z = data.read(Type.DOUBLE, 2).intValue();
+                double x = data.read(Type.DOUBLE, 0);
+                double y = data.read(Type.DOUBLE, 1);
+                double z = data.read(Type.DOUBLE, 2);
 
-                BlockLocation loc = new BlockLocation(x, y, z);
+                Location loc = new Location(x, y, z);
                 WorldEntityEvent.playSoundAt(session, loc, WorldSound.RANDOM_EXPLODE);
 
                 return PacketUtil.createPacket(0x3C, new TypeHolder[]{
@@ -562,11 +590,11 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
                 if (tracker != null) {
                     int entityId = data.read(Type.INT, 0);
-                    int x = data.read(Type.INT, 4) / 32;
-                    int y = data.read(Type.INT, 5) / 32;
-                    int z = data.read(Type.INT, 6) / 32;
+                    double x = data.read(Type.INT, 4) / 32.0D;
+                    double y = data.read(Type.INT, 5) / 32.0D;
+                    double z = data.read(Type.INT, 6) / 32.0D;
 
-                    BlockLocation b = new BlockLocation(x, y, z);
+                    Location b = new Location(x, y, z);
 
                     Entity itemPickup = new Entity(entityId, b, EntityType.ITEM);
                     tracker.addEntity(entityId, itemPickup);
