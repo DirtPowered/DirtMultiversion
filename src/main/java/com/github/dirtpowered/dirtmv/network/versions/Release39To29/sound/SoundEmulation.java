@@ -31,7 +31,7 @@ public class SoundEmulation {
         // pig sounds
         ENTITY_SOUNDS[90] = new WorldSound[]{
                 WorldSound.MOB_PIG, // idle
-                WorldSound.NO_SOUND, // hurt
+                WorldSound.MOB_PIG, // hurt
                 WorldSound.MOB_PIG_DEATH, // death
                 WorldSound.NO_SOUND, // custom
         };
@@ -39,7 +39,7 @@ public class SoundEmulation {
         // sheep sounds
         ENTITY_SOUNDS[91] = new WorldSound[]{
                 WorldSound.MOB_SHEEP,
-                WorldSound.NO_SOUND,
+                WorldSound.MOB_SHEEP,
                 WorldSound.NO_SOUND,
                 WorldSound.NO_SOUND,
         };
@@ -47,7 +47,7 @@ public class SoundEmulation {
         // cow sounds
         ENTITY_SOUNDS[92] = new WorldSound[]{
                 WorldSound.MOB_COW,
-                WorldSound.NO_SOUND,
+                WorldSound.MOB_COW_HURT,
                 WorldSound.NO_SOUND,
                 WorldSound.NO_SOUND,
         };
@@ -68,6 +68,14 @@ public class SoundEmulation {
                 WorldSound.NO_SOUND,
         };
 
+        // mushroom cow sounds
+        ENTITY_SOUNDS[96] = new WorldSound[]{
+                WorldSound.MOB_COW,
+                WorldSound.MOB_COW_HURT,
+                WorldSound.NO_SOUND,
+                WorldSound.NO_SOUND,
+        };
+
         // ozelot
         ENTITY_SOUNDS[98] = new WorldSound[]{
                 WorldSound.MOB_CAT,
@@ -76,10 +84,18 @@ public class SoundEmulation {
                 WorldSound.NO_SOUND,
         };
 
+        // iron golem
+        ENTITY_SOUNDS[99] = new WorldSound[]{
+                WorldSound.NO_SOUND,
+                WorldSound.MOB_IRON_GOLEM_HURT,
+                WorldSound.MOB_IRON_GOLEM_DEATH,
+                WorldSound.NO_SOUND,
+        };
+
         // creeper sounds
         ENTITY_SOUNDS[50] = new WorldSound[]{
                 WorldSound.MOB_CREEPER,
-                WorldSound.NO_SOUND,
+                WorldSound.RANDOM_FUSE,
                 WorldSound.MOB_CREEPER_DEATH,
                 WorldSound.NO_SOUND
         };
@@ -95,7 +111,7 @@ public class SoundEmulation {
         // spider sounds
         ENTITY_SOUNDS[52] = new WorldSound[]{
                 WorldSound.MOB_SPIDER,
-                WorldSound.NO_SOUND,
+                WorldSound.MOB_SPIDER,
                 WorldSound.MOB_SPIDER_DEATH,
                 WorldSound.NO_SOUND,
         };
@@ -119,15 +135,15 @@ public class SoundEmulation {
         // slime sounds
         ENTITY_SOUNDS[55] = new WorldSound[]{
                 WorldSound.MOB_SLIME,
-                WorldSound.NO_SOUND,
+                WorldSound.MOB_SLIME,
                 WorldSound.NO_SOUND,
                 WorldSound.NO_SOUND,
         };
 
         // ghast sounds
         ENTITY_SOUNDS[56] = new WorldSound[]{
-                WorldSound.NO_SOUND,
-                WorldSound.NO_SOUND,
+                WorldSound.MOB_GHAST,
+                WorldSound.MOB_GHAST_HURT,
                 WorldSound.MOB_GHAST_DEATH,
                 WorldSound.NO_SOUND,
         };
@@ -151,7 +167,7 @@ public class SoundEmulation {
         // cave spider sounds
         ENTITY_SOUNDS[59] = new WorldSound[]{
                 WorldSound.MOB_SPIDER,
-                WorldSound.NO_SOUND,
+                WorldSound.MOB_SPIDER,
                 WorldSound.MOB_SPIDER_DEATH,
                 WorldSound.NO_SOUND,
         };
