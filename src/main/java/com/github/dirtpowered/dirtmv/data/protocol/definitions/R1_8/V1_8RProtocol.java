@@ -28,6 +28,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.types.ItemArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.MetadataDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.entity.UseEntityDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.item.V1_8RItemDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.UuidDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.V1_8RMultiBlockDataType;
@@ -43,6 +44,7 @@ public class V1_8RProtocol extends BaseProtocol {
     public final static DataType ITEM_ARRAY;
     public final static DataType METADATA;
     public final static DataType MULTIBLOCK_ARRAY;
+    public final static DataType OPTIONAL_POSITION;
 
     private static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
 
@@ -54,6 +56,7 @@ public class V1_8RProtocol extends BaseProtocol {
         ITEM_ARRAY = new ItemArrayDataType(Type.V1_8R_ITEM_ARRAY, ITEM);
         METADATA = new MetadataDataType(Type.V1_8R_METADATA);
         MULTIBLOCK_ARRAY = new V1_8RMultiBlockDataType();
+        OPTIONAL_POSITION = new UseEntityDataType();
 
         STATE_DEPENDED_PROTOCOL = new V1_8ProtocolDefinitions();
     }

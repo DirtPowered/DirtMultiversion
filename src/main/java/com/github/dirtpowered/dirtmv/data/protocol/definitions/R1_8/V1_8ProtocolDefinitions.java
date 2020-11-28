@@ -371,6 +371,12 @@ public class V1_8ProtocolDefinitions extends StateDependedProtocol {
                 V1_7_2RProtocol.STRING // Chat Message
         });
 
+        // use entity
+        addPacket(0x02, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                V1_7_2RProtocol.VAR_INT, // entity id
+                V1_8RProtocol.OPTIONAL_POSITION
+        });
+
         // player
         addPacket(0x03, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
                 BaseProtocol.UNSIGNED_BYTE //on ground

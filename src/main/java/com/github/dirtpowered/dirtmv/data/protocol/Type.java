@@ -38,6 +38,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockChangeRecord;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.OptionalPosition;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BChunk;
@@ -402,6 +403,13 @@ public class Type {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_8RProtocol.MULTIBLOCK_ARRAY.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<OptionalPosition> V1_8R_USE_ENTITY_OPTIONAL_POSITION = new TypeObject<>(OptionalPosition.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.OPTIONAL_POSITION.write(holder, packetOutput);
         }
     });
 }

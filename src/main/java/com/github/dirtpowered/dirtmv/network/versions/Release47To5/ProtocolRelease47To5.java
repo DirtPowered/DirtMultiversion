@@ -30,6 +30,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockChangeRecord;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.OptionalPosition;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
@@ -611,6 +612,23 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x00, new TypeHolder[]{
                         set(Type.INT, data.read(Type.VAR_INT, 0))
+                });
+            }
+        });
+
+        // use entity
+        addTranslator(0x02, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                OptionalPosition optPos = data.read(Type.V1_8R_USE_ENTITY_OPTIONAL_POSITION, 1);
+                int action = optPos.getAction();
+
+                action = action == 2 ? 0 : action;
+
+                return PacketUtil.createPacket(0x02, new TypeHolder[] {
+                        set(Type.INT, data.read(Type.VAR_INT, 0)),
+                        set(Type.BYTE, (byte) action)
                 });
             }
         });
