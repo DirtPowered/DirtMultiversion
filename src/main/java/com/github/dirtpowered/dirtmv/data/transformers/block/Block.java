@@ -22,9 +22,11 @@
 
 package com.github.dirtpowered.dirtmv.data.transformers.block;
 
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.StringTag;
 import lombok.Data;
+import net.kyori.adventure.nbt.BinaryTag;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+
+import java.util.Map;
 
 @Data
 public class Block {
@@ -43,22 +45,27 @@ public class Block {
         this.oldItemName = oldItemName;
     }
 
-    CompoundTag getNameTag(CompoundTag originalTag) {
+    CompoundBinaryTag getNameTag(CompoundBinaryTag originalTag) {
         if (oldItemName == null || oldItemName.isEmpty()) {
             return originalTag;
         }
 
-        CompoundTag tag = originalTag;
+        CompoundBinaryTag tag = originalTag;
         if (tag == null) {
-            tag = new CompoundTag();
+            tag = CompoundBinaryTag.empty();
         }
 
-        CompoundTag parent = new CompoundTag("display");
+        CompoundBinaryTag.Builder parentBuilder = CompoundBinaryTag.builder();
+        parentBuilder.putString("Name", "§r" + oldItemName);
+        CompoundBinaryTag parentTag = parentBuilder.build();
 
-        StringTag name = new StringTag("Name", "§r" + oldItemName);
+        CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder();
+        builder.put("display", parentTag);
 
-        parent.put("Name", name);
-        tag.put("display", parent);
-        return tag;
+        for (Map.Entry<String, ? extends BinaryTag> stringEntry : tag) {
+            builder.put(stringEntry.getKey(), stringEntry.getValue());
+        }
+
+        return builder.build();
     }
 }

@@ -23,7 +23,6 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release73To61;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.data.entity.EntityTracker;
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
@@ -38,6 +37,7 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_5RTo1_6RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import lombok.extern.log4j.Log4j2;

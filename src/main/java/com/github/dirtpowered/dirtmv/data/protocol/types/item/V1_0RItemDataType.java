@@ -30,7 +30,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.utils.NBTUtils;
 import com.github.dirtpowered.dirtmv.network.versions.Release22To17.item.LegacyItemList;
-import com.mojang.nbt.CompoundTag;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 public class V1_0RItemDataType extends DataType<ItemStack> {
 
@@ -46,7 +46,7 @@ public class V1_0RItemDataType extends DataType<ItemStack> {
             int amount = packetInput.readByte();
             int data = packetInput.readShort();
 
-            CompoundTag compoundTag = null;
+            CompoundBinaryTag compoundTag = null;
 
             if (LegacyItemList.isEnchantable(itemId))
                 compoundTag = NBTUtils.readNBT(packetInput);

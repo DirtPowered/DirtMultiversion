@@ -28,22 +28,22 @@ import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.utils.NBTUtils;
-import com.mojang.nbt.CompoundTag;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 
-public class CompoundTagDataType extends DataType<CompoundTag> {
+public class CompoundTagDataType extends DataType<CompoundBinaryTag> {
 
     public CompoundTagDataType() {
         super(Type.COMPOUND_TAG);
     }
 
     @Override
-    public CompoundTag read(PacketInput packetInput) {
+    public CompoundBinaryTag read(PacketInput packetInput) {
         return NBTUtils.readNBT(packetInput);
     }
 
     @Override
     public void write(TypeHolder typeHolder, PacketOutput packetOutput) {
-        CompoundTag compoundTag = (CompoundTag) typeHolder.getObject();
+        CompoundBinaryTag compoundTag = (CompoundBinaryTag) typeHolder.getObject();
 
         NBTUtils.writeNBT(compoundTag, packetOutput);
     }

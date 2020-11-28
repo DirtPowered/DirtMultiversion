@@ -20,7 +20,9 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.entity;
+package com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity;
+
+import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,9 +40,5 @@ public class EntityTracker {
 
     public void removeEntity(int entityId) {
         entities.remove(entityId);
-    }
-
-    public void purge() {
-        entities.clear();
     }
 }

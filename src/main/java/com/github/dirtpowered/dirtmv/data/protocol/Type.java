@@ -48,7 +48,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_2EntityAttribute
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8Chunk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8ChunkBulk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
-import com.mojang.nbt.CompoundTag;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -292,7 +292,7 @@ public class Type {
         }
     });
 
-    public static final TypeObject<CompoundTag> COMPOUND_TAG = new TypeObject<>(CompoundTag.class, new TypeHandler() {
+    public static final TypeObject<CompoundBinaryTag> COMPOUND_TAG = new TypeObject<>(CompoundBinaryTag.class, new TypeHandler() {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             BaseProtocol.COMPOUND_TAG.write(holder, packetOutput);

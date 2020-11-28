@@ -29,7 +29,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.utils.NBTUtils;
-import com.mojang.nbt.CompoundTag;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 public class V1_3RItemDataType extends DataType<ItemStack> {
 
@@ -45,7 +45,7 @@ public class V1_3RItemDataType extends DataType<ItemStack> {
             int amount = packetInput.readByte();
             int data = packetInput.readShort();
 
-            CompoundTag compoundTag = NBTUtils.readNBT(packetInput);
+            CompoundBinaryTag compoundTag = NBTUtils.readNBT(packetInput);
             return new ItemStack(itemId, amount, data, compoundTag);
         }
 

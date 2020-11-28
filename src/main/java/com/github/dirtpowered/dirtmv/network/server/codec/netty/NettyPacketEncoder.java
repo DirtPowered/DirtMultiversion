@@ -18,6 +18,6 @@ public class NettyPacketEncoder extends MessageToMessageEncoder<PacketData> {
         NettyOutputWrapper outputWrapper = new NettyOutputWrapper(packetId);
         outputWrapper.writeVarInt(packetData.getOpCode());
 
-        list.add(Unpooled.wrappedBuffer(packetId, ((NettyOutputWrapper) packetData.toMessage()).getBuffer()));
+        list.add(Unpooled.wrappedBuffer(packetId, packetData.toMessage().getBuffer()));
     }
 }

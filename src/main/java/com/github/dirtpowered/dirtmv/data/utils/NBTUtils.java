@@ -24,17 +24,27 @@ package com.github.dirtpowered.dirtmv.data.utils;
 
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.NbtIo;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
+import net.kyori.adventure.nbt.BinaryTagIO;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
 
 public class NBTUtils {
 
-    public static CompoundTag readNBT(PacketInput packetInput) {
+    /**
+     * Reads compressed binary tag from network
+     *
+     * @param packetInput Network input
+     * @return CompoundBinaryTag - NBT Tag
+     */
+    public static CompoundBinaryTag readNBT(PacketInput packetInput) {
         try {
             short size = packetInput.readShort();
 
@@ -42,7 +52,7 @@ public class NBTUtils {
                 return null;
             } else {
                 byte[] data = packetInput.readBytes(size);
-                return NbtIo.decompress(data);
+                return BinaryTagIO.readCompressedInputStream(new ByteArrayInputStream(data));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,21 +60,13 @@ public class NBTUtils {
         }
     }
 
-    public static void writeNBT(CompoundTag tag, PacketOutput packetOutput) {
-        try {
-            if (tag == null) {
-                packetOutput.writeShort(-1);
-            } else {
-                byte[] data = NbtIo.compress(tag);
-                packetOutput.writeShort((short) data.length);
-                packetOutput.writeBytes(data);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static CompoundTag readNBTUncompressed(PacketInput packetInput) {
+    /**
+     * Reads uncompressed binary tag from network
+     *
+     * @param packetInput Network input
+     * @return CompoundBinaryTag - NBT Tag
+     */
+    public static CompoundBinaryTag readNBTUncompressed(PacketInput packetInput) {
         ByteBuf buf = packetInput.getBuffer();
 
         int readerIndex = buf.readerIndex();
@@ -75,7 +77,7 @@ public class NBTUtils {
         } else {
             buf.readerIndex(readerIndex);
             try {
-                return NbtIo.read(new ByteBufInputStream(buf));
+                return BinaryTagIO.readInputStream(new ByteBufInputStream(buf));
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
@@ -83,12 +85,46 @@ public class NBTUtils {
         }
     }
 
-    public static void writeNBTUncompressed(CompoundTag tag, PacketOutput packetOutput) {
+    /**
+     * Writes compressed binary tag to network
+     *
+     * @param tag          NBT tag
+     * @param packetOutput Network output
+     */
+    public static void writeNBT(CompoundBinaryTag tag, PacketOutput packetOutput) {
+        try {
+            if (tag == null) {
+                packetOutput.writeShort(-1);
+            } else {
+                ByteArrayOutputStream var1 = new ByteArrayOutputStream();
+
+                try (DataOutputStream var2 = new DataOutputStream(new GZIPOutputStream(var1))) {
+                    BinaryTagIO.writeDataOutput(tag, var2);
+                }
+
+                byte[] data = var1.toByteArray();
+
+                packetOutput.writeShort((short) data.length);
+                packetOutput.writeBytes(data);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Writes uncompressed binary tag to network
+     *
+     * @param tag          NBT tag
+     * @param packetOutput Network output
+     */
+    public static void writeNBTUncompressed(CompoundBinaryTag tag, PacketOutput packetOutput) {
         try {
             if (tag == null) {
                 packetOutput.writeByte(0);
             } else {
-                NbtIo.write(tag, new ByteBufOutputStream(packetOutput.getBuffer()));
+                BinaryTagIO.writeDataOutput(tag, new ByteBufOutputStream(packetOutput.getBuffer()));
             }
         } catch (IOException e) {
             e.printStackTrace();

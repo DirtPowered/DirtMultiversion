@@ -45,8 +45,8 @@ import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.Entit
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.UpdateTask;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.WorldEntityEvent;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
-import com.mojang.nbt.CompoundTag;
 import lombok.SneakyThrows;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
@@ -283,7 +283,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 for (ItemStack item : items) {
                     if (item != null && item.getCompoundTag() == null) {
                         // since 1.3 all items contains NBT data
-                        item.setCompoundTag(new CompoundTag("tag"));
+                        item.setCompoundTag(CompoundBinaryTag.empty());
                     }
                 }
 
@@ -526,10 +526,10 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                     double y = data.read(Type.INT, 3) / 32.0D;
                     double z = data.read(Type.INT, 4) / 32.0D;
 
-                    Location b = new Location(x, y, z);
+                    Location loc = new Location(x, y, z);
 
-                    Entity itemPickup = new Entity(entityId, b, EntityType.HUMAN);
-                    tracker.addEntity(entityId, itemPickup);
+                    Entity human = new Entity(entityId, loc, EntityType.HUMAN);
+                    tracker.addEntity(entityId, human);
                 }
 
                 /* default 1.3.x metadata */
@@ -688,7 +688,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         data.read(1),
                         data.read(2),
                         data.read(3),
-                        set(Type.COMPOUND_TAG, new CompoundTag())
+                        set(Type.COMPOUND_TAG, CompoundBinaryTag.empty())
                 });
             }
         });

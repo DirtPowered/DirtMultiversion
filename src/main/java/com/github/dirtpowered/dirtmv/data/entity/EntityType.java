@@ -56,7 +56,7 @@ public enum EntityType {
     IRON_GOLEM(99, true),
     HORSE(100, true),
     VILLAGER(120, true),
-    HUMAN(-1, true),
+    HUMAN(48, true),
     ITEM(1, false),
     PRIMED_TNT(20, false);
 

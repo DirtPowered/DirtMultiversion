@@ -22,9 +22,9 @@
 
 package com.github.dirtpowered.dirtmv.data.protocol.objects;
 
-import com.mojang.nbt.CompoundTag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 @Data
 @AllArgsConstructor
@@ -32,5 +32,5 @@ public class ItemStack {
     private int itemId;
     private int amount;
     private int data;
-    private CompoundTag compoundTag;
+    private CompoundBinaryTag compoundTag;
 }

@@ -40,9 +40,9 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
-import com.mojang.nbt.CompoundTag;
 import io.netty.buffer.Unpooled;
 import lombok.extern.log4j.Log4j2;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -252,7 +252,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 byte amount = data.read(Type.BYTE, 2);
                 short itemData = data.read(Type.SHORT, 3);
 
-                ItemStack itemStack = new ItemStack(itemId, amount, itemData, new CompoundTag());
+                ItemStack itemStack = new ItemStack(itemId, amount, itemData, CompoundBinaryTag.empty());
 
                 List<WatchableObject> metadata = Collections.singletonList(new WatchableObject(
                         MetadataType.ITEM,
