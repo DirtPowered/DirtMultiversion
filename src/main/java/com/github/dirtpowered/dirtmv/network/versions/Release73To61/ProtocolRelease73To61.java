@@ -79,7 +79,10 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
                 int entityId = data.read(Type.INT, 0);
                 session.getUserData().setEntityId(entityId);
-                session.getUserData().getProtocolStorage().set(EntityTracker.class, new EntityTracker());
+                EntityTracker tracker = new EntityTracker();
+
+                tracker.addEntity(entityId, EntityType.HUMAN);
+                session.getUserData().getProtocolStorage().set(EntityTracker.class, tracker);
 
                 // send entity attributes (fixes fast movement)
                 session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());

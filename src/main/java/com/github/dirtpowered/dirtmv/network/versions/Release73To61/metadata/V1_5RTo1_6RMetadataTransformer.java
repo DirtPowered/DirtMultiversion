@@ -62,12 +62,18 @@ public class V1_5RTo1_6RMetadataTransformer implements MetadataTransformer {
 
                 } else if (entityType == EntityType.WITHER | entityType == EntityType.ENDER_DRAGON) {
                     if (index == 16) {
-                        newMetaData.add(new WatchableObject(MetadataType.FLOAT, 6, value));
+                        newMetaData.add(new WatchableObject(MetadataType.FLOAT, 6, ((Integer)value).floatValue()));
                     }
                 } else if (entityType == EntityType.WOLF) {
                     if (index == 18) {
-                        newMetaData.add(new WatchableObject(MetadataType.FLOAT, 18, value));
+                        newMetaData.add(new WatchableObject(MetadataType.FLOAT, 18, ((Integer) value).floatValue()));
                     }
+                } else if (entityType == EntityType.HUMAN) {
+                    if (index == 17) {
+                        // absorption amount
+                        newMetaData.add(new WatchableObject(MetadataType.FLOAT, 17, ((Byte) value).floatValue()));
+                    }
+
                 } else {
                     newMetaData.add(watchableObject);
                 }
