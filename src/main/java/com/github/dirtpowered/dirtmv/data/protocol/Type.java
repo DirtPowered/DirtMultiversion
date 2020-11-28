@@ -34,6 +34,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6_2RProto
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockChangeRecord;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
@@ -394,6 +395,13 @@ public class Type {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_8RProtocol.METADATA.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<BlockChangeRecord[]> V1_8R_MULTIBLOCK_ARRAY = new TypeObject<>(BlockChangeRecord[].class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.MULTIBLOCK_ARRAY.write(holder, packetOutput);
         }
     });
 }

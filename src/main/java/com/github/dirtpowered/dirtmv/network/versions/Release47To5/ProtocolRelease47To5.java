@@ -26,9 +26,11 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockChangeRecord;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
@@ -44,6 +46,10 @@ import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRema
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.google.gson.Gson;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -217,6 +223,27 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // chunk data
         addTranslator(0x21, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new V1_3ToV1_8ChunkTranslator());
+
+        // multi block change
+        addTranslator(0x22, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+                V1_2MultiBlockArray blockArray = data.read(Type.V1_2MULTIBLOCK_ARRAY, 2);
+                DataInput dis = new DataInputStream(new ByteArrayInputStream(blockArray.getData()));
+
+                BlockChangeRecord[] blockChangeRecords = new BlockChangeRecord[blockArray.getRecordCount()];
+
+                for (int i = 0; i < blockArray.getRecordCount(); i++) {
+                    blockChangeRecords[i] = new BlockChangeRecord(dis.readShort(), dis.readShort());
+                }
+
+                return PacketUtil.createPacket(0x22, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        set(Type.V1_8R_MULTIBLOCK_ARRAY, blockChangeRecords)
+                });
+            }
+        });
 
         // chunk bulk
         addTranslator(0x26, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
@@ -805,9 +832,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // entity metadata
         addTranslator(0x1C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // multi block change
-        addTranslator(0x22, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // update tile entity
         addTranslator(0x35, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
