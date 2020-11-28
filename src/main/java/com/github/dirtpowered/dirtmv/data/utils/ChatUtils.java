@@ -86,4 +86,32 @@ public class ChatUtils {
 
         return result;
     }
+
+    /**
+     * Converts JSON text to plain chat message
+     *
+     * @param message JSON string
+     * @return Legacy text
+     */
+    public static String jsonToLegacy(String message) {
+        JsonElement jsonElement = JsonParser.parseString(message);
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+        if (jsonObject.has("text")) {
+            return jsonObject.get("text").getAsString();
+        }
+
+        return "";
+    }
+
+    public static String createChatComponentFromInvalidJson(String message) {
+        if (message.startsWith("\"") && message.endsWith("\"")) {
+            message = "{\"text\":" + message + "}";
+
+            JsonElement element = JsonParser.parseString(message);
+            return element.toString();
+        }
+
+        return legacyToJsonString("");
+    }
 }

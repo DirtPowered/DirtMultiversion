@@ -748,6 +748,35 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // update sign
+        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                long encodedPosition = data.read(Type.LONG, 0);
+                BlockLocation l = fromBlockPosition(encodedPosition);
+
+                String[] lines = new String[4];
+                for (int i = 0; i < 4; i++) {
+                    String msg = data.read(Type.V1_7_STRING, 1 + i);
+
+                    msg = ChatUtils.createChatComponentFromInvalidJson(msg);
+                    msg = ChatUtils.jsonToLegacy(msg);
+                    lines[i] = msg;
+                }
+
+                return PacketUtil.createPacket(0x12, new TypeHolder[]{
+                        set(Type.INT, l.getX()),
+                        set(Type.SHORT, (short) l.getY()),
+                        set(Type.INT, l.getZ()),
+                        set(Type.V1_7_STRING, lines[0]),
+                        set(Type.V1_7_STRING, lines[1]),
+                        set(Type.V1_7_STRING, lines[2]),
+                        set(Type.V1_7_STRING, lines[3]),
+                });
+            }
+        });
+
         // client settings
         addTranslator(0x15, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
