@@ -3,10 +3,9 @@
     {
       "mob.ghast.affectionate scream": "mob.ghast.affectionate_scream",
       "mob.sheep": "mob.sheep.say",
-      "random.door_open": "random.door_open",
-      "random.click": "random.click",
       "mob.spider": "mob.spider.say",
       "mob.chickenplop": "mob.chicken.plop",
+      "mob.pig": "mob.pig.say",
       "mob.pigdeath": "mob.pig.death",
       "random.hurt": "damage.hit",
       "mob.chicken": "mob.chicken.say",
