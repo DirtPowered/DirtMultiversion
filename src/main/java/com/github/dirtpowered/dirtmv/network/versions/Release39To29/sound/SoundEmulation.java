@@ -179,6 +179,14 @@ public class SoundEmulation {
                 WorldSound.NO_SOUND,
                 WorldSound.RANDOM_FUSE
         };
+
+        // human sounds
+        ENTITY_SOUNDS[48] = new WorldSound[]{
+                WorldSound.NO_SOUND,
+                WorldSound.MOB_HUMAN_HURT,
+                WorldSound.NO_SOUND,
+                WorldSound.NO_SOUND
+        };
     }
 
     public static String getEntitySound(SoundType soundType, EntityType entityType) {

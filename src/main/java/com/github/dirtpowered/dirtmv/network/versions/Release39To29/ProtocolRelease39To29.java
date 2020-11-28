@@ -429,24 +429,32 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 int throwerId = motion.getThrowerId();
                 byte type = data.read(Type.BYTE, 1);
 
-                switch (type) {
-                    case 50:
-                        // cache primed tnt entity
-                        EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
-                        if (tracker != null) {
-                            int entityId = data.read(Type.INT, 0);
-                            double x = data.read(Type.INT, 2) / 32.0D;
-                            double y = data.read(Type.INT, 3) / 32.0D;
-                            double z = data.read(Type.INT, 4) / 32.0D;
+                // sound emulation
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    int entityId = data.read(Type.INT, 0);
+                    double x = data.read(Type.INT, 2) / 32.0D;
+                    double y = data.read(Type.INT, 3) / 32.0D;
+                    double z = data.read(Type.INT, 4) / 32.0D;
+                    Location loc = new Location(x, y, z);
 
-                            Location b = new Location(x, y, z);
-
-                            Entity primedTNT = new Entity(entityId, b, EntityType.PRIMED_TNT);
+                    switch (type) {
+                        case 50:
+                            // cache primed tnt entity
+                            Entity primedTNT = new Entity(entityId, loc, EntityType.PRIMED_TNT);
                             tracker.addEntity(entityId, primedTNT);
 
                             WorldEntityEvent.onCustomAction(session, entityId);
-                        }
-                        break;
+                            break;
+                        case 60:
+                            // bow sound
+                            float pitch = 1.0F / (session.getMain().getSharedRandom().nextFloat() * 0.4F + 1.2F) + 0.5F;
+                            WorldEntityEvent.playSoundAt(session, loc, WorldSound.RANDOM_BOW, 0.2F, pitch);
+                            break;
+                    }
+                }
+
+                switch (type) {
                     case 70:
                         throwerId = 12;
                         break;
@@ -505,11 +513,24 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             }
         });
 
-        // name entity spawn
+        // named entity spawn
         addTranslator(0x14, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    int entityId = data.read(Type.INT, 0);
+                    double x = data.read(Type.INT, 2) / 32.0D;
+                    double y = data.read(Type.INT, 3) / 32.0D;
+                    double z = data.read(Type.INT, 4) / 32.0D;
+
+                    Location b = new Location(x, y, z);
+
+                    Entity itemPickup = new Entity(entityId, b, EntityType.HUMAN);
+                    tracker.addEntity(entityId, itemPickup);
+                }
 
                 /* default 1.3.x metadata */
                 List<WatchableObject> watchableObjects = Arrays.asList(
