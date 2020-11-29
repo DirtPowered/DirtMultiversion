@@ -30,6 +30,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
+import java.util.regex.Pattern;
+
 public class ChatUtils {
 
     /**
@@ -113,5 +115,16 @@ public class ChatUtils {
         }
 
         return legacyToJsonString("");
+    }
+
+    /**
+     * Removes colors from message (&, §)
+     *
+     * @param message colored message
+     * @return message without colors
+     */
+    public static String stripColor(String message) {
+        message = message.replaceAll("&", "§");
+        return Pattern.compile("(?i)" + "§" + "[0-9A-FK-OR]").matcher(message).replaceAll("");
     }
 }

@@ -30,6 +30,7 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
+import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.data.utils.StringUtils;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
@@ -51,6 +52,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
                 String message = session.getMain().getConfiguration().preReleaseMOTD();
+                message = ChatUtils.stripColor(message);
 
                 int max = session.getMain().getConfiguration().getMaxOnline();
                 int online = session.getConnectionCount();

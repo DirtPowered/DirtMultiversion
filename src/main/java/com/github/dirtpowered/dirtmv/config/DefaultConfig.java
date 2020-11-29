@@ -54,12 +54,17 @@ public class DefaultConfig implements Configuration {
 
     @Override
     public String preReleaseMOTD() {
-        return "A Beta 1.7 Minecraft Server";
+        return "&fA Beta 1.7 Minecraft Server";
     }
 
     @Override
     public int getMaxOnline() {
         return 60;
+    }
+
+    @Override
+    public String getServerIcon() {
+        return "";
     }
 
     @Override

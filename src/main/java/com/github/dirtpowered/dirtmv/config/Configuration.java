@@ -62,6 +62,11 @@ public interface Configuration {
     int getMaxOnline();
 
     /**
+     * Server icon (Base64 64x64 image)
+     */
+    String getServerIcon();
+
+    /**
      * Debug mode, printing all packets, additional info
      */
     boolean isDebugMode();

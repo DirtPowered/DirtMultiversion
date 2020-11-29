@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release51To39;
 
+import com.github.dirtpowered.dirtmv.config.Configuration;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
@@ -62,7 +63,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         soundRemapper = new SoundRemapper("1_3To1_4SoundMappings");
     }
 
-    private String transformMotd(String oldMessage) {
+    private String transformMotd(String oldMessage, Configuration configuration) {
         String colorChar = "\u00a7";
         String splitChar = "\00";
 
@@ -79,10 +80,17 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         Integer selectedVersion = (Integer) keyArray[new Random().nextInt(keyArray.length)];
         String versionName = versionMap.get(selectedVersion);
 
+        String motd = oldParts[0];
+
+        // display coloured MOTD for pre b1.8 servers
+        if (configuration.getServerVersion().getRegistryId() < 17) {
+            motd = configuration.preReleaseMOTD().replaceAll("&", "\u00a7");
+        }
+
         return colorChar + "1"
                 + splitChar + selectedVersion
                 + splitChar + versionName
-                + splitChar + oldParts[0]
+                + splitChar + motd
                 + splitChar + oldParts[1]
                 + splitChar + oldParts[2];
     }
@@ -131,9 +139,12 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 if (reason.split("\u00a7").length != 3) {
                     return data;
                 }
+
+                Configuration configuration = session.getMain().getConfiguration();
+
                 // old to new format
                 return PacketUtil.createPacket(0xFF, new TypeHolder[] {
-                        set(Type.STRING, transformMotd(reason))
+                        set(Type.STRING, transformMotd(reason, configuration))
                 });
             }
         });
