@@ -20,34 +20,17 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity;
+package com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model;
 
-import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model.AbstractEntity;
+import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-public class EntityTracker {
-
-    private Map<Integer, AbstractEntity> entityMap = new ConcurrentHashMap<>();
-
-    public void addEntity(int entityId, AbstractEntity entity) {
-        entityMap.putIfAbsent(entityId, entity);
-    }
-
-    public AbstractEntity getEntity(int entityId) {
-        return entityMap.get(entityId);
-    }
-
-    public boolean isEntityTracked(int entityId) {
-        return entityMap.containsKey(entityId);
-    }
-
-    public void removeEntity(int entityId) {
-        entityMap.remove(entityId);
-    }
-
-    public Map<Integer, AbstractEntity> getTrackedEntities() {
-        return entityMap;
-    }
+@Data
+@AllArgsConstructor
+public abstract class AbstractEntity {
+    private int entityId;
+    private Location location;
+    private EntityType entityType;
 }

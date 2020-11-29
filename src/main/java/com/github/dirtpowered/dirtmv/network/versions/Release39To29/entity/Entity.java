@@ -24,13 +24,11 @@ package com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity;
 
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model.AbstractEntity;
 
-@Data
-@AllArgsConstructor
-public class Entity {
-    private int entityId;
-    private Location location;
-    private EntityType entityType;
+public class Entity extends AbstractEntity {
+
+    public Entity(int entityId, Location location, EntityType entityType) {
+        super(entityId, location, entityType);
+    }
 }

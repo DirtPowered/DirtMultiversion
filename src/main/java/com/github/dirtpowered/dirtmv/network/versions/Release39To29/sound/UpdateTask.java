@@ -19,11 +19,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity;
+package com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound;
 
 import com.github.dirtpowered.dirtmv.data.interfaces.Tickable;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.EntityTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.WorldEntityEvent;
 
 import java.util.Random;
 

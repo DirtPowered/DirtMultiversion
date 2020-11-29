@@ -31,6 +31,7 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model.AbstractEntity;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.SoundEmulation;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.SoundType;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
@@ -67,7 +68,7 @@ public class WorldEntityEvent {
 
         assert tracker != null;
         if (tracker.isEntityTracked(entityId)) {
-            Entity e = tracker.getEntity(entityId);
+            AbstractEntity e = tracker.getEntity(entityId);
 
             String sound = SoundEmulation.getEntitySound(type, e.getEntityType());
             if (sound.isEmpty())

@@ -22,32 +22,19 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity;
 
+import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model.AbstractEntity;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+public class HumanEntity extends AbstractEntity {
 
-public class EntityTracker {
+    @Setter
+    @Getter
+    private boolean isRidingEntity;
 
-    private Map<Integer, AbstractEntity> entityMap = new ConcurrentHashMap<>();
-
-    public void addEntity(int entityId, AbstractEntity entity) {
-        entityMap.putIfAbsent(entityId, entity);
-    }
-
-    public AbstractEntity getEntity(int entityId) {
-        return entityMap.get(entityId);
-    }
-
-    public boolean isEntityTracked(int entityId) {
-        return entityMap.containsKey(entityId);
-    }
-
-    public void removeEntity(int entityId) {
-        entityMap.remove(entityId);
-    }
-
-    public Map<Integer, AbstractEntity> getTrackedEntities() {
-        return entityMap;
+    public HumanEntity(int entityId, Location location) {
+        super(entityId, location, EntityType.HUMAN);
     }
 }

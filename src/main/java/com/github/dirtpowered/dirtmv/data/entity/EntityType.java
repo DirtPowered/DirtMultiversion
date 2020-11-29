@@ -58,7 +58,9 @@ public enum EntityType {
     VILLAGER(120, true),
     HUMAN(48, true),
     ITEM(1, false),
-    PRIMED_TNT(20, false);
+    PRIMED_TNT(20, false),
+    MINECART(40, false),
+    BOAT(41, false);
 
     @Getter
     private int entityTypeId;
