@@ -50,11 +50,13 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
-
                 String message = session.getMain().getConfiguration().preReleaseMOTD();
 
+                int max = session.getMain().getConfiguration().getMaxOnline();
+                int online = session.getConnectionCount();
+
                 PacketData packetData = PacketUtil.createPacket(0xFF, new TypeHolder[]{
-                        set(Type.STRING, message + "§0§20")
+                        set(Type.STRING, message + "§" + online + "§" + max)
                 });
 
                 session.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, getFrom());
@@ -92,6 +94,8 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
                 session.sendPacket(createTabEntryPacket(colored, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
 
+                int max = session.getMain().getConfiguration().getMaxOnline();
+
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0), // INT - entityId
                         data.read(1), // STRING - empty
@@ -100,7 +104,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                         data.read(3), // BYTE - dimension
                         set(Type.BYTE, 0), // BYTE - difficulty
                         set(Type.BYTE, -128), // BYTE - world height
-                        set(Type.BYTE, 20), // BYTE - maxPlayers
+                        set(Type.BYTE, (byte) max), // BYTE - maxPlayers
                 });
             }
         });

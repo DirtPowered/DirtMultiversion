@@ -52,9 +52,14 @@ public interface Configuration {
     MinecraftVersion getServerVersion();
 
     /**
-     * Message of the day for pre b1.8 versions
+     * Message of the day for pre b1.8 servers
      */
     String preReleaseMOTD();
+
+    /**
+     * Max online players (visual) for pre b1.8 servers
+     */
+    int getMaxOnline();
 
     /**
      * Debug mode, printing all packets, additional info

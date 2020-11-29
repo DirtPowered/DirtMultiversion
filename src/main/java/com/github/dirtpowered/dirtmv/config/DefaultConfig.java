@@ -58,6 +58,11 @@ public class DefaultConfig implements Configuration {
     }
 
     @Override
+    public int getMaxOnline() {
+        return 60;
+    }
+
+    @Override
     public boolean isDebugMode() {
         return false;
     }
