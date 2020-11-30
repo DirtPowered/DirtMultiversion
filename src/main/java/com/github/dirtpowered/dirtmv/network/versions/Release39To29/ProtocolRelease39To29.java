@@ -637,12 +637,14 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                                 }
                             } else if (((Byte) value).intValue() == 0) { // un-mount
                                 if (tracker.isEntityTracked(entityId) && tracker.getEntity(entityId) instanceof HumanEntity) {
-                                    if (((HumanEntity) tracker.getEntity(entityId)).isRidingEntity()) {
+                                    HumanEntity humanEntity = (HumanEntity) tracker.getEntity(entityId);
+                                    if (humanEntity.isRidingEntity()) {
                                         PacketData entityAttach = PacketUtil.createPacket(0x27, new TypeHolder[]{
                                                 set(Type.INT, entityId),
                                                 set(Type.INT, -1),
                                         });
 
+                                        humanEntity.setRidingEntity(false);
                                         session.sendPacket(entityAttach, PacketDirection.SERVER_TO_CLIENT, getFrom());
                                     }
                                 }
