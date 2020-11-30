@@ -29,13 +29,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class HumanEntity extends AbstractEntity {
-    @Setter
-    @Getter
-    private boolean isRidingEntity;
 
     @Setter
     @Getter
-    private int vehicleEntityId;
+    private boolean isRidingEntity;
 
     public HumanEntity(int entityId, Location location) {
         super(entityId, location, EntityType.HUMAN);
