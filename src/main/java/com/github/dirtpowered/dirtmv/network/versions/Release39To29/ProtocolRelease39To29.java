@@ -66,7 +66,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
         AbstractEntity nearbyEntity = new Entity(-1, new Location(0, 0, 0), EntityType.PIG);
 
         for (AbstractEntity entity : tracker.getTrackedEntities().values()) {
-            if (entity.getLocation().distanceTo(location) < 1.5D && entity.getLocation().distanceTo(location) != 0.0D) {
+            if (entity.getLocation().distanceTo(location) < 1.15D && entity.getLocation().distanceTo(location) != 0.0D) {
                 nearbyEntity = entity;
             }
         }
@@ -74,7 +74,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
         return nearbyEntity;
     }
 
-    private void updateEntityLocation(ServerSession session, int entityId, int x, int y, int z, boolean relative) {
+    private void updateEntityLocation(ServerSession session, int entityId, int x, int y, int z) {
         EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
         if (tracker != null) {
             AbstractEntity e = tracker.getEntity(entityId);
@@ -85,13 +85,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 double yPos = y / 32.0D;
                 double zPos = z / 32.0D;
 
-                Location newLoc;
-                if (relative) {
-                    newLoc = new Location(oldLoc.getX() + xPos, oldLoc.getY() + yPos, oldLoc.getZ() + zPos);;
-                } else {
-                    newLoc = new Location(xPos, yPos, zPos);;
-                }
-
+                Location newLoc = new Location(oldLoc.getX() + xPos, oldLoc.getY() + yPos, oldLoc.getZ() + zPos);
                 e.setLocation(newLoc);
             }
         }
@@ -411,12 +405,35 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                int entityId = data.read(Type.INT, 0);
-                int x = data.read(Type.INT, 1);
-                int y = data.read(Type.INT, 2);
-                int z = data.read(Type.INT, 3);
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker != null) {
+                    int entityId = data.read(Type.INT, 0);
+                    int x = data.read(Type.INT, 1);
+                    int y = data.read(Type.INT, 2);
+                    int z = data.read(Type.INT, 3);
 
-                updateEntityLocation(session, entityId, x, y, z, false);
+                    AbstractEntity e = tracker.getEntity(entityId);
+                    if (e != null) {
+                        double xPos = x / 32.0D;
+                        double yPos = y / 32.0D;
+                        double zPos = z / 32.0D;
+
+                        Location newLoc = new Location(xPos, yPos, zPos);
+                        e.setLocation(newLoc);
+                    }
+
+                    if (e instanceof HumanEntity) {
+                        AbstractEntity nearest = getNearestEntity(tracker, e.getLocation());
+                        EntityType entityType = nearest.getEntityType();
+
+                        if (nearest.getEntityId() != -1) {
+                            if (entityType == EntityType.MINECART || entityType == EntityType.PIG || entityType == EntityType.BOAT) {
+                                ((HumanEntity) e).setVehicleEntityId(nearest.getEntityId());
+                            }
+                        }
+                    }
+                }
+
                 return data;
             }
         });
@@ -431,7 +448,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 int y = data.read(Type.BYTE, 2);
                 int z = data.read(Type.BYTE, 3);
 
-                updateEntityLocation(session, entityId, x, y, z, true);
+                updateEntityLocation(session, entityId, x, y, z);
                 return data;
             }
         });
@@ -446,7 +463,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 int y = data.read(Type.BYTE, 2);
                 int z = data.read(Type.BYTE, 3);
 
-                updateEntityLocation(session, entityId, x, y, z, true);
+                updateEntityLocation(session, entityId, x, y, z);
                 return data;
             }
         });
@@ -616,24 +633,16 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                         if (type == MetadataType.BYTE && index == 0 && tracker.isEntityTracked(entityId)) {
                             if (((Byte) value).intValue() == 4) { //entity mount
-                                if (tracker.getEntity(entityId).getEntityType() == EntityType.HUMAN) {
+                                if (tracker.getEntity(entityId) instanceof HumanEntity) {
                                     HumanEntity humanEntity = (HumanEntity) tracker.getEntity(entityId);
+                                    PacketData entityAttach = PacketUtil.createPacket(0x27, new TypeHolder[]{
+                                            set(Type.INT, entityId),
+                                            set(Type.INT, humanEntity.getVehicleEntityId()),
 
-                                    AbstractEntity nearbyEntity = getNearestEntity(tracker, humanEntity.getLocation());
-                                    EntityType eType = nearbyEntity.getEntityType();
+                                    });
 
-                                    if (nearbyEntity.getEntityId() != -1) {
-                                        if (eType == EntityType.MINECART || eType == EntityType.PIG || eType == EntityType.BOAT) {
-                                            PacketData entityAttach = PacketUtil.createPacket(0x27, new TypeHolder[]{
-                                                    set(Type.INT, entityId),
-                                                    set(Type.INT, nearbyEntity.getEntityId()),
-
-                                            });
-
-                                            humanEntity.setRidingEntity(true);
-                                            session.sendPacket(entityAttach, PacketDirection.SERVER_TO_CLIENT, getFrom());
-                                        }
-                                    }
+                                    humanEntity.setRidingEntity(true);
+                                    session.sendPacket(entityAttach, PacketDirection.SERVER_TO_CLIENT, getFrom());
                                 }
                             } else if (((Byte) value).intValue() == 0) { // un-mount
                                 if (tracker.isEntityTracked(entityId) && tracker.getEntity(entityId) instanceof HumanEntity) {
