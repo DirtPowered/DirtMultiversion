@@ -62,11 +62,11 @@ public class ProtocolRelease39To29 extends ServerProtocol {
         super(MinecraftVersion.R1_3_1, MinecraftVersion.R1_2_4);
     }
 
-    private AbstractEntity getNearestEntity(EntityTracker tracker, Location location) {
+    private AbstractEntity getNearestEntity(EntityTracker tracker, Location location, double range) {
         AbstractEntity nearbyEntity = new Entity(-1, new Location(0, 0, 0), EntityType.PIG);
 
         for (AbstractEntity entity : tracker.getTrackedEntities().values()) {
-            if (entity.getLocation().distanceTo(location) < 1.5D && entity.getLocation().distanceTo(location) != 0.0D) {
+            if (entity.getLocation().distanceTo(location) < range && entity.getLocation().distanceTo(location) != 0.0D) {
                 nearbyEntity = entity;
             }
         }
@@ -87,9 +87,9 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 Location newLoc;
                 if (relative) {
-                    newLoc = new Location(oldLoc.getX() + xPos, oldLoc.getY() + yPos, oldLoc.getZ() + zPos);;
+                    newLoc = new Location(oldLoc.getX() + xPos, oldLoc.getY() + yPos, oldLoc.getZ() + zPos);
                 } else {
-                    newLoc = new Location(xPos, yPos, zPos);;
+                    newLoc = new Location(xPos, yPos, zPos);
                 }
 
                 e.setLocation(newLoc);
@@ -190,6 +190,8 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 storage.set(EntityTracker.class, new EntityTracker());
                 storage.set(UpdateTask.class, new UpdateTask(session));
+
+                session.getUserData().setEntityId(data.read(Type.INT, 0));
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0),
@@ -495,6 +497,12 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                             float pitch = 1.0F / (session.getMain().getSharedRandom().nextFloat() * 0.4F + 1.2F) + 0.5F;
                             WorldEntityEvent.playSoundAt(session, loc, WorldSound.RANDOM_BOW, 0.2F, pitch);
                             break;
+                        case 90:
+                            Location hookLocation = new Location(x, y, z);
+                            AbstractEntity nearest = getNearestEntity(tracker, hookLocation, 2.0D);
+
+                            throwerId = nearest.getEntityId() != -1 ? nearest.getEntityId() : session.getUserData().getEntityId();
+                            break;
                     }
                 }
 
@@ -619,7 +627,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                                 if (tracker.getEntity(entityId).getEntityType() == EntityType.HUMAN) {
                                     HumanEntity humanEntity = (HumanEntity) tracker.getEntity(entityId);
 
-                                    AbstractEntity nearbyEntity = getNearestEntity(tracker, humanEntity.getLocation());
+                                    AbstractEntity nearbyEntity = getNearestEntity(tracker, humanEntity.getLocation(),1.5D);
                                     EntityType eType = nearbyEntity.getEntityType();
 
                                     if (nearbyEntity.getEntityId() != -1) {
