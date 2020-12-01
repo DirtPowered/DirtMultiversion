@@ -31,4 +31,11 @@ public class Location {
     private double x;
     private double y;
     private double z;
+
+    public double distanceTo(Location p2) {
+        return Math.sqrt(Math.pow(p2.getX() - x, 2)
+                + Math.pow(p2.getY() - y, 2)
+                + Math.pow(p2.getZ() - z, 2)
+        );
+    }
 }
