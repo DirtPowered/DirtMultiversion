@@ -30,7 +30,9 @@ import com.github.dirtpowered.dirtmv.data.protocol.types.ItemArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.MetadataDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.UseEntityDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.item.V1_8RItemDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.netty.TabListEntryDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.UuidDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.netty.VarIntArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.V1_8RMultiBlockDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_8RChunkBulkDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_8RChunkDataType;
@@ -45,6 +47,8 @@ public class V1_8RProtocol extends BaseProtocol {
     public final static DataType METADATA;
     public final static DataType MULTIBLOCK_ARRAY;
     public final static DataType OPTIONAL_POSITION;
+    public final static DataType VAR_INT_ARRAY;
+    public final static DataType TAB_LIST_ENTRY;
 
     private static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
 
@@ -57,6 +61,8 @@ public class V1_8RProtocol extends BaseProtocol {
         METADATA = new MetadataDataType(Type.V1_8R_METADATA);
         MULTIBLOCK_ARRAY = new V1_8RMultiBlockDataType();
         OPTIONAL_POSITION = new UseEntityDataType();
+        VAR_INT_ARRAY = new VarIntArrayDataType();
+        TAB_LIST_ENTRY = new TabListEntryDataType();
 
         STATE_DEPENDED_PROTOCOL = new V1_8ProtocolDefinitions();
     }

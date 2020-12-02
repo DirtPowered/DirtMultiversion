@@ -33,6 +33,11 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.OptionalPosition;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.GameProfile;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.Property;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.PlayerListEntry;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListAction;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListEntry;
 import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
@@ -45,6 +50,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.InventoryUtils;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRemapper;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
+import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 
 import java.io.ByteArrayInputStream;
@@ -53,6 +59,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class ProtocolRelease47To5 extends ServerProtocol {
 
@@ -423,6 +430,36 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // tab list item
+        addTranslator(0x38, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                String username = ChatUtils.stripColor(data.read(Type.V1_7_STRING, 0));
+                boolean online = data.read(Type.BYTE, 1) == 1;
+
+                UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));
+
+                if (online) {
+                    TabListEntry tabAddListEntry = new TabListEntry(TabListAction.ADD_PLAYER, new PlayerListEntry[] {
+                            new PlayerListEntry(new GameProfile(uuid, username), new Property[0], 0, 0, null)
+                    });
+
+                    return PacketUtil.createPacket(0x38, new TypeHolder[] {
+                            set(Type.TAB_LIST_ENTRY, tabAddListEntry)
+                    });
+                } else {
+                    TabListEntry tabRemoveListEntry = new TabListEntry(TabListAction.REMOVE_PLAYER, new PlayerListEntry[] {
+                            new PlayerListEntry(new GameProfile(uuid, username))
+                    });
+
+                    return PacketUtil.createPacket(0x38, new TypeHolder[] {
+                            set(Type.TAB_LIST_ENTRY, tabRemoveListEntry)
+                    });
+                }
+            }
+        });
+
         // set experience
         addTranslator(0x1F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
@@ -433,6 +470,28 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         data.read(0),
                         set(Type.VAR_INT, data.read(Type.SHORT, 1).intValue()),
                         set(Type.VAR_INT, data.read(Type.SHORT, 2).intValue())
+                });
+            }
+        });
+
+        // spawn player
+        addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                UUID playerOfflineUUID = UUID.fromString(data.read(Type.V1_7_STRING, 1));
+                WatchableObject[] watchableObjects = data.read(Type.V1_7R_METADATA, 10);
+
+                return PacketUtil.createPacket(0x0C, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.UUID, playerOfflineUUID),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                        data.read(7),
+                        data.read(8),
+                        set(Type.V1_8R_METADATA, watchableObjects)
                 });
             }
         });
@@ -507,6 +566,18 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         data.read(1),
                         data.read(2),
                         data.read(3)
+                });
+            }
+        });
+
+        // entity destroy
+        addTranslator(0x13, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x13, new TypeHolder[]{
+                        set(Type.VAR_INT_ARRAY, data.read(Type.BYTE_INT_ARRAY, 0))
                 });
             }
         });
@@ -839,12 +910,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
-        // spawn player
-        addTranslator(0x0C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // entity destroy
-        addTranslator(0x13, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
         // entity attributes
         addTranslator(0x20, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
@@ -853,9 +918,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // update tile entity
         addTranslator(0x35, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // tab list item
-        addTranslator(0x38, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // custom payload
         addTranslator(0x3F, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);

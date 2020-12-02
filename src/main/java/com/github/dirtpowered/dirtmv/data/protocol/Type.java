@@ -50,6 +50,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_2EntityAttribute
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8Chunk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8ChunkBulk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListEntry;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 import java.io.IOException;
@@ -410,6 +411,20 @@ public class Type {
         @Override
         public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
             V1_8RProtocol.OPTIONAL_POSITION.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<int[]> VAR_INT_ARRAY = new TypeObject<>(int[].class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.VAR_INT_ARRAY.write(holder, packetOutput);
+        }
+    });
+
+    public static final TypeObject<TabListEntry> TAB_LIST_ENTRY = new TypeObject<>(TabListEntry.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.TAB_LIST_ENTRY.write(holder, packetOutput);
         }
     });
 }

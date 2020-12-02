@@ -33,9 +33,12 @@ public class ItemRemapper extends ItemBlockDataTransformer {
         addItemReplacement(9, 0, new Block(326, 0, "Stationary Water"));
         addItemReplacement(10, 0, new Block(326, 0, "Lava"));
         addItemReplacement(11, 0, new Block(326, 0, "Stationary lava"));
+        addItemReplacement(43, 0, new Block(44, 0, "Double step"));
+        addItemReplacement(44, 2, new Block(126, 0, "Wooden slab"));
         addItemReplacement(51, 0, new Block(385, 0, "Fire"));
         addItemReplacement(90, 0, new Block(160, 10, "Nether portal"));
         addItemReplacement(119, 0, new Block(399, 0, "End portal"));
+        addItemReplacement(125, 0, new Block(126, 0, "Wood double step"));
         addItemReplacement(127, 0, new Block(351, 3, "Cocoa"));
         addItemReplacement(141, 0, new Block(391, 0, "Carrots"));
         addItemReplacement(142, 0, new Block(392, 0, "Potato"));
