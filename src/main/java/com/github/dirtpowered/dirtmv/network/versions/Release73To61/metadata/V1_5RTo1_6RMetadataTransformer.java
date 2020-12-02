@@ -71,7 +71,11 @@ public class V1_5RTo1_6RMetadataTransformer implements MetadataTransformer {
                 } else if (entityType == EntityType.HUMAN) {
                     if (index == 17) {
                         // absorption amount
-                        newMetaData.add(new WatchableObject(MetadataType.FLOAT, 17, ((Integer) value).floatValue()));
+                        if (value instanceof Byte) {
+                            newMetaData.add(new WatchableObject(MetadataType.FLOAT, 17, ((Byte) value).floatValue()));
+                        } else if (value instanceof Integer) {
+                            newMetaData.add(new WatchableObject(MetadataType.FLOAT, 17, ((Integer) value).floatValue()));
+                        }
                     }
 
                 } else {
