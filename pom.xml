@@ -120,5 +120,10 @@
             <artifactId>adventure-nbt</artifactId>
             <version>4.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil</artifactId>
+            <version>8.4.4</version>
+        </dependency>
     </dependencies>
 </project>

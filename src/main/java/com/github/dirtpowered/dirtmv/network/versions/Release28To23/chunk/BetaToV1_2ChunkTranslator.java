@@ -98,11 +98,6 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                         newChunkStorage.setBlockMetadata(x, y, z, replacement.getBlockData());
                         newChunkStorage.setBlockLight(x, y, z, oldChunkStorage.getBlockLight(x, y, z));
                         newChunkStorage.setSkyLight(x, y, z, oldChunkStorage.getSkyLight(x, y, z));
-
-                        // fix chest lighting
-                        if (replacement.getBlockId() == 54) {
-                            newChunkStorage.setSkyLight(x, y, z, 15);
-                        }
                     }
                 }
             }

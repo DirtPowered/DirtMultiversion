@@ -26,6 +26,8 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BChunk;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
@@ -34,8 +36,13 @@ import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.data.utils.StringUtils;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.RotationUtil;
+import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.SolidBlockList;
+import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProtocolBeta17to14 extends ServerProtocol {
 
@@ -72,6 +79,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 session.getUserData().setUsername(data.read(Type.STRING, 1));
+                session.getUserData().getProtocolStorage().set(BlockStorage.class, new BlockStorage());
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         set(Type.INT, 14), // INT
@@ -230,6 +238,124 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 return data;
             }
         });
+
+        // block change
+        addTranslator(0x35, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int x = data.read(Type.INT, 0);
+                byte y = data.read(Type.BYTE, 1);
+                int z = data.read(Type.INT, 2);
+                byte blockId = data.read(Type.BYTE, 3);
+                byte blockData = data.read(Type.BYTE, 4);
+
+                BlockStorage blockStorage = session.getUserData().getProtocolStorage().get(BlockStorage.class);
+
+                if (blockStorage != null) {
+                    blockStorage.setBlockAt(x >> 4, z >> 4, x, y, z, blockId);
+
+                    if (blockId == 54) {
+                        blockData = RotationUtil.fixBlockRotation(session, x, y, z);
+                    }
+                }
+
+                return PacketUtil.createPacket(0x35, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        set(Type.BYTE, blockData),
+                });
+            }
+        });
+
+        // unload chunk
+        addTranslator(0x32, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                BlockStorage blockStorage = session.getUserData().getProtocolStorage().get(BlockStorage.class);
+                if (blockStorage != null) {
+                    byte mode = data.read(Type.BYTE, 2);
+
+                    if (mode == 0) {
+                        int chunkX = data.read(Type.INT, 0);
+                        int chunkZ = data.read(Type.INT, 1);
+
+                        blockStorage.removeChunk(chunkX, chunkZ);
+                    }
+                }
+
+                return data;
+            }
+        });
+
+        // chunk data
+        addTranslator(0x33, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                V1_3BChunk chunk = data.read(Type.V1_3B_CHUNK, 0);
+                int chunkX = chunk.getX() >> 4;
+                int chunkZ = chunk.getZ() >> 4;
+
+                // skip non-full chunk updates
+                if (chunk.getXSize() * chunk.getYSize() * chunk.getZSize() != 32768) {
+                    return data;
+                }
+
+                BlockStorage blockStorage = session.getUserData().getProtocolStorage().get(BlockStorage.class);
+                if (blockStorage != null) {
+                    List<BlockLocation> locationList = new ArrayList<>();
+                    try {
+                        byte[] chunkData = chunk.getChunk();
+
+                        for (int x = 0; x < 16; x++) {
+                            for (int y = 0; y < 128; y++) {
+                                for (int z = 0; z < 16; z++) {
+                                    int blockId = chunkData[getBlockIndexAt(x, y, z)];
+
+                                    if (SolidBlockList.isSolid(blockId)) {
+                                        int nibbleIndex = (x << 11 | z << 7 | y) >> 1;
+                                        int skyLightIndex = nibbleIndex + 65536;
+
+                                        if (blockId == 54) {
+                                            chunkData[skyLightIndex] = 15;
+                                            locationList.add(new BlockLocation(x, y, z));
+                                        }
+
+                                        blockStorage.setBlockAt(chunkX, chunkZ, chunk.getX() + x, chunk.getY() + y, chunk.getZ() + z, blockId);
+                                    }
+                                }
+                            }
+                        }
+
+                        for (BlockLocation location : locationList) {
+                            int x = location.getX();
+                            int y = location.getY();
+                            int z = location.getZ();
+
+                            byte rotation = RotationUtil.fixBlockRotation(session, chunk.getX() + x, chunk.getY() + y, chunk.getZ() + z);
+                            int blockDataIndex = ((x << 11 | z << 7 | y) >> 1) + 32768;
+
+                            chunkData[blockDataIndex] = rotation;
+                        }
+
+                        chunk.setChunk(chunkData);
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                    }
+                }
+
+                return PacketUtil.createPacket(0x33, new TypeHolder[]{
+                        set(Type.V1_3B_CHUNK, chunk)
+                });
+            }
+        });
+    }
+
+    private int getBlockIndexAt(int x, int y, int z) {
+        return x << 11 | z << 7 | y;
     }
 
     private PacketData createTabEntryPacket(String username, boolean online) {

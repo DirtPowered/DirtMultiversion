@@ -27,7 +27,7 @@ import lombok.Getter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlayerTabListCache {
+class PlayerTabListCache {
 
     @Getter
     private Map<Integer, String> tabPlayers;
