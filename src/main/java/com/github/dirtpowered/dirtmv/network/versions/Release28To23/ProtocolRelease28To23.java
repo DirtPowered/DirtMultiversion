@@ -240,6 +240,31 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 return data;
             }
         });
+
+        // door change
+        addTranslator(0x3D, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int effectId = data.read(Type.INT, 0);
+                int effectData = data.read(Type.INT, 4);
+
+                if (effectId == 2001) {
+                    int blockId = effectData & 255;
+                    int blockData = effectData >> 8 & 255;
+
+                    effectData = blockId + (blockData << 12);
+                }
+
+                return PacketUtil.createPacket(0x3D, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        set(Type.INT, effectData)
+                });
+            }
+        });
     }
 
     static class BlockRemapper extends ItemBlockDataTransformer {
