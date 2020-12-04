@@ -337,9 +337,14 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                             int z = location.getZ();
 
                             byte rotation = RotationUtil.fixBlockRotation(session, chunk.getX() + x, chunk.getY() + y, chunk.getZ() + z);
-                            int blockDataIndex = ((x << 11 | z << 7 | y) >> 1) + 32768;
+                            int blockDataIndex = (x << 11 | z << 7 | y) >> 1;
+                            int offset = 32768;
 
-                            chunkData[blockDataIndex] = rotation;
+                            if ((blockDataIndex & 1) == 0) {
+                                chunkData[blockDataIndex + offset] = (byte) (chunkData[blockDataIndex + offset] & 240 | rotation & 15);
+                            } else {
+                                chunkData[blockDataIndex + offset] = (byte) (chunkData[blockDataIndex + offset] & 15 | (rotation & 15) << 4);
+                            }
                         }
 
                         chunk.setChunk(chunkData);
