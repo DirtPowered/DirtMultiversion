@@ -104,7 +104,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                         data.read(2), // LONG - world seed
                         set(Type.INT, 0), // INT - gameMode
                         data.read(3), // BYTE - dimension
-                        set(Type.BYTE, 0), // BYTE - difficulty
+                        set(Type.BYTE, 1), // BYTE - difficulty
                         set(Type.BYTE, -128), // BYTE - world height
                         set(Type.BYTE, (byte) max), // BYTE - maxPlayers
                 });
