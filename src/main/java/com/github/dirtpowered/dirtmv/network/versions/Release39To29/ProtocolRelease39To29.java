@@ -470,6 +470,9 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                     double x = data.read(Type.INT, 2) / 32.0D;
                     double y = data.read(Type.INT, 3) / 32.0D;
                     double z = data.read(Type.INT, 4) / 32.0D;
+
+                    float pitch;
+
                     Location loc = new Location(x, y, z);
 
                     switch (type) {
@@ -494,14 +497,25 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                             break;
                         case 60:
                             // bow sound
-                            float pitch = 1.0F / (session.getMain().getSharedRandom().nextFloat() * 0.4F + 1.2F) + 0.5F;
+                            pitch = 1.0F / (session.getMain().getSharedRandom().nextFloat() * 0.4F + 1.2F) + 0.5F;
                             WorldEntityEvent.playSoundAt(session, loc, WorldSound.RANDOM_BOW, 0.2F, pitch);
                             break;
-                        case 90:
-                            Location hookLocation = new Location(x, y, z);
-                            AbstractEntity nearest = getNearestEntity(tracker, hookLocation, 2.0D);
+                        case 61: // snowball
+                        case 62: // egg
+                        case 90: // fishing rod
+                        case 65: // ender pearl
+                        case 72: // ender eye
+                        case 73: // throwable potion
+                        case 75: // exp bottle
+                            pitch = 0.4F / (session.getMain().getSharedRandom().nextFloat() * 0.4F + 0.8F);
+                            WorldEntityEvent.playSoundAt(session, loc, WorldSound.RANDOM_BOW, 0.5F, pitch);
 
-                            throwerId = nearest.getEntityId() != -1 ? nearest.getEntityId() : session.getUserData().getEntityId();
+                            if (type == 90) {
+                                Location hookLocation = new Location(x, y, z);
+                                AbstractEntity nearest = getNearestEntity(tracker, hookLocation, 2.0D);
+
+                                throwerId = nearest.getEntityId() != -1 ? nearest.getEntityId() : session.getUserData().getEntityId();
+                            }
                             break;
                     }
                 }
