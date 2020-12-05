@@ -317,11 +317,8 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                                     int blockId = chunkData[getBlockIndexAt(x, y, z)];
 
                                     if (SolidBlockList.isSolid(blockId)) {
-                                        int nibbleIndex = (x << 11 | z << 7 | y) >> 1;
-                                        int skyLightIndex = nibbleIndex + 65536;
 
                                         if (blockId == 54) {
-                                            chunkData[skyLightIndex] = 15;
                                             locationList.add(new BlockLocation(x, y, z));
                                         }
 
@@ -337,14 +334,11 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                             int z = location.getZ();
 
                             byte rotation = RotationUtil.fixBlockRotation(session, chunk.getX() + x, chunk.getY() + y, chunk.getZ() + z);
-                            int blockDataIndex = (x << 11 | z << 7 | y) >> 1;
-                            int offset = 32768;
+                            int blockDataOffset = 32768;
+                            int blockLightOffset = 65536;
 
-                            if ((blockDataIndex & 1) == 0) {
-                                chunkData[blockDataIndex + offset] = (byte) (chunkData[blockDataIndex + offset] & 240 | rotation & 15);
-                            } else {
-                                chunkData[blockDataIndex + offset] = (byte) (chunkData[blockDataIndex + offset] & 15 | (rotation & 15) << 4);
-                            }
+                            setNibble(chunkData, x, y, z, rotation, blockDataOffset);
+                            setNibble(chunkData, x, y, z, (byte) 15, blockLightOffset);
                         }
 
                         chunk.setChunk(chunkData);
@@ -357,6 +351,16 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 });
             }
         });
+    }
+
+    private void setNibble(byte[] data, int x, int y, int z, byte value, int offset) {
+        int nibbleIndex = (x << 11 | z << 7 | y) >> 1;
+
+        if ((nibbleIndex & 1) == 0) {
+            data[nibbleIndex + offset] = (byte) (data[nibbleIndex + offset] & 240 | value & 15);
+        } else {
+            data[nibbleIndex + offset] = (byte) (data[nibbleIndex + offset] & 15 | (value & 15) << 4);
+        }
     }
 
     private int getBlockIndexAt(int x, int y, int z) {
