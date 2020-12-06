@@ -31,6 +31,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
@@ -172,8 +173,8 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                BlockStorage blockStorage = session.getUserData().getProtocolStorage().get(BlockStorage.class);
-                if (blockStorage == null) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                if (!storage.hasObject(BlockStorage.class)) {
                     return data;
                 }
 
@@ -201,8 +202,8 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                BlockStorage blockStorage = session.getUserData().getProtocolStorage().get(BlockStorage.class);
-                if (blockStorage == null) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                if (!storage.hasObject(BlockStorage.class)) {
                     return data;
                 }
 
