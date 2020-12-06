@@ -317,7 +317,6 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                                     int blockId = chunkData[getBlockIndexAt(x, y, z)];
 
                                     if (SolidBlockList.isSolid(blockId) || blockId == 85 /* for r1.0 -> b1.8 fence bounding box fix*/) {
-
                                         if (blockId == 54) {
                                             locationList.add(new BlockLocation(x, y, z));
                                         }
@@ -339,6 +338,8 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
                             setNibble(chunkData, x, y, z, rotation, blockDataOffset);
                             setNibble(chunkData, x, y, z, (byte) 15, blockLightOffset);
+
+                            sendDelayedBlockUpdate(session, chunk.getX() + x, chunk.getY() + y, chunk.getZ() + z, rotation);
                         }
 
                         chunk.setChunk(chunkData);
@@ -351,6 +352,18 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 });
             }
         });
+    }
+
+    private void sendDelayedBlockUpdate(ServerSession session, int x, int y, int z, byte data) {
+        PacketData blockUpdate = PacketUtil.createPacket(0x35, new TypeHolder[]{
+                new TypeHolder(Type.INT, x),
+                new TypeHolder(Type.BYTE, (byte) y),
+                new TypeHolder(Type.INT, z),
+                new TypeHolder(Type.BYTE, (byte) 54),
+                new TypeHolder(Type.BYTE, data)
+        });
+
+        session.queuePacket(blockUpdate, PacketDirection.SERVER_TO_CLIENT, getFrom());
     }
 
     private void setNibble(byte[] data, int x, int y, int z, byte value, int offset) {

@@ -43,6 +43,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.internal.StringUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
@@ -72,6 +74,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     private UUID key;
 
     private Queue<PacketData> initialPacketQueue = new LinkedBlockingQueue<>();
+    private Queue<QueuedPacket> packetQueue = new LinkedBlockingQueue<>();
 
     ServerSession(SocketChannel channel, DirtMultiVersion server) {
         this.key = UUID.randomUUID();
@@ -154,8 +157,24 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         }
     }
 
+    private void handleQueuedPackets() {
+        if (!packetQueue.isEmpty()) {
+            QueuedPacket queuedPacket = packetQueue.poll();
+            try {
+                sendPacket(queuedPacket.getPacket(), queuedPacket.getDirection(), queuedPacket.getVersion());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void queuePacket(PacketData packet, PacketDirection direction, MinecraftVersion version) {
+        packetQueue.add(new QueuedPacket(packet, direction, version));
+    }
+
     @Override
     public void tick() {
+        handleQueuedPackets();
         for (Object o : userData.getProtocolStorage().getSavedObjects().values()) {
             if (o instanceof Tickable) {
                 ((Tickable) o).tick();
@@ -214,6 +233,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         }
 
         initialPacketQueue.clear();
+        packetQueue.clear();
     }
 
     private void sendDisconnectPacket(String message) {
@@ -275,5 +295,14 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     public int getConnectionCount() {
         return main.getSessionRegistry().getSessions().size();
+    }
+
+
+    @Data
+    @AllArgsConstructor
+    private final static class QueuedPacket {
+        private PacketData packet;
+        private PacketDirection direction;
+        private MinecraftVersion version;
     }
 }
