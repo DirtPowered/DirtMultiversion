@@ -35,6 +35,7 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.network.versions.Release22To17.item.LegacyItemList;
+import com.github.dirtpowered.dirtmv.network.versions.Release22To17.movement.MovementTranslator;
 
 public class ProtocolRelease22To17 extends ServerProtocol {
 
@@ -180,12 +181,13 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 double y = data.read(Type.DOUBLE, 1);
                 double z = data.read(Type.DOUBLE, 3);
 
-                Location loc = correctPosition(blockStorage, x, y, z);
+                MovementTranslator.updateBoundingBox(session, new Location(x, y, z));
+                Location loc = MovementTranslator.correctPosition(session, x, y, z);
 
                 return PacketUtil.createPacket(0x0D, new TypeHolder[] {
                         set(Type.DOUBLE, loc.getX()),
                         set(Type.DOUBLE, loc.getY()),
-                        set(Type.DOUBLE, loc.getY() + 1.6200000047683716D),
+                        set(Type.DOUBLE, loc.getY() + 1.6200000047683716D), // stance
                         set(Type.DOUBLE, loc.getZ()),
                         data.read(4),
                         data.read(5),
@@ -208,7 +210,8 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 double y = data.read(Type.DOUBLE, 1);
                 double z = data.read(Type.DOUBLE, 3);
 
-                Location loc = correctPosition(blockStorage, x, y, z);
+                MovementTranslator.updateBoundingBox(session, new Location(x, y, z));
+                Location loc = MovementTranslator.correctPosition(session, x, y, z);
 
                 return PacketUtil.createPacket(0x0B, new TypeHolder[] {
                         set(Type.DOUBLE, loc.getX()),
@@ -219,10 +222,5 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 });
             }
         });
-    }
-
-    private Location correctPosition(BlockStorage blockStorage, double x, double y, double z) {
-        // TODO: correct position
-        return new Location(x, y, z);
     }
 }

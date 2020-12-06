@@ -316,7 +316,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                                 for (int z = 0; z < 16; z++) {
                                     int blockId = chunkData[getBlockIndexAt(x, y, z)];
 
-                                    if (SolidBlockList.isSolid(blockId)) {
+                                    if (SolidBlockList.isSolid(blockId) || blockId == 85 /* for r1.0 -> b1.8 fence bounding box fix*/) {
 
                                         if (blockId == 54) {
                                             locationList.add(new BlockLocation(x, y, z));
