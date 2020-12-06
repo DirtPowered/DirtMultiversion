@@ -70,4 +70,9 @@ public interface Configuration {
      * Debug mode, printing all packets, additional info
      */
     boolean isDebugMode();
+
+    /**
+     * Caches blocks only above Y 20 (for b1.7 servers)
+     */
+    boolean reduceBlockStorageMemory();
 }

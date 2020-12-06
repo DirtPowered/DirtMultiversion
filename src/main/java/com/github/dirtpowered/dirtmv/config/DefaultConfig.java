@@ -71,4 +71,9 @@ public class DefaultConfig implements Configuration {
     public boolean isDebugMode() {
         return false;
     }
+
+    @Override
+    public boolean reduceBlockStorageMemory() {
+        return true;
+    }
 }

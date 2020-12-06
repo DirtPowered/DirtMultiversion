@@ -306,13 +306,15 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 }
 
                 BlockStorage blockStorage = session.getUserData().getProtocolStorage().get(BlockStorage.class);
+                boolean reduceBlockStorageMemory = session.getMain().getConfiguration().reduceBlockStorageMemory();
+
                 if (blockStorage != null) {
                     List<BlockLocation> locationList = new ArrayList<>();
                     try {
                         byte[] chunkData = chunk.getChunk();
 
                         for (int x = 0; x < 16; x++) {
-                            for (int y = 0; y < 128; y++) {
+                            for (int y = reduceBlockStorageMemory ? 20 : 0; y < 128; y++) {
                                 for (int z = 0; z < 16; z++) {
                                     int blockId = chunkData[getBlockIndexAt(x, y, z)];
 
