@@ -119,7 +119,7 @@ public class MovementTranslator {
 
         for (BlockCollision blockCollision : possibleCollisions) {
             if (blockCollision != null) {
-                blockCollision.correctPosition(b);
+                blockCollision.correctPosition(b, blockCollision instanceof ChestCollision);
             }
         }
 
