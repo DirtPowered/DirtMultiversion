@@ -229,6 +229,35 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // entity effect
+        addTranslator(0x1D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x1D, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        data.read(1),
+                        data.read(2),
+                        set(Type.VAR_INT, data.read(Type.SHORT, 3).intValue()),
+                        set(Type.BOOLEAN, false)
+                });
+            }
+        });
+
+        // remove entity effect
+        addTranslator(0x1E, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x1E, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        data.read(1),
+                });
+            }
+        });
+
         // chunk data
         addTranslator(0x21, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new V1_3ToV1_8ChunkTranslator());
 
@@ -415,6 +444,23 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // update tile entity
+        addTranslator(0x35, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int x = data.read(Type.INT, 0);
+                short y = data.read(Type.SHORT, 1);
+                int z = data.read(Type.INT, 2);
+
+                return PacketUtil.createPacket(0x35, new TypeHolder[]{
+                        set(Type.LONG, toBlockPosition(x, y, z)),
+                        data.read(3),
+                        set(Type.COMPRESSED_COMPOUND_TAG, data.read(Type.COMPOUND_TAG, 4))
+                });
+            }
+        });
+
         // sign editor
         addTranslator(0x36, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
@@ -470,6 +516,22 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         data.read(0),
                         set(Type.VAR_INT, data.read(Type.SHORT, 1).intValue()),
                         set(Type.VAR_INT, data.read(Type.SHORT, 2).intValue())
+                });
+            }
+        });
+
+        // use bed
+        addTranslator(0x0A, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int x = data.read(Type.INT, 1);
+                byte y = data.read(Type.BYTE, 2);
+                int z = data.read(Type.INT, 3);
+
+                return PacketUtil.createPacket(0x0A, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        set(Type.LONG, toBlockPosition(x, y, z))
                 });
             }
         });
@@ -915,9 +977,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // entity metadata
         addTranslator(0x1C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // update tile entity
-        addTranslator(0x35, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // custom payload
         addTranslator(0x3F, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);

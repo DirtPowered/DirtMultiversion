@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.types.CompressedCompoundTagDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.ItemArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.MetadataDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.UseEntityDataType;
@@ -49,6 +50,7 @@ public class V1_8RProtocol extends BaseProtocol {
     public final static DataType OPTIONAL_POSITION;
     public final static DataType VAR_INT_ARRAY;
     public final static DataType TAB_LIST_ENTRY;
+    public final static DataType COMPRESSED_TAG;
 
     private static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
 
@@ -63,6 +65,7 @@ public class V1_8RProtocol extends BaseProtocol {
         OPTIONAL_POSITION = new UseEntityDataType();
         VAR_INT_ARRAY = new VarIntArrayDataType();
         TAB_LIST_ENTRY = new TabListEntryDataType();
+        COMPRESSED_TAG = new CompressedCompoundTagDataType();
 
         STATE_DEPENDED_PROTOCOL = new V1_8ProtocolDefinitions();
     }

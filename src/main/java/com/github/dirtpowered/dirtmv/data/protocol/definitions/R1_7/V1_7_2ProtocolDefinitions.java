@@ -139,6 +139,14 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.BYTE, // slot
         });
 
+        // use bed
+        addPacket(0x0A, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
+                BaseProtocol.INT, // entity id
+                BaseProtocol.INT,
+                BaseProtocol.BYTE,
+                BaseProtocol.INT,
+        });
+
         // animation
         addPacket(0x0B, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
                 V1_7_2RProtocol.VAR_INT, // entity id

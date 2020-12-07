@@ -427,4 +427,11 @@ public class Type {
             V1_8RProtocol.TAB_LIST_ENTRY.write(holder, packetOutput);
         }
     });
+
+    public static final TypeObject<CompoundBinaryTag> COMPRESSED_COMPOUND_TAG = new TypeObject<>(CompoundBinaryTag.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.COMPRESSED_TAG.write(holder, packetOutput);
+        }
+    });
 }
