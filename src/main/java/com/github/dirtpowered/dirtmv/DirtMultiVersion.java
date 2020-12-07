@@ -64,16 +64,18 @@ import com.github.dirtpowered.dirtmv.network.versions.Release74To73.ProtocolRele
 import com.github.dirtpowered.dirtmv.network.versions.Release78To74.ProtocolRelease78To74;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
+import io.netty.util.ResourceLeakDetector;
 import lombok.Getter;
 
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Getter
 public class DirtMultiVersion implements Runnable {
-    private final ScheduledExecutorService scheduledExecutorService;
+    private final ExecutorService executorService;
     private SessionRegistry sessionRegistry;
     private TranslatorRegistry translatorRegistry;
     private Random sharedRandom;
@@ -124,7 +126,7 @@ public class DirtMultiVersion implements Runnable {
         translatorRegistry.registerProtocol(new ProtocolBeta10To9());
 
         sessionRegistry = new SessionRegistry();
-        scheduledExecutorService = Executors.newScheduledThreadPool(32);
+        executorService = Executors.newCachedThreadPool();
 
         sharedRandom = new Random();
 
@@ -139,6 +141,7 @@ public class DirtMultiVersion implements Runnable {
     }
 
     public static void main(String... args) {
+        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
         new DirtMultiVersion();
     }
 

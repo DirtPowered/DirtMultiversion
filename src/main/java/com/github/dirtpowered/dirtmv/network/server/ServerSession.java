@@ -274,7 +274,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     private void connectToServer() {
         if (getClientSession() == null) {
-            main.getScheduledExecutorService().execute(() -> client.createClient(key, () -> {
+            main.getExecutorService().execute(() -> client.createClient(key, () -> {
                 if (!initialPacketQueue.isEmpty()) {
 
                     initialPacketQueue.forEach(data -> {
