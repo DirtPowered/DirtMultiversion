@@ -23,13 +23,13 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release47To5;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockChangeRecord;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.OptionalPosition;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
@@ -49,7 +49,9 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.InventoryUtils;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRemapper;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.metadata.V1_7RTo1_8RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
+import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 
@@ -57,18 +59,18 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 public class ProtocolRelease47To5 extends ServerProtocol {
 
     private ItemBlockDataTransformer itemRemapper;
+    private V1_7RTo1_8RMetadataTransformer metadataTransformer;
 
     public ProtocolRelease47To5() {
         super(MinecraftVersion.R1_8, MinecraftVersion.R1_7_6);
 
         itemRemapper = new ItemRemapper();
+        metadataTransformer = new V1_7RTo1_8RMetadataTransformer();
     }
 
     private long toBlockPosition(int x, int y, int z) {
@@ -542,7 +544,8 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 UUID playerOfflineUUID = UUID.fromString(data.read(Type.V1_7_STRING, 1));
-                WatchableObject[] watchableObjects = data.read(Type.V1_7R_METADATA, 10);
+                WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 10);
+                WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
 
                 return PacketUtil.createPacket(0x0C, new TypeHolder[]{
                         data.read(0),
@@ -553,7 +556,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         data.read(6),
                         data.read(7),
                         data.read(8),
-                        set(Type.V1_8R_METADATA, watchableObjects)
+                        set(Type.V1_8R_METADATA, newMeta)
                 });
             }
         });
@@ -590,15 +593,10 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                EntityType entityType = EntityType.fromEntityTypeId(data.read(Type.BYTE, 1));
 
-                // TODO: Medatata translator
-                List<WatchableObject> defaultMetadata = Arrays.asList(
-                        new WatchableObject(MetadataType.BYTE, 0, (byte) 0),
-                        new WatchableObject(MetadataType.SHORT, 1, 300),
-                        new WatchableObject(MetadataType.BYTE, 3, (byte) 1),
-                        new WatchableObject(MetadataType.STRING, 2, "I'm too lazy to translate metadata"),
-                        new WatchableObject(MetadataType.BYTE, 4, (byte) 0)
-                );
+                WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 11);
+                WatchableObject[] newMeta = metadataTransformer.transformMetadata(entityType, oldMeta);
 
                 return PacketUtil.createPacket(0x0F, new TypeHolder[]{
                         data.read(0),
@@ -612,7 +610,30 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         data.read(8),
                         data.read(9),
                         data.read(10),
-                        set(Type.V1_8R_METADATA, defaultMetadata.toArray(new WatchableObject[0]))
+                        set(Type.V1_8R_METADATA, newMeta)
+                });
+            }
+        });
+
+        // entity metadata
+        addTranslator(0x1C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                // get existing entity tracker (TODO: create if not exist)
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                if (tracker == null) {
+                    return new PacketData(-1); // cancel
+                }
+
+                EntityType entityType = tracker.getEntityById(data.read(Type.INT, 0));
+                WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 1);
+
+                WatchableObject[] watchableObjects = metadataTransformer.transformMetadata(entityType, oldMeta);
+
+                return PacketUtil.createPacket(0x1C, new TypeHolder[] {
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        set(Type.V1_8R_METADATA, watchableObjects)
                 });
             }
         });
@@ -974,9 +995,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // entity attributes
         addTranslator(0x20, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // entity metadata
-        addTranslator(0x1C, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // custom payload
         addTranslator(0x3F, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
