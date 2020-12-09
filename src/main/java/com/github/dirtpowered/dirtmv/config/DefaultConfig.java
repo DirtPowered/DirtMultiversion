@@ -76,4 +76,9 @@ public class DefaultConfig implements Configuration {
     public boolean reduceBlockStorageMemory() {
         return true;
     }
+
+    @Override
+    public int getMaxConnections() {
+        return 20;
+    }
 }

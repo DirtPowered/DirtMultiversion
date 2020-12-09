@@ -75,4 +75,9 @@ public interface Configuration {
      * Caches blocks only above Y 20 (for b1.7 servers)
      */
     boolean reduceBlockStorageMemory();
+
+    /**
+     * Number of maximum connections allowed
+     */
+    int getMaxConnections();
 }

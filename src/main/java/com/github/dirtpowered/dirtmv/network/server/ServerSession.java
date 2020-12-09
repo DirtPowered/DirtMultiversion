@@ -113,6 +113,10 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
                 state = ProtocolState.PRE_NETTY;
             }
 
+            if (target == null) {
+                return;
+            }
+
             PacketTranslator translator = protocol.getTranslatorFor(target.getOpCode(), state, direction);
 
             String protocolName = protocol.getClass().getSimpleName();
@@ -273,6 +277,11 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     }
 
     private void connectToServer() {
+        if (getConnectionCount() >= main.getConfiguration().getMaxConnections()) {
+            disconnect("server is full");
+            return;
+        }
+
         if (getClientSession() == null) {
             main.getExecutorService().execute(() -> client.createClient(key, () -> {
                 if (!initialPacketQueue.isEmpty()) {
