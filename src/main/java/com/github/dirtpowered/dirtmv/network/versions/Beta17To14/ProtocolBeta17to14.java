@@ -152,7 +152,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 return PacketUtil.createPacket(0x09, new TypeHolder[]{
                         data.read(0),
-                        set(Type.BYTE, 0),
+                        set(Type.BYTE, 1),
                         set(Type.BYTE, 0),
                         set(Type.SHORT, 128),
                         set(Type.LONG, 0),
