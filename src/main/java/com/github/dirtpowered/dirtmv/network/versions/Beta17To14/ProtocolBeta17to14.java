@@ -105,6 +105,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 session.sendPacket(createTabEntryPacket(colored, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
 
                 int max = session.getMain().getConfiguration().getMaxOnline();
+                if (max > 100) max = 100; // b1.8 client is rendering tablist grid wrong when above 100
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0), // INT - entityId

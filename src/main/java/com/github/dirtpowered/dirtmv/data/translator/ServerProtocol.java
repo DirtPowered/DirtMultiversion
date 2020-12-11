@@ -83,6 +83,10 @@ public abstract class ServerProtocol {
         return new TypeHolder(type, obj);
     }
 
+    public void addGroup(ServerProtocol translators) {
+        registeredTranslators.putAll(translators.getRegisteredTranslators());
+    }
+
     @AllArgsConstructor
     @EqualsAndHashCode
     private static class TranslatorKeyObj {
