@@ -23,6 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.chunk.biome.OldChunkData;
 import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_2RChunkStorage;
 import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_3BChunkStorage;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
@@ -102,9 +103,15 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                 }
             }
 
+            OldChunkData biomeData = session.getUserData().getProtocolStorage().get(OldChunkData.class);
             byte[] biomes = new byte[256];
 
-            Arrays.fill(biomes, (byte) 0x04 /* Forest */);
+            if (biomeData != null) {
+                biomes = biomeData.getBiomeDataAt(chunkX, chunkZ, false);
+            } else {
+                Arrays.fill(biomes, (byte) 0x04); // forest
+            }
+
             newChunkStorage.setBiomeData(biomes);
 
             byte[] compressedData = newChunkStorage.getCompressedData(true, 0xff);

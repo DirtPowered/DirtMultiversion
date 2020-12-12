@@ -38,6 +38,7 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.data.utils.other.PreNettyPacketNames;
 import com.github.dirtpowered.dirtmv.network.client.Client;
 import com.github.dirtpowered.dirtmv.network.client.ClientSession;
+import com.github.dirtpowered.dirtmv.session.MultiSession;
 import com.google.common.base.Preconditions;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -46,6 +47,7 @@ import io.netty.util.internal.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
@@ -203,6 +205,11 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     public void channelInactive(ChannelHandlerContext ctx) {
         disconnect();
 
+        // notify other sessions
+        for (ServerProtocol t : main.getTranslatorRegistry().getProtocols().values()) {
+            t.onDisconnect(this);
+        }
+
         ClientSession clientSession = getClientSession();
         if (clientSession != null) {
             clientSession.disconnectRemote();
@@ -215,6 +222,17 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
         // disconnect from proxy
         disconnect(cause.getMessage());
+    }
+
+    @SneakyThrows
+    public void broadcastPacket(PacketData packetData, MinecraftVersion from) {
+        for (MultiSession entry : main.getSessionRegistry().getSessions().values()) {
+            if (entry != null) {
+
+                ServerSession serverSession = entry.getServerSession();
+                serverSession.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, from);
+            }
+        }
     }
 
     private void sendPacket(PacketData packetData) {

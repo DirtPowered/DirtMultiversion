@@ -86,8 +86,8 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 ServerPing serverPing = new Gson().fromJson(json, ServerPing.class);
 
                 ServerPing.Version versionObj = new ServerPing.Version();
-                versionObj.setName("1.8");
-                versionObj.setProtocol(47);
+                versionObj.setName("1.8.x (unstable)");
+                versionObj.setProtocol(-1);
 
                 serverPing.setVersion(versionObj);
 

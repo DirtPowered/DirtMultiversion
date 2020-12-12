@@ -25,6 +25,9 @@ package com.github.dirtpowered.dirtmv.network.client;
 import com.github.dirtpowered.dirtmv.data.interfaces.Callback;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
 import io.netty.channel.ChannelHandlerContext;
@@ -50,18 +53,34 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
     private UUID key;
 
     private Callback callback;
+    private boolean stateLock;
 
     ClientSession(UUID key, ServerSession serverSession, SocketChannel ch, Callback callback) {
         this.serverSession = serverSession;
         this.channel = ch;
         this.key = key;
         this.callback = callback;
+        this.stateLock = false;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, PacketData packetData) throws IOException {
         // server to client packets
         serverSession.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, null);
+
+        // notify other sessions
+        if (!stateLock) {
+            boolean postNettyFlag = serverSession.getUserData().getProtocolState() == ProtocolState.PLAY;
+            boolean preNettyFlag = serverSession.getUserData().getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME;
+
+            if (preNettyFlag || postNettyFlag) {
+                for (ServerProtocol t : serverSession.getMain().getTranslatorRegistry().getProtocols().values()) {
+                    t.onConnect(serverSession);
+                }
+
+                stateLock = true;
+            }
+        }
     }
 
     @Override

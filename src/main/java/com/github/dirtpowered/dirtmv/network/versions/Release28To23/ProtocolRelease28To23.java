@@ -23,6 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release28To23;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.chunk.biome.OldChunkData;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
@@ -80,6 +81,13 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                // biome data only for < b1.7 for now
+                if (session.getMain().getConfiguration().getServerVersion().getRegistryId() < 17) {
+                    OldChunkData biomeData = new OldChunkData();
+                    biomeData.initialize(data.read(Type.LONG, 2));
+
+                    session.getUserData().getProtocolStorage().set(OldChunkData.class, biomeData);
+                }
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0),

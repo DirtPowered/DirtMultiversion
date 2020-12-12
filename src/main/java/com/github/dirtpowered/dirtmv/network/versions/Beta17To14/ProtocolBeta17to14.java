@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Beta17To14;
 
+import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
@@ -34,11 +35,11 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
-import com.github.dirtpowered.dirtmv.data.utils.StringUtils;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.RotationUtil;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.SolidBlockList;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
+import com.github.dirtpowered.dirtmv.session.MultiSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +49,25 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
     public ProtocolBeta17to14() {
         super(MinecraftVersion.B1_8_1, MinecraftVersion.B1_7_3);
+    }
+
+    private boolean isConnectedThroughProxy(DirtMultiVersion main, String username) {
+        boolean isLocal = false;
+
+        for (MultiSession value : main.getSessionRegistry().getSessions().values()) {
+            isLocal = value.getServerSession().getUserData().getUsername().equals(username);
+        }
+        return isLocal;
+    }
+
+    @Override
+    public void onConnect(ServerSession session) {
+        session.broadcastPacket(createTabEntryPacket(session.getUserData().getUsername(), true), getFrom());
+    }
+
+    @Override
+    public void onDisconnect(ServerSession session) {
+        session.broadcastPacket(createTabEntryPacket(session.getUserData().getUsername(), false), getFrom());
     }
 
     @Override
@@ -94,15 +114,20 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 UserData userData = session.getUserData();
                 userData.getProtocolStorage().set(PlayerTabListCache.class, new PlayerTabListCache());
 
-                // add default tab entry
-                String username = userData.getUsername();
-                String colored = StringUtils.safeSubstring("§6" + username, 0, 16);
-
-                session.sendPacket(createTabEntryPacket(colored, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.getMain().getSessionRegistry().getSessions().forEach((uuid, multiSession) -> {
+                    String s = multiSession.getServerSession().getUserData().getUsername();
+                    if (!userData.getUsername().equals(s)) {
+                        try {
+                            session.sendPacket(createTabEntryPacket(s, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
 
                 int max = session.getMain().getConfiguration().getMaxOnline();
                 if (max > 100) max = 100; // b1.8 client is rendering tablist grid wrong when above 100
@@ -130,7 +155,6 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                         data.read(0),
                         set(Type.SHORT, (short) 6),
                         set(Type.FLOAT, 0.0F),
-
                 });
             }
         });
@@ -212,10 +236,12 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 int entityId = data.read(Type.INT, 0);
                 String username = data.read(Type.STRING, 1);
 
-                PlayerTabListCache cache = session.getUserData().getProtocolStorage().get(PlayerTabListCache.class);
-                if (cache != null) {
-                    session.sendPacket(createTabEntryPacket(username, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
-                    cache.getTabPlayers().put(entityId, username);
+                if (!isConnectedThroughProxy(session.getMain(), username)) {
+                    PlayerTabListCache cache = session.getUserData().getProtocolStorage().get(PlayerTabListCache.class);
+                    if (cache != null) {
+                        session.sendPacket(createTabEntryPacket(username, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
+                        cache.getTabPlayers().put(entityId, username);
+                    }
                 }
                 return data;
             }

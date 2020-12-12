@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-public abstract class ServerProtocol {
+public abstract class ServerProtocol implements ConnectionHandler {
     private Map<TranslatorKeyObj, PacketTranslator> registeredTranslators = new HashMap<>();
     private MinecraftVersion from;
     private MinecraftVersion to;
@@ -85,6 +85,16 @@ public abstract class ServerProtocol {
 
     public void addGroup(ServerProtocol translators) {
         registeredTranslators.putAll(translators.getRegisteredTranslators());
+    }
+
+    @Override
+    public void onConnect(ServerSession session) {
+        // it will be overridden when needed
+    }
+
+    @Override
+    public void onDisconnect(ServerSession session) {
+        // it will be overridden when needed
     }
 
     @AllArgsConstructor
