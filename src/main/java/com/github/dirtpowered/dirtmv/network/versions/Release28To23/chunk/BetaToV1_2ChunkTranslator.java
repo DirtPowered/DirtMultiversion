@@ -36,6 +36,7 @@ import com.github.dirtpowered.dirtmv.data.transformers.block.Block;
 import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import lombok.AllArgsConstructor;
@@ -103,10 +104,13 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                 }
             }
 
-            OldChunkData biomeData = session.getUserData().getProtocolStorage().get(OldChunkData.class);
+            ProtocolStorage storage = session.getUserData().getProtocolStorage();
             byte[] biomes = new byte[256];
 
-            if (biomeData != null) {
+            if (storage.hasObject(OldChunkData.class)) {
+                OldChunkData biomeData = storage.get(OldChunkData.class);
+
+                assert biomeData != null;
                 biomes = biomeData.getBiomeDataAt(chunkX, chunkZ, false);
             } else {
                 Arrays.fill(biomes, (byte) 0x04); // forest
