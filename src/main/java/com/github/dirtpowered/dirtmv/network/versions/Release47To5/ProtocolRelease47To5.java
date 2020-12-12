@@ -43,6 +43,7 @@ import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
@@ -61,6 +62,11 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         addGroup(new MovementPackets());
         addGroup(new InventoryPackets());
         addGroup(new EntityPackets());
+    }
+
+    @Override
+    public void onConnect(ServerSession session) {
+        session.getUserData().getProtocolStorage().set(OnGroundTracker.class, new OnGroundTracker());
     }
 
     static long toBlockPosition(int x, int y, int z) {

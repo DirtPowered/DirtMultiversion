@@ -32,6 +32,7 @@ import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
 
 public class MovementPackets extends ServerProtocol {
 
@@ -57,13 +58,21 @@ public class MovementPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                OnGroundTracker groundTracker = session.getUserData().getProtocolStorage().get(OnGroundTracker.class);
+                int entityId = data.read(Type.INT, 0);
 
+                double y = data.read(Type.BYTE, 2) / 32.0D;
+                boolean onGround = !(y < 0.0D);
+
+                if (groundTracker != null) {
+                    groundTracker.setGroundStateFor(entityId, onGround);
+                }
                 return PacketUtil.createPacket(0x15, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         data.read(1),
                         data.read(2),
                         data.read(3),
-                        set(Type.BOOLEAN, true)
+                        set(Type.BOOLEAN, onGround)
                 });
             }
         });
@@ -73,12 +82,19 @@ public class MovementPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                OnGroundTracker groundTracker = session.getUserData().getProtocolStorage().get(OnGroundTracker.class);
+                int entityId = data.read(Type.INT, 0);
 
+                boolean onGround = false;
+
+                if (groundTracker != null) {
+                    onGround = groundTracker.isOnGround(entityId);
+                }
                 return PacketUtil.createPacket(0x16, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         data.read(1),
                         data.read(2),
-                        set(Type.BOOLEAN, true)
+                        set(Type.BOOLEAN, onGround)
                 });
             }
         });
@@ -88,7 +104,15 @@ public class MovementPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                OnGroundTracker groundTracker = session.getUserData().getProtocolStorage().get(OnGroundTracker.class);
+                int entityId = data.read(Type.INT, 0);
 
+                double y = data.read(Type.BYTE, 2) / 32.0D;
+                boolean onGround = !(y < 0.0D);
+
+                if (groundTracker != null) {
+                    groundTracker.setGroundStateFor(entityId, onGround);
+                }
                 return PacketUtil.createPacket(0x17, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         data.read(1),
@@ -96,7 +120,7 @@ public class MovementPackets extends ServerProtocol {
                         data.read(3),
                         data.read(4),
                         data.read(5),
-                        set(Type.BOOLEAN, true)
+                        set(Type.BOOLEAN, onGround)
                 });
             }
         });
@@ -106,6 +130,14 @@ public class MovementPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                OnGroundTracker groundTracker = session.getUserData().getProtocolStorage().get(OnGroundTracker.class);
+                int entityId = data.read(Type.INT, 0);
+
+                boolean onGround = false;
+
+                if (groundTracker != null) {
+                    onGround = groundTracker.isOnGround(entityId);
+                }
 
                 return PacketUtil.createPacket(0x18, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
@@ -114,7 +146,7 @@ public class MovementPackets extends ServerProtocol {
                         data.read(3),
                         data.read(4),
                         data.read(5),
-                        set(Type.BOOLEAN, true)
+                        set(Type.BOOLEAN, onGround)
                 });
             }
         });
