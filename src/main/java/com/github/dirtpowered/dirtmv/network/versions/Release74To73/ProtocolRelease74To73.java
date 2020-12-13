@@ -11,10 +11,12 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_2EntityAttribute
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
+import com.github.dirtpowered.dirtmv.network.versions.Release74To73.item.CreativeItemList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,6 +86,28 @@ public class ProtocolRelease74To73 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0xFF, new TypeHolder[]{
                         set(Type.STRING, ServerMotd.serialize(pingMessage))
+                });
+            }
+        });
+
+        // creative item get
+        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack item = data.read(Type.V1_3R_ITEM, 1);
+
+                boolean notNull = item != null;
+
+                if (notNull && !CreativeItemList.exists(item.getItemId())) {
+                    // replace all unknown items to stone
+                    item.setItemId(1);
+                    item.setData(0);
+                }
+
+                return PacketUtil.createPacket(0x6B, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.V1_3R_ITEM, item)
                 });
             }
         });

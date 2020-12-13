@@ -103,10 +103,19 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack item = data.read(Type.V1_0R_ITEM, 1);
+
+                boolean notNull = item != null;
+
+                if (notNull && !LegacyItemList.exists(item.getItemId())) {
+                    // replace all unknown items to stone
+                    item.setItemId(1);
+                    item.setData(0);
+                }
 
                 return PacketUtil.createPacket(0x6B, new TypeHolder[]{
                         data.read(0),
-                        set(Type.V1_0R_ITEM, data.read(Type.V1_8B_ITEM, 1))
+                        set(Type.V1_8B_ITEM, item)
                 });
             }
         });

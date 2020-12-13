@@ -37,6 +37,7 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.InventoryUtils;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.WindowTypeTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRemapper;
 
 public class InventoryPackets extends ServerProtocol {
@@ -201,7 +202,7 @@ public class InventoryPackets extends ServerProtocol {
                         data.read(2),
                         data.read(3),
                         data.read(4),
-                        set(Type.V1_3R_ITEM, data.read(Type.V1_8B_ITEM, 5))
+                        set(Type.V1_3R_ITEM, data.read(Type.V1_8R_ITEM, 5))
 
                 });
             }
@@ -212,10 +213,19 @@ public class InventoryPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack item = data.read(Type.V1_8R_ITEM, 1);
+
+                boolean notNull = item != null;
+
+                if (notNull && !CreativeItemList.exists(item.getItemId())) {
+                    // replace all unknown items to stone
+                    item.setItemId(1);
+                    item.setData(0);
+                }
 
                 return PacketUtil.createPacket(0x10, new TypeHolder[]{
                         data.read(0),
-                        set(Type.V1_3R_ITEM, data.read(Type.V1_8B_ITEM, 1))
+                        set(Type.V1_3R_ITEM, item)
                 });
             }
         });

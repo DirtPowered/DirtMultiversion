@@ -27,17 +27,20 @@ import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release73To61.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_5RTo1_6RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import lombok.extern.log4j.Log4j2;
@@ -388,6 +391,28 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                         data.read(0),
                         data.read(1),
                         set(Type.BOOLEAN, false) // leash
+                });
+            }
+        });
+
+        // creative item get
+        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack item = data.read(Type.V1_3R_ITEM, 1);
+
+                boolean notNull = item != null;
+
+                if (notNull && !CreativeItemList.exists(item.getItemId())) {
+                    // replace all unknown items to stone
+                    item.setItemId(1);
+                    item.setData(0);
+                }
+
+                return PacketUtil.createPacket(0x6B, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.V1_3R_ITEM, item)
                 });
             }
         });

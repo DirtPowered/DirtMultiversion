@@ -41,6 +41,7 @@ import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release4To78.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.item.ItemRemapper;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
@@ -1068,14 +1069,33 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // creative item get
+        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack item = data.read(Type.V1_3R_ITEM, 1);
+
+                boolean notNull = item != null;
+
+                if (notNull && !CreativeItemList.exists(item.getItemId())) {
+                    // replace all unknown items to stone
+                    item.setItemId(1);
+                    item.setData(0);
+                }
+
+                return PacketUtil.createPacket(0x6B, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.V1_3R_ITEM, item)
+                });
+            }
+        });
+
         // 0x0F CS 0x6A (confirm transaction)
         addTranslator(0x0F, 0x6A, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
 
         // 0x0C CS 0x1B (steer vehicle / player input)
         addTranslator(0x0C, 0x1B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
-
-        // 0x10 CS 0x6B (creative item get)
-        addTranslator(0x10, 0x6B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
 
         // 0x13 CS 0xCA (player abilities)
         addTranslator(0x13, 0xCA, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);

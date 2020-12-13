@@ -97,7 +97,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 ServerPing.Version versionObj = new ServerPing.Version();
                 versionObj.setName("1.8.x (unstable)");
-                versionObj.setProtocol(-1);
+                versionObj.setProtocol(47);
 
                 serverPing.setVersion(versionObj);
 

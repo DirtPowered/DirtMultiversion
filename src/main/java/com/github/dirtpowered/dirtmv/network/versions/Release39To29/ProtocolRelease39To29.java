@@ -45,6 +45,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.Entit
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.HumanEntity;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.WorldEntityEvent;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model.AbstractEntity;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.UpdateTask;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
 import lombok.SneakyThrows;
@@ -569,8 +570,15 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-
                 ItemStack newItem = data.read(Type.V1_3R_ITEM, 1);
+
+                boolean notNull = newItem != null;
+
+                if (notNull && !CreativeItemList.exists(newItem.getItemId())) {
+                    // replace all unknown items to stone
+                    newItem.setItemId(1);
+                    newItem.setData(0);
+                }
 
                 return PacketUtil.createPacket(0x6B, new TypeHolder[]{
                         data.read(0),
