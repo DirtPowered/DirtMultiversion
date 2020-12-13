@@ -39,11 +39,13 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.WindowTypeTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
@@ -66,7 +68,9 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
     @Override
     public void onConnect(ServerSession session) {
-        session.getUserData().getProtocolStorage().set(OnGroundTracker.class, new OnGroundTracker());
+        ProtocolStorage storage = session.getUserData().getProtocolStorage();
+        storage.set(OnGroundTracker.class, new OnGroundTracker());
+        storage.set(WindowTypeTracker.class, new WindowTypeTracker());
     }
 
     static long toBlockPosition(int x, int y, int z) {

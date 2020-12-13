@@ -34,6 +34,7 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.metadata.V1_7RTo1_8RMetadataTransformer;
@@ -85,10 +86,14 @@ public class EntityPackets extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 // get existing entity tracker (TODO: create if not exist)
-                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
-                if (tracker == null) {
+                ProtocolStorage protocolStorage = session.getUserData().getProtocolStorage();
+
+                if (!protocolStorage.hasObject(EntityTracker.class)) {
                     return new PacketData(-1);
                 }
+
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                assert tracker != null;
 
                 EntityType entityType = tracker.getEntityById(data.read(Type.INT, 0));
                 WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 1);

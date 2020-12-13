@@ -799,13 +799,18 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 ItemStack originalItem = data.read(Type.V1_3R_ITEM, 2);
 
-                if (originalItem == null)
-                    return new PacketData(0x2F, data.getObjects());
+                if (originalItem == null) {
+                    return PacketUtil.createPacket(0x2F, new TypeHolder[]{
+                            set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 0).shortValue()),
+                            data.read(1),
+                            data.read(2)
+                    });
+                }
 
                 ItemStack itemStack = itemRemapper.replaceItem(originalItem);
 
                 return PacketUtil.createPacket(0x2F, new TypeHolder[]{
-                        data.read(0),
+                        set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 0).shortValue()),
                         data.read(1),
                         set(Type.V1_3R_ITEM, itemStack)
                 });
@@ -831,7 +836,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 }
 
                 return PacketUtil.createPacket(0x30, new TypeHolder[]{
-                        data.read(0),
+                        set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 0).shortValue()),
                         set(Type.V1_3R_ITEM_ARRAY, itemArray)
                 });
             }

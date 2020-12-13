@@ -32,9 +32,11 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.InventoryUtils;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.WindowTypeTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRemapper;
 
 public class InventoryPackets extends ServerProtocol {
@@ -53,6 +55,19 @@ public class InventoryPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                short windowId = data.read(Type.UNSIGNED_BYTE, 0);
+                short slot = data.read(Type.SHORT, 1);
+
+                int windowType = 0;
+
+                if (storage.hasObject(WindowTypeTracker.class)) {
+                    WindowTypeTracker windowTracker = storage.get(WindowTypeTracker.class);
+                    assert windowTracker != null;
+
+                    windowType = windowTracker.getWindowType(windowId);
+                }
+
                 ItemStack originalItem = data.read(Type.V1_3R_ITEM, 2);
 
                 if (originalItem == null)
@@ -60,9 +75,15 @@ public class InventoryPackets extends ServerProtocol {
 
                 ItemStack itemStack = itemRemapper.replaceItem(originalItem);
 
+                if (windowType == 4) {
+                    if (slot >= 1) {
+                        slot ++;
+                    }
+                }
+
                 return PacketUtil.createPacket(0x2F, new TypeHolder[]{
                         data.read(0),
-                        data.read(1),
+                        set(Type.SHORT, slot),
                         set(Type.V1_8R_ITEM, itemStack)
                 });
             }
@@ -73,7 +94,35 @@ public class InventoryPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                short windowId = data.read(Type.UNSIGNED_BYTE, 0);
+
                 ItemStack[] itemArray = data.read(Type.V1_3R_ITEM_ARRAY, 1);
+
+                int windowType = 0;
+
+                if (storage.hasObject(WindowTypeTracker.class)) {
+                    WindowTypeTracker windowTracker = storage.get(WindowTypeTracker.class);
+                    assert windowTracker != null;
+
+                    windowType = windowTracker.getWindowType(windowId);
+                }
+
+                if (windowType == 4) {
+                    ItemStack[] copy = itemArray;
+
+                    itemArray = new ItemStack[copy.length + 1];
+                    itemArray[0] = copy[0];
+
+                    int slot = 0;
+
+                    while (slot < copy.length - 1) {
+                        itemArray[slot + 2] = copy[slot + 1];
+                        slot++;
+                    }
+                    // lapis
+                    itemArray[1] = new ItemStack(351, 3, 4, null);
+                }
 
                 for (int i = 0; i < itemArray.length; i++) {
                     ItemStack originalItem = itemArray[i];
@@ -98,6 +147,8 @@ public class InventoryPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                short windowId = data.read(Type.UNSIGNED_BYTE, 0);
                 short type = data.read(Type.UNSIGNED_BYTE, 1);
                 String title = data.read(Type.V1_7_STRING, 2);
 
@@ -105,6 +156,13 @@ public class InventoryPackets extends ServerProtocol {
                 // non storage inventories have always 0 slots
                 slots = InventoryUtils.isNonStorageInventory(type) ? 0 : slots;
 
+                // cache window type (for enchanting tables)
+                if (storage.hasObject(WindowTypeTracker.class)) {
+                    WindowTypeTracker windowTracker = storage.get(WindowTypeTracker.class);
+                    assert windowTracker != null;
+
+                    windowTracker.setWindowTypeFor(windowId, type);
+                }
                 return PacketUtil.createPacket(0x2D, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_7_STRING, InventoryUtils.getNamedTypeFromId(type)),
@@ -119,10 +177,27 @@ public class InventoryPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                byte windowId = data.read(Type.BYTE, 0);
+                short slot = data.read(Type.SHORT, 1);
 
+                int windowType = 0;
+
+                if (storage.hasObject(WindowTypeTracker.class)) {
+                    WindowTypeTracker windowTracker = storage.get(WindowTypeTracker.class);
+                    assert windowTracker != null;
+
+                    windowType = windowTracker.getWindowType(windowId);
+                }
+
+                if (windowType == 4) {
+                    if (slot > 1) {
+                        slot--;
+                    }
+                }
                 return PacketUtil.createPacket(0x0E, new TypeHolder[]{
                         data.read(0),
-                        data.read(1),
+                        set(Type.SHORT, slot),
                         data.read(2),
                         data.read(3),
                         data.read(4),
