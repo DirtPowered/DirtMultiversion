@@ -98,7 +98,6 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                session.getUserData().setUsername(data.read(Type.STRING, 1));
                 session.getUserData().getProtocolStorage().set(BlockStorage.class, new BlockStorage());
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{

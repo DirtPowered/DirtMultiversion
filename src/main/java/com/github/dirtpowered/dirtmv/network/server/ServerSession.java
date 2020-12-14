@@ -228,8 +228,11 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     public void broadcastPacket(PacketData packetData, MinecraftVersion from) {
         for (MultiSession entry : main.getSessionRegistry().getSessions().values()) {
             if (entry != null) {
-
                 ServerSession serverSession = entry.getServerSession();
+                if (!(serverSession.userData.getClientVersion().getRegistryId() >= from.getRegistryId())) {
+                    return;
+                }
+
                 serverSession.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, from);
             }
         }
