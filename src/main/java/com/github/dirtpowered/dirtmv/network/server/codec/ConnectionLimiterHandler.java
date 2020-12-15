@@ -22,20 +22,39 @@
 
 package com.github.dirtpowered.dirtmv.network.server.codec;
 
-public class ChannelConstants {
-    public static final String DEFAULT_PIPELINE = "minecraft_pipeline";
-    public static final String CONNECTION_THROTTLE = "connection_throttle";
-    public static final String LEGACY_PING = "legacy_ping";
-    public static final String LEGACY_ENCODER = "legacy_encoder";
-    public static final String LEGACY_DECODER = "legacy_decoder";
-    public static final String TIMEOUT_HANDLER = "timeout";
-    public static final String PACKET_ENCRYPTION = "packet_encryption";
-    public static final String PACKET_DECRYPTION = "packet_decryption";
-    public static final String SERVER_HANDLER = "server_handler";
-    public static final String CLIENT_HANDLER = "client_handler";
-    public static final String DETECTION_HANDLER = "netty_detection_handler";
-    public static final String NETTY_LENGTH_DECODER = "netty_length_decoder";
-    public static final String NETTY_LENGTH_ENCODER = "netty_length_encoder";
-    public static final String NETTY_PACKET_DECODER = "netty_packet_decoder";
-    public static final String NETTY_PACKET_ENCODER = "netty_packet_encoder";
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+
+@ChannelHandler.Sharable
+public class ConnectionLimiterHandler extends ChannelInboundHandlerAdapter {
+    private static Map<String, Long> connections = new HashMap<>();
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        InetSocketAddress isa = (InetSocketAddress) ctx.channel().remoteAddress();
+        String address = isa.getAddress().getHostAddress();
+
+        if (connections.containsKey(address)) {
+            if (System.currentTimeMillis() - connections.get(address) < 350L) {
+                connections.put(address, System.currentTimeMillis());
+
+                ctx.close();
+                return;
+            }
+        }
+
+        connections.put(address, System.currentTimeMillis());
+        super.channelActive(ctx);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+    }
 }
+

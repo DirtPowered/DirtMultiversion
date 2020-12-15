@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.config.Configuration;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
+import com.github.dirtpowered.dirtmv.network.server.codec.ConnectionLimiterHandler;
 import com.github.dirtpowered.dirtmv.network.server.codec.PipelineFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -56,6 +57,8 @@ public class Server {
                     @Override
                     public void initChannel(SocketChannel channel) {
                         ServerSession serverSession = new ServerSession(channel, main);
+
+                        channel.pipeline().addFirst(ChannelConstants.CONNECTION_THROTTLE, new ConnectionLimiterHandler());
 
                         channel.pipeline().addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(
                                 main, serverSession.getUserData(), PacketDirection.CLIENT_TO_SERVER))
