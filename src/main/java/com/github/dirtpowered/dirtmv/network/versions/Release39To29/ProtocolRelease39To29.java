@@ -41,6 +41,7 @@ import com.github.dirtpowered.dirtmv.data.utils.EncryptionUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.Entity;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.EntityIdToTypeString;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.EntityTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.HumanEntity;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.WorldEntityEvent;
@@ -814,13 +815,28 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                int x = data.read(Type.INT, 0);
+                short y = data.read(Type.SHORT, 1);
+                int z = data.read(Type.INT, 2);
+
+                int entityTypeId = data.read(Type.INT, 4);
+
+                CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder();
+
+                builder.putString("EntityId", EntityIdToTypeString.getEntityTypeString(entityTypeId));
+                builder.putShort("Delay", (short) 20);
+                builder.putInt("x", x);
+                builder.putInt("y", y);
+                builder.putInt("z", z);
+
+                CompoundBinaryTag tileTag = builder.build();
 
                 return PacketUtil.createPacket(0x84, new TypeHolder[] {
                         data.read(0),
                         data.read(1),
                         data.read(2),
                         data.read(3),
-                        set(Type.COMPOUND_TAG, CompoundBinaryTag.empty())
+                        set(Type.COMPOUND_TAG, tileTag)
                 });
             }
         });
