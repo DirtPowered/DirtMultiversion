@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.server.codec;
 
+import com.github.dirtpowered.dirtmv.config.Configuration;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -29,13 +30,27 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @ChannelHandler.Sharable
 public class ConnectionLimiterHandler extends ChannelInboundHandlerAdapter {
-    private static Map<String, Long> connections = new HashMap<>();
+    private static final Map<String, Long> connections = new HashMap<>();
+    private static final AtomicInteger connectionCounter = new AtomicInteger();
+    private final Configuration config;
+
+    public ConnectionLimiterHandler(Configuration configuration) {
+        this.config = configuration;
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        int count = connectionCounter.incrementAndGet();
+
+        if (count > config.getMaxConnections()) {
+            ctx.close();
+            return;
+        }
+
         InetSocketAddress isa = (InetSocketAddress) ctx.channel().remoteAddress();
         String address = isa.getAddress().getHostAddress();
 
@@ -55,6 +70,8 @@ public class ConnectionLimiterHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
+
+        connectionCounter.decrementAndGet();
     }
 }
 

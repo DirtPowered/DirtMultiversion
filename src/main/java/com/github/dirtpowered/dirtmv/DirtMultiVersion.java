@@ -43,7 +43,9 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_6RProto
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.registry.ProtocolRegistry;
 import com.github.dirtpowered.dirtmv.data.registry.TranslatorRegistry;
+import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.network.server.Server;
+import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Beta10To9.ProtocolBeta10To9;
 import com.github.dirtpowered.dirtmv.network.versions.Beta11To10.ProtocolBeta11To10;
 import com.github.dirtpowered.dirtmv.network.versions.Beta13To11.ProtocolBeta13To11;
@@ -64,6 +66,8 @@ import com.github.dirtpowered.dirtmv.network.versions.Release74To73.ProtocolRele
 import com.github.dirtpowered.dirtmv.network.versions.Release78To74.ProtocolRelease78To74;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.ResourceLeakDetector;
 import lombok.Getter;
 
@@ -80,6 +84,7 @@ public class DirtMultiVersion implements Runnable {
     private TranslatorRegistry translatorRegistry;
     private Random sharedRandom;
     private Configuration configuration;
+    private EventLoopGroup loopGroup;
 
     private DirtMultiVersion() {
         configuration = new DefaultConfig();
@@ -129,8 +134,22 @@ public class DirtMultiVersion implements Runnable {
         executorService = Executors.newCachedThreadPool();
 
         sharedRandom = new Random();
+        loopGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
 
         setupGlobalTask();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            // disconnect all players
+            sessionRegistry.getSessions().forEach((uuid, multiSession) -> {
+                ServerSession session = multiSession.getServerSession();
+                if (session != null) {
+                    session.disconnect(ChatUtils.LEGACY_COLOR_CHAR + "cDisconnected");
+                }
+            });
+
+            // release loop group
+            loopGroup.shutdownGracefully();
+        }));
 
         new Server(this);
     }

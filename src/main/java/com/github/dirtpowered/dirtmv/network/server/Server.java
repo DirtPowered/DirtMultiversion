@@ -58,7 +58,7 @@ public class Server {
                     public void initChannel(SocketChannel channel) {
                         ServerSession serverSession = new ServerSession(channel, main);
 
-                        channel.pipeline().addFirst(ChannelConstants.CONNECTION_THROTTLE, new ConnectionLimiterHandler());
+                        channel.pipeline().addFirst(ChannelConstants.CONNECTION_THROTTLE, new ConnectionLimiterHandler(main.getConfiguration()));
 
                         channel.pipeline().addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(
                                 main, serverSession.getUserData(), PacketDirection.CLIENT_TO_SERVER))

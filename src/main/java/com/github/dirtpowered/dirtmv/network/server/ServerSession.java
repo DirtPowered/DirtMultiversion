@@ -298,22 +298,14 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     }
 
     private void connectToServer() {
-        if (getConnectionCount() >= main.getConfiguration().getMaxConnections()) {
-            disconnect("server is full");
-            return;
-        }
-
         if (getClientSession() == null) {
             main.getExecutorService().execute(() -> client.createClient(key, () -> {
-                if (!initialPacketQueue.isEmpty()) {
-
-                    initialPacketQueue.forEach(data -> {
-                        try {
-                            sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, null);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
+                while (!initialPacketQueue.isEmpty()) {
+                    try {
+                        sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, null);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }));
         }
@@ -326,7 +318,6 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     public int getConnectionCount() {
         return main.getSessionRegistry().getSessions().size();
     }
-
 
     @Data
     @AllArgsConstructor

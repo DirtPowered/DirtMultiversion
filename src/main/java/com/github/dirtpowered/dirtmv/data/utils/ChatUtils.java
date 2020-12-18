@@ -34,6 +34,8 @@ import java.util.regex.Pattern;
 
 public class ChatUtils {
 
+    public final static String LEGACY_COLOR_CHAR = "§";
+
     /**
      * Converts old legacy (pre1.6) text messages to JSON format
      *
