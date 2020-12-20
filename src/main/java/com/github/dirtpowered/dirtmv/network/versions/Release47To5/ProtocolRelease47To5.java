@@ -263,7 +263,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 int x = data.read(Type.INT, 1);
-                short y = data.read(Type.SHORT, 2);
+                byte y = data.read(Type.BYTE, 2);
                 int z = data.read(Type.INT, 3);
 
                 return PacketUtil.createPacket(0x28, new TypeHolder[]{
@@ -319,8 +319,14 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                String username = ChatUtils.stripColor(data.read(Type.V1_7_STRING, 0));
-                boolean online = data.read(Type.BYTE, 1) == 1;
+                String u = data.read(Type.V1_7_STRING, 0);
+                if (u == null) { // skip if server is updating ping or something
+                    return new PacketData(-1);
+                }
+
+                String username = ChatUtils.stripColor(u);
+
+                boolean online = data.read(Type.BOOLEAN, 1);
 
                 UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));
 

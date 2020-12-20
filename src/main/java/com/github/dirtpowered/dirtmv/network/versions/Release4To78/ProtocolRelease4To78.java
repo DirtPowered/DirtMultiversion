@@ -297,7 +297,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x38, new TypeHolder[]{
                         set(Type.V1_7_STRING, data.read(Type.STRING, 0)),
-                        data.read(1),
+                        set(Type.BOOLEAN, data.read(Type.BYTE, 1) == 1),
                         data.read(2)
                 });
             }
@@ -843,14 +843,27 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x3D SC 0x28 (door change -> effect)
+        addTranslator(0x3D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x28, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        set(Type.BYTE, data.read(Type.SHORT, 2).byteValue()),
+                        data.read(3),
+                        data.read(4),
+                        data.read(5)
+                });
+            }
+        });
         // 0xC8 SC 0x37 -> cancel (statistics)
         addTranslator(0xC8, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x27 SC 0x1B (entity attach)
         addTranslator(0x27, 0x1B, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // 0x3D SC 0x28 (door change)
-        addTranslator(0x3D, 0x28, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // 0x69 SC 0x31 (update progress bar -> window property)
         addTranslator(0x69, 0x31, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
