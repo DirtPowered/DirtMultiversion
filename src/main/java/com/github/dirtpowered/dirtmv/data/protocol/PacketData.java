@@ -43,7 +43,11 @@ public class PacketData {
     }
 
     public TypeHolder read(int index) {
-        return objects[index];
+        try {
+            return objects[index];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
     }
 
     public <T> T read(TypeObject<T> type, int index) {
