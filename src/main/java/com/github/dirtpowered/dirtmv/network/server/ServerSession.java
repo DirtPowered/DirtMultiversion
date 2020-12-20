@@ -299,7 +299,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     private void connectToServer() {
         if (getClientSession() == null) {
-            main.getExecutorService().execute(() -> client.createClient(key, () -> {
+            client.createClient(key, () -> {
                 while (!initialPacketQueue.isEmpty()) {
                     try {
                         sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, null);
@@ -307,7 +307,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
                         e.printStackTrace();
                     }
                 }
-            }));
+            });
         }
     }
 

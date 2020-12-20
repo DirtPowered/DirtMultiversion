@@ -25,11 +25,12 @@ package com.github.dirtpowered.dirtmv.network.client;
 import com.github.dirtpowered.dirtmv.config.Configuration;
 import com.github.dirtpowered.dirtmv.data.interfaces.Callback;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
 import com.github.dirtpowered.dirtmv.network.server.codec.PipelineFactory;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -49,34 +50,33 @@ public class Client {
 
     public void createClient(UUID key, Callback callback) {
         EventLoopGroup loopGroup = serverSession.getMain().getLoopGroup();
+        Bootstrap clientBootstrap = new Bootstrap();
 
-        try {
-            Bootstrap clientBootstrap = new Bootstrap();
+        clientBootstrap.group(loopGroup);
+        clientBootstrap.channel(NioSocketChannel.class);
+        clientBootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+        clientBootstrap.option(ChannelOption.TCP_NODELAY, true);
 
-            clientBootstrap.group(loopGroup);
-            clientBootstrap.channel(NioSocketChannel.class);
-            clientBootstrap.option(ChannelOption.SO_KEEPALIVE, true);
-            clientBootstrap.option(ChannelOption.TCP_NODELAY, true);
+        Configuration c = serverSession.getMain().getConfiguration();
 
-            Configuration c = serverSession.getMain().getConfiguration();
+        clientBootstrap.remoteAddress(new InetSocketAddress(c.getRemoteServerAddress(), c.getRemoteServerPort()));
 
-            clientBootstrap.remoteAddress(new InetSocketAddress(c.getRemoteServerAddress(), c.getRemoteServerPort()));
+        clientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
-            clientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel ch) {
+                ch.pipeline()
+                        .addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(serverSession.getMain(),
+                                serverSession.getUserData(), PacketDirection.SERVER_TO_CLIENT))
+                        .addLast(ChannelConstants.CLIENT_HANDLER, new ClientSession(key, serverSession, ch, callback));
+            }
+        });
 
-                @Override
-                protected void initChannel(SocketChannel ch) {
-                    ch.pipeline()
-                            .addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(serverSession.getMain(),
-                                    serverSession.getUserData(), PacketDirection.SERVER_TO_CLIENT))
-                            .addLast(ChannelConstants.CLIENT_HANDLER, new ClientSession(key, serverSession, ch, callback));
-                }
-            });
-
-            ChannelFuture channelFuture = clientBootstrap.connect().sync();
-            channelFuture.channel().closeFuture().sync();
-        } catch (Exception e) {
-            serverSession.disconnect(e.getMessage());
-        }
+        clientBootstrap.connect().addListener((ChannelFutureListener) channelFuture -> {
+            if (!channelFuture.isSuccess()) {
+                serverSession.disconnect(ChatUtils.LEGACY_COLOR_CHAR + "cUnable to connect to remote server");
+                channelFuture.channel().close();
+            }
+        });
     }
 }
