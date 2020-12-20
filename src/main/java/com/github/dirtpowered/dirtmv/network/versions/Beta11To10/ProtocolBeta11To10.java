@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
@@ -190,13 +191,26 @@ public class ProtocolBeta11To10 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                boolean shiftClick = (data.read(Type.BYTE, 4) == 1);
+
+                // cancel shift-clicking
+                ItemStack itemStack;
+                if (!shiftClick) {
+                    itemStack = data.read(Type.V1_3B_ITEM, 5);
+                } else {
+                    /*
+                     * sending invalid/other item than held item is forcing server to send window update packet
+                     * It should prevent against all inventory desyncs
+                     */
+                    itemStack = new ItemStack(99, 0, 1, null);
+                }
 
                 return PacketUtil.createPacket(0x66, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
                         data.read(3),
-                        data.read(5),
+                        set(Type.V1_3B_ITEM, itemStack),
                 });
             }
         });
