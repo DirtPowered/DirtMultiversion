@@ -40,7 +40,6 @@ public class UserData {
     private PreNettyProtocolState preNettyProtocolState;
     private int dimension;
     private int entityId;
-    private int vehicleEntityId;
     private ProtocolState protocolState;
     private String address;
     private int port;

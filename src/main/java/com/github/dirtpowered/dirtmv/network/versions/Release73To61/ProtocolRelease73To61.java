@@ -40,6 +40,7 @@ import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.VehicleTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_5RTo1_6RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
@@ -71,6 +72,11 @@ public class ProtocolRelease73To61 extends ServerProtocol {
         return PacketUtil.createPacket(0x2C, new TypeHolder[] {
                 set(Type.V1_6_1_ENTITY_ATTRIBUTES, attrObj)
         });
+    }
+
+    @Override
+    public void onConnect(ServerSession session) {
+        session.getUserData().getProtocolStorage().set(VehicleTracker.class, new VehicleTracker());
     }
 
     @Override
@@ -383,10 +389,13 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                VehicleTracker vehicleTracker = session.getUserData().getProtocolStorage().get(VehicleTracker.class);
+                assert vehicleTracker != null;
+                int vehicleId = data.read(Type.INT, 1);
 
-                int vehicleEntityId = data.read(Type.INT, 1);
-                session.getUserData().setVehicleEntityId(vehicleEntityId);
-
+                if (vehicleId != -1) {
+                    vehicleTracker.setVehicleId(vehicleId);
+                }
                 return PacketUtil.createPacket(0x27, new TypeHolder[] {
                         data.read(0),
                         data.read(1),
@@ -422,12 +431,17 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                VehicleTracker vehicleTracker = session.getUserData().getProtocolStorage().get(VehicleTracker.class);
+                assert vehicleTracker != null;
                 boolean dismount = data.read(Type.BOOLEAN, 3);
 
-                if (dismount) {
+                if (dismount && vehicleTracker.getVehicleId() != -999) {
+                    int cachedId = vehicleTracker.getVehicleId();
+                    vehicleTracker.setVehicleId(-999);
+
                     return PacketUtil.createPacket(0x07, new TypeHolder[] {
                         set(Type.INT, session.getUserData().getEntityId()),
-                        set(Type.INT, session.getUserData().getVehicleEntityId()),
+                        set(Type.INT, cachedId),
                         set(Type.BYTE, (byte) 0),
                     });
                 }

@@ -415,7 +415,9 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 OptionalPosition optPos = data.read(Type.V1_8R_USE_ENTITY_OPTIONAL_POSITION, 1);
                 int action = optPos.getAction();
 
-                action = action == 2 ? 0 : action;
+                if (action == 2) {
+                    return new PacketData(-1);
+                }
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[] {
                         set(Type.INT, data.read(Type.VAR_INT, 0)),
@@ -535,6 +537,22 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         data.read(3),
                         data.read(4),
                         set(Type.BOOLEAN, false)
+                });
+            }
+        });
+
+        // player input
+        addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                byte status = data.read(Type.BYTE, 2);
+
+                return PacketUtil.createPacket(0x0C, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        set(Type.BOOLEAN, (status & 1) == 1),
+                        set(Type.BOOLEAN, (status & 2) == 2)
                 });
             }
         });
