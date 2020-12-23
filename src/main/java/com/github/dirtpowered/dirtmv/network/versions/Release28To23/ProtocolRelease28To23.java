@@ -36,9 +36,11 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.BetaToV1_2ChunkTranslator;
+import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.LoadedChunkTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.item.CreativeItemList;
 
 import java.io.ByteArrayOutputStream;
@@ -55,6 +57,12 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
     public ProtocolRelease28To23() {
         super(MinecraftVersion.R1_2_1, MinecraftVersion.R1_1);
+    }
+
+    @Override
+    public void onConnect(ServerSession session) {
+        ProtocolStorage storage = session.getUserData().getProtocolStorage();
+        storage.set(LoadedChunkTracker.class, new LoadedChunkTracker());
     }
 
     @Override
@@ -105,6 +113,26 @@ public class ProtocolRelease28To23 extends ServerProtocol {
             }
         });
 
+        // pre chunk
+        addTranslator(0x32, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                LoadedChunkTracker chunkTracker = session.getUserData().getProtocolStorage().get(LoadedChunkTracker.class);
+                int chunkX = data.read(Type.INT, 0);
+                int chunkZ = data.read(Type.INT, 1);
+
+                byte mode = data.read(Type.BYTE, 2);
+
+                assert chunkTracker != null;
+
+                if (mode == 0) {
+                    chunkTracker.removeChunk(chunkX, chunkZ);
+                }
+                return data;
+            }
+        });
+
         // chunk
         addTranslator(0x33, PacketDirection.SERVER_TO_CLIENT, new BetaToV1_2ChunkTranslator(blockDataTransformer));
 
@@ -113,7 +141,11 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
+                LoadedChunkTracker chunkTracker = session.getUserData().getProtocolStorage().get(LoadedChunkTracker.class);
                 V1_3BMultiBlockArray blockArray = (V1_3BMultiBlockArray) data.read(2).getObject();
+
+                int chunkX = data.read(Type.INT, 0);
+                int chunkZ = data.read(Type.INT, 1);
 
                 int totalDataSize = 4 * blockArray.getSize();
 
@@ -139,6 +171,11 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 dataOutputStream.close();
                 byteArrayOutputStream.close();
 
+                assert chunkTracker != null;
+                if (!chunkTracker.isChunkLoaded(chunkX, chunkZ)) {
+                    return new PacketData(-1);
+                }
+
                 return PacketUtil.createPacket(0x34, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
@@ -152,10 +189,19 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                LoadedChunkTracker chunkTracker = session.getUserData().getProtocolStorage().get(LoadedChunkTracker.class);
+                int chunkX = data.read(Type.INT, 0) >> 4;
+                int chunkZ = data.read(Type.INT, 2) >> 4;
+
                 byte blockId = data.read(Type.BYTE, 3);
                 byte blockData = data.read(Type.BYTE, 4);
 
                 Block replacement = blockDataTransformer.replaceBlock(blockId, blockData);
+
+                assert chunkTracker != null;
+                if (!chunkTracker.isChunkLoaded(chunkX, chunkZ)) {
+                    return new PacketData(-1);
+                }
 
                 return PacketUtil.createPacket(0x35, new TypeHolder[]{
                         data.read(0),

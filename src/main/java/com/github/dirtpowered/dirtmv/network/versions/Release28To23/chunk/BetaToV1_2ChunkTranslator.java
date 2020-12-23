@@ -62,6 +62,8 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
     @Override
     public PacketData translate(ServerSession session, PacketData data) throws IOException {
+        LoadedChunkTracker chunkTracker = session.getUserData().getProtocolStorage().get(LoadedChunkTracker.class);
+
         V1_3BChunk oldChunk = (V1_3BChunk) data.read(0).getObject();
         boolean groundUp = true;
 
@@ -120,7 +122,7 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
             byte[] compressedData = newChunkStorage.getCompressedData(true, 0xff);
 
-            return PacketUtil.createPacket(0x33, new TypeHolder[]{
+            session.sendPacket(PacketUtil.createPacket(0x33, new TypeHolder[]{
                     new TypeHolder(Type.V1_2_CHUNK, new V1_2Chunk(
                             chunkX,
                             chunkZ,
@@ -131,8 +133,18 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                             compressedData,
                             newChunkStorage
                     ))
-            });
+            }), PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_2_1);
+
+            assert chunkTracker != null;
+            chunkTracker.setChunkLoaded(chunkX, chunkZ);
+
+            return new PacketData(-1);
         } else {
+            assert chunkTracker != null;
+            if (!chunkTracker.isChunkLoaded(chunkX, chunkZ)) {
+                return new PacketData(-1);
+            }
+
             List<WorldBlock> worldBlocks = getUpdatedBlockList(
                     oldChunk.getX(),
                     oldChunk.getY(),
