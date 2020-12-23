@@ -32,7 +32,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BChunk;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
-import com.github.dirtpowered.dirtmv.data.user.UserData;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
@@ -62,6 +62,11 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
     @Override
     public void onConnect(ServerSession session) {
+        ProtocolStorage storage = session.getUserData().getProtocolStorage();
+
+        storage.set(BlockStorage.class, new BlockStorage());
+        storage.set(PlayerTabListCache.class, new PlayerTabListCache());
+
         session.broadcastPacket(createTabEntryPacket(session.getUserData().getUsername(), true), getFrom());
     }
 
@@ -98,7 +103,6 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                session.getUserData().getProtocolStorage().set(BlockStorage.class, new BlockStorage());
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         set(Type.INT, 14), // INT
@@ -114,18 +118,9 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                UserData userData = session.getUserData();
-                userData.getProtocolStorage().set(PlayerTabListCache.class, new PlayerTabListCache());
-
                 session.getMain().getSessionRegistry().getSessions().forEach((uuid, multiSession) -> {
                     String s = multiSession.getServerSession().getUserData().getUsername();
-                    if (!userData.getUsername().equals(s)) {
-                        try {
-                            session.sendPacket(createTabEntryPacket(s, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    session.queuePacket(createTabEntryPacket(s, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
                 });
 
                 int max = session.getMain().getConfiguration().getMaxOnline();

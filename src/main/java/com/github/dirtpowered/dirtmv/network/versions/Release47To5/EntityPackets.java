@@ -159,12 +159,12 @@ public class EntityPackets extends ServerProtocol {
                 return PacketUtil.createPacket(0x0C, new TypeHolder[]{
                         data.read(0),
                         set(Type.UUID, playerOfflineUUID),
-                        data.read(3),
                         data.read(4),
                         data.read(5),
                         data.read(6),
                         data.read(7),
                         data.read(8),
+                        data.read(9),
                         set(Type.V1_8R_METADATA, newMeta)
                 });
             }
