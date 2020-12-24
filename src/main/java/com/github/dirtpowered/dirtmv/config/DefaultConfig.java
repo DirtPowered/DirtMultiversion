@@ -81,4 +81,9 @@ public class DefaultConfig implements Configuration {
     public int getMaxConnections() {
         return 20;
     }
+
+    @Override
+    public int getMaxPacketsPerSecond() {
+        return 200;
+    }
 }

@@ -80,4 +80,9 @@ public interface Configuration {
      * Number of maximum connections allowed
      */
     int getMaxConnections();
+
+    /**
+     *  Max packets per second (default 200)
+     */
+    int getMaxPacketsPerSecond();
 }

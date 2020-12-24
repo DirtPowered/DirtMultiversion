@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Server to Client connection session
@@ -77,6 +78,9 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     private Queue<PacketData> initialPacketQueue = new LinkedBlockingQueue<>();
     private Queue<QueuedPacket> packetQueue = new LinkedBlockingQueue<>();
+    private AtomicInteger packetCounter = new AtomicInteger();
+
+    private int currentTick = 0;
 
     ServerSession(SocketChannel channel, DirtMultiVersion server) {
         this.key = UUID.randomUUID();
@@ -186,12 +190,22 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
                 ((Tickable) o).tick();
             }
         }
+
+        if (currentTick % 20 == 0) {
+            if (packetCounter.get() >= main.getConfiguration().getMaxPacketsPerSecond()) {
+                disconnect("You're sending too many packets. Lag?");
+            }
+
+            packetCounter.set(0);
+        }
+        currentTick++;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, PacketData packetData) throws IOException {
         // client to server packets
         sendPacket(packetData, PacketDirection.CLIENT_TO_SERVER, null);
+        packetCounter.getAndIncrement();
     }
 
     @Override
