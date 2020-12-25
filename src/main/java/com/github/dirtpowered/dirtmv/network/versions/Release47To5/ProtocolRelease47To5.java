@@ -43,9 +43,13 @@ import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.WindowTypeTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.BlockMiningTimeFixer;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.HardnessTable;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
@@ -71,9 +75,15 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         ProtocolStorage storage = session.getUserData().getProtocolStorage();
         storage.set(OnGroundTracker.class, new OnGroundTracker());
         storage.set(WindowTypeTracker.class, new WindowTypeTracker());
+        storage.set(QuickBarTracker.class, new QuickBarTracker());
+
+        // fixes block hardness inconsistencies
+        if (session.getMain().getConfiguration().getServerVersion() == MinecraftVersion.B1_7_3) {
+            storage.set(BlockMiningTimeFixer.class, new BlockMiningTimeFixer(session));
+        }
     }
 
-    static long toBlockPosition(int x, int y, int z) {
+    public static long toBlockPosition(int x, int y, int z) {
         return (((long) x & 0x3FFFFFF) << 38) | ((((long) y) & 0xFFF) << 26) | (((long) z) & 0x3FFFFFF);
     }
 
@@ -437,8 +447,32 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 long encodedPosition = data.read(Type.LONG, 1);
+                int action = data.read(Type.UNSIGNED_BYTE, 0);
 
                 BlockLocation l = fromBlockPosition(encodedPosition);
+
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                if (storage.hasObject(BlockMiningTimeFixer.class) && storage.hasObject(BlockStorage.class)) {
+                    BlockMiningTimeFixer blockMiningTimeFixer = storage.get(BlockMiningTimeFixer.class);
+                    BlockStorage blockStorage = storage.get(BlockStorage.class);
+
+                    assert blockMiningTimeFixer != null;
+                    assert blockStorage != null;
+
+                    switch (action) {
+                        case 0: // start digging
+                            blockMiningTimeFixer.onBlockStartBreaking(l);
+                            break;
+                        case 1: // cancel digging
+                            blockMiningTimeFixer.onBlockCancelBreaking(l);
+                            break;
+                        case 2: // finish digging
+                            if (HardnessTable.exist(blockStorage.getBlockAt(l.getX(), l.getY(), l.getZ()))) {
+                                return new PacketData(-1);
+                            }
+                            break;
+                    }
+                }
 
                 return PacketUtil.createPacket(0x07, new TypeHolder[]{
                         data.read(0),

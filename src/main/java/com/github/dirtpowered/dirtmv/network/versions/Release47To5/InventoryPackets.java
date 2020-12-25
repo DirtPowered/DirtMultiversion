@@ -36,6 +36,7 @@ import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.InventoryUtils;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.WindowTypeTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRemapper;
@@ -78,7 +79,19 @@ public class InventoryPackets extends ServerProtocol {
 
                 if (windowType == 4) {
                     if (slot >= 1) {
-                        slot ++;
+                        slot++;
+                    }
+                }
+
+                // quick-bar cache
+                if (storage.hasObject(QuickBarTracker.class)) {
+                    if (slot >= 36 && slot <= 44) {
+                        int itemId = (itemStack != null ? itemStack.getItemId() : 0);
+
+                        QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
+                        assert quickBarTracker != null;
+
+                        quickBarTracker.addItem(slot, itemId);
                     }
                 }
 
@@ -134,6 +147,18 @@ public class InventoryPackets extends ServerProtocol {
                     }
 
                     itemArray[i] = item;
+
+                    // quick-bar cache
+                    if (storage.hasObject(QuickBarTracker.class)) {
+                        if (i >= 36 && i <= 44) {
+                            int itemId = (item != null ? item.getItemId() : 0);
+
+                            QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
+                            assert quickBarTracker != null;
+
+                            quickBarTracker.addItem(i, itemId);
+                        }
+                    }
                 }
 
                 return PacketUtil.createPacket(0x30, new TypeHolder[]{
@@ -227,6 +252,24 @@ public class InventoryPackets extends ServerProtocol {
                         data.read(0),
                         set(Type.V1_3R_ITEM, item)
                 });
+            }
+        });
+
+        // change held slot
+        addTranslator(0x09, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+
+                if (storage.hasObject(QuickBarTracker.class)) {
+                    QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
+                    assert quickBarTracker != null;
+
+                    quickBarTracker.setCurrentHotBarSlot(data.read(Type.SHORT, 0));
+                }
+
+                return data;
             }
         });
     }
