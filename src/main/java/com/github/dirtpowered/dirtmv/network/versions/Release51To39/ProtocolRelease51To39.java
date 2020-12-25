@@ -30,11 +30,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
@@ -44,15 +40,11 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release51To39.item.CreativeItemList;
 import io.netty.buffer.Unpooled;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.WeakHashMap;
+import java.util.*;
 
 @Log4j2
 public class ProtocolRelease51To39 extends ServerProtocol {
@@ -248,9 +240,9 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         addTranslator(0x15, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
 
-                PacketData vehicleSpawn = PacketUtil.createPacket(0x17, new TypeHolder[] {
+                PacketData vehicleSpawn = PacketUtil.createPacket(0x17, new TypeHolder[]{
                         data.read(0),
                         set(Type.BYTE, (byte) 2),
                         data.read(4),
@@ -289,7 +281,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         addTranslator(0x18, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());
 
                 byte type = data.read(Type.BYTE, 1);
@@ -321,8 +313,9 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         // custom payload
         addTranslator(0xFA, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
+            @SneakyThrows
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 String channel = data.read(Type.STRING, 0);
                 byte[] payload = data.read(Type.SHORT_BYTE_ARRAY, 1);
 

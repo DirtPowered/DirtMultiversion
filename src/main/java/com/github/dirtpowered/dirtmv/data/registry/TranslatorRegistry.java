@@ -30,6 +30,7 @@ import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthrough;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthroughEncrypted;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolStateHandler;
+import com.github.dirtpowered.dirtmv.network.versions.handler.GlobalProtocolHandler;
 import lombok.Getter;
 
 import java.util.Collections;
@@ -109,6 +110,9 @@ public class TranslatorRegistry {
         if (from.isNettyProtocol()) {
             serverProtocols.add(new ProtocolStateHandler(from, versionTo));
         }
+
+        // track packets in all protocols
+        serverProtocols.add(new GlobalProtocolHandler(from, versionTo));
 
         return serverProtocols;
     }

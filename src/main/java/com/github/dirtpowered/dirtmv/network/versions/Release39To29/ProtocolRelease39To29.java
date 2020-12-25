@@ -27,12 +27,7 @@ import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
@@ -40,11 +35,7 @@ import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.EncryptionUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
-import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.Entity;
-import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.EntityIdToTypeString;
-import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.EntityTracker;
-import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.HumanEntity;
-import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.WorldEntityEvent;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.*;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model.AbstractEntity;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.UpdateTask;
@@ -53,7 +44,6 @@ import lombok.SneakyThrows;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -115,7 +105,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
         addTranslator(0x02, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 if (data.getObjects().length < 3)
                     return new PacketData(-1);
 
@@ -633,7 +623,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
         // entity metadata
         addTranslator(0x28, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = data.read(Type.INT, 0);
 
                 WatchableObject[] watchableObjects = data.read(Type.V1_3B_METADATA, 1);

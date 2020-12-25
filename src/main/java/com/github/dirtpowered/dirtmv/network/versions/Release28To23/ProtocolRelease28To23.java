@@ -140,7 +140,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         addTranslator(0x34, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 LoadedChunkTracker chunkTracker = session.getUserData().getProtocolStorage().get(LoadedChunkTracker.class);
                 V1_3BMultiBlockArray blockArray = (V1_3BMultiBlockArray) data.read(2).getObject();
 
@@ -152,24 +152,29 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(totalDataSize);
                 DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
 
-                for (int i = 0; i < blockArray.getSize(); ++i) {
-                    short coordinate = blockArray.getCoordsArray()[i];
+                V1_2MultiBlockArray newFormat = null;
+                try {
+                    for (int i = 0; i < blockArray.getSize(); ++i) {
+                        short coordinate = blockArray.getCoordsArray()[i];
 
-                    int blockId = blockArray.getTypesArray()[i] & 255;
-                    int blockData = blockArray.getMetadataArray()[i];
+                        int blockId = blockArray.getTypesArray()[i] & 255;
+                        int blockData = blockArray.getMetadataArray()[i];
 
-                    Block replacement = blockDataTransformer.replaceBlock(blockId, blockData);
+                        Block replacement = blockDataTransformer.replaceBlock(blockId, blockData);
 
-                    dataOutputStream.writeShort(coordinate);
-                    dataOutputStream.writeShort((short) ((replacement.getBlockId() & 4095) << 4 | replacement.getBlockData() & 15));
+                        dataOutputStream.writeShort(coordinate);
+                        dataOutputStream.writeShort((short) ((replacement.getBlockId() & 4095) << 4 | replacement.getBlockData() & 15));
+                    }
+
+                    byte[] b = byteArrayOutputStream.toByteArray();
+
+                    newFormat = new V1_2MultiBlockArray(blockArray.getSize(), b.length, b);
+
+                    dataOutputStream.close();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
-                byte[] b = byteArrayOutputStream.toByteArray();
-
-                V1_2MultiBlockArray newFormat = new V1_2MultiBlockArray(blockArray.getSize(), b.length, b);
-
-                dataOutputStream.close();
-                byteArrayOutputStream.close();
 
                 assert chunkTracker != null;
                 if (!chunkTracker.isChunkLoaded(chunkX, chunkZ)) {
@@ -270,7 +275,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         addTranslator(0x21, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 PacketData rotationPacket = PacketUtil.createPacket(0x23, new TypeHolder[]{
                         data.read(0), // entityId
@@ -286,7 +291,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         addTranslator(0x20, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
 
                 PacketData rotationPacket = PacketUtil.createPacket(0x23, new TypeHolder[]{
                         data.read(0),

@@ -41,7 +41,6 @@ import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.SolidBloc
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +81,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         addTranslator(0xFE, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 String message = session.getMain().getConfiguration().preReleaseMOTD();
                 message = ChatUtils.stripColor(message);
 
@@ -226,7 +225,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         addTranslator(0x14, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = data.read(Type.INT, 0);
                 String username = data.read(Type.STRING, 1);
 
@@ -245,7 +244,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         addTranslator(0x1D, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = data.read(Type.INT, 0);
 
                 PlayerTabListCache cache = session.getUserData().getProtocolStorage().get(PlayerTabListCache.class);

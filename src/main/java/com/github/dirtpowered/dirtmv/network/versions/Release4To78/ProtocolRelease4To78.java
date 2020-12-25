@@ -48,7 +48,6 @@ import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerM
 import com.google.common.base.Charsets;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.IOException;
 import java.util.UUID;
 
 @Log4j2
@@ -96,7 +95,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         addTranslator(0x01, ProtocolState.STATUS, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 PacketData response = PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0)
                 });
@@ -142,7 +141,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         addTranslator(0x00, ProtocolState.LOGIN, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 if (data.getObjects().length > 1)
                     return new PacketData(-1);
 
@@ -175,7 +174,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         addTranslator(0xFD, ProtocolState.LOGIN, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 UserData userData = session.getUserData();
                 String username = userData.getUsername();
 

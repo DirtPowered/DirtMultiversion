@@ -31,11 +31,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
-import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
-import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
-import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
-import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.translator.*;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
@@ -46,7 +42,6 @@ import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,7 +80,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
         addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = data.read(Type.INT, 0);
                 session.getUserData().setEntityId(entityId);
                 EntityTracker tracker = new EntityTracker();
@@ -105,7 +100,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
         addTranslator(0x09, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = session.getUserData().getEntityId();
 
                 session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());

@@ -36,7 +36,6 @@ import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -64,7 +63,7 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, PacketData packetData) throws IOException {
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, PacketData packetData) {
         // server to client packets
         serverSession.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, null);
 
@@ -85,7 +84,8 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        log.info("[{}] connected to remote server using {}", serverSession.getLogTag(), serverSession.getUserData().getClientVersion());
+        log.info("[{}] connected to remote server using {} client",
+                serverSession.getLogTag(), serverSession.getUserData().getClientVersion().getFriendlyName());
         serverSession.getMain().getSessionRegistry().addSession(key, new MultiSession(this, serverSession));
 
         callback.onComplete();

@@ -61,7 +61,7 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
     }
 
     @Override
-    public PacketData translate(ServerSession session, PacketData data) throws IOException {
+    public PacketData translate(ServerSession session, PacketData data) {
         LoadedChunkTracker chunkTracker = session.getUserData().getProtocolStorage().get(LoadedChunkTracker.class);
 
         V1_3BChunk oldChunk = (V1_3BChunk) data.read(0).getObject();
@@ -172,17 +172,20 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream(totalDataSize);
                     DataOutputStream dos = new DataOutputStream(baos);
+                    V1_2MultiBlockArray blockArray = null;
+                    try {
+                        for (WorldBlock record : slicedData) {
+                            dos.writeShort((record.getX() - (chunkX << 4)) << 12 | (record.getZ() - (chunkZ << 4)) << 8 | record.getY());
+                            dos.writeShort((record.getBlockId() & 4095) << 4 | record.getBlockData() & 15);
+                        }
 
-                    for (WorldBlock record : slicedData) {
-                        dos.writeShort((record.getX() - (chunkX << 4)) << 12 | (record.getZ() - (chunkZ << 4)) << 8 | record.getY());
-                        dos.writeShort((record.getBlockId() & 4095) << 4 | record.getBlockData() & 15);
+                        byte[] bytes = baos.toByteArray();
+                        blockArray = new V1_2MultiBlockArray(slicedData.size(), bytes.length, bytes);
+
+                        dos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-
-                    byte[] bytes = baos.toByteArray();
-                    V1_2MultiBlockArray blockArray = new V1_2MultiBlockArray(slicedData.size(), bytes.length, bytes);
-
-                    dos.close();
-                    baos.close();
 
                     PacketData multiBlockChange = PacketUtil.createPacket(0x34, new TypeHolder[]{
                             new TypeHolder(Type.INT, chunkX),

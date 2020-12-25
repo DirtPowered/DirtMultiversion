@@ -37,7 +37,6 @@ import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.SoundT
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
 import com.google.common.primitives.Shorts;
 
-import java.io.IOException;
 import java.util.Random;
 
 public class WorldEntityEvent {
@@ -103,10 +102,6 @@ public class WorldEntityEvent {
                 new TypeHolder(Type.UNSIGNED_BYTE, correctedPitch),
         });
 
-        try {
-            session.sendPacket(namedSound, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_3_1);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+        session.sendPacket(namedSound, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_3_1);
     }
 }

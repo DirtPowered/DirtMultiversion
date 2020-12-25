@@ -36,8 +36,6 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release60To51.item.CreativeItemList;
 
-import java.io.IOException;
-
 public class ProtocolRelease60To51 extends ServerProtocol {
 
     public ProtocolRelease60To51() {
@@ -84,7 +82,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
         addTranslator(0x66, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 boolean leftClickFlag = false;
                 boolean startDragging = false;
                 boolean endDragging = false;

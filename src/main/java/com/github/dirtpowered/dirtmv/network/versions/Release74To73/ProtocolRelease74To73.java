@@ -8,17 +8,12 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.EntityAttribute;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_2EntityAttributes;
-import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
-import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
-import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
-import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.translator.*;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import com.github.dirtpowered.dirtmv.network.versions.Release74To73.item.CreativeItemList;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -116,7 +111,7 @@ public class ProtocolRelease74To73 extends ServerProtocol {
         addTranslator(0x0F, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 int x = data.read(Type.INT, 0);
                 int y = data.read(Type.UNSIGNED_BYTE, 1);
                 int z = data.read(Type.INT, 2);

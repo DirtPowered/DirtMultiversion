@@ -93,11 +93,12 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     /**
      * Translates and sends packet to server
-     * @param packet         {@link PacketData} Packet
-     * @param direction      {@link PacketDirection} sending direction (client/server)
-     * @param from Version to start from
+     *
+     * @param packet    {@link PacketData} Packet
+     * @param direction {@link PacketDirection} sending direction (client/server)
+     * @param from      Version to start from
      */
-    public void sendPacket(PacketData packet, PacketDirection direction, MinecraftVersion from) throws IOException {
+    public void sendPacket(PacketData packet, PacketDirection direction, MinecraftVersion from) {
         MinecraftVersion version = main.getConfiguration().getServerVersion();
         if (from != null && from != version) {
             version = from;
@@ -129,7 +130,11 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
             if (translator != null) {
                 if (from == null || from != protocol.getFrom()) {
-                    target = translator.translate(this, target);
+                    try {
+                        target = translator.translate(this, target);
+                    } catch (IOException e) {
+                        disconnect(e.getMessage());
+                    }
 
                     String namedOpCode = PreNettyPacketNames.getPacketName(packet.getOpCode());
                     Preconditions.checkNotNull(target, "%s returned null while translating %s", protocolName, namedOpCode);
@@ -170,11 +175,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     private void handleQueuedPackets() {
         if (!packetQueue.isEmpty()) {
             QueuedPacket queuedPacket = packetQueue.poll();
-            try {
-                sendPacket(queuedPacket.getPacket(), queuedPacket.getDirection(), queuedPacket.getVersion());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            sendPacket(queuedPacket.getPacket(), queuedPacket.getDirection(), queuedPacket.getVersion());
         }
     }
 
@@ -232,8 +233,6 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-
         // disconnect from proxy
         disconnect(cause.getMessage());
     }
@@ -315,11 +314,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         if (getClientSession() == null) {
             client.createClient(key, () -> {
                 while (!initialPacketQueue.isEmpty()) {
-                    try {
-                        sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, null);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, null);
                 }
             });
         }

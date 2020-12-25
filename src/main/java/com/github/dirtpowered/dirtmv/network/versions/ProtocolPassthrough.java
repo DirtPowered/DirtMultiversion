@@ -23,12 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.versions;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
-import com.github.dirtpowered.dirtmv.data.protocol.Type;
-import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
-import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
-import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
 public class ProtocolPassthrough extends ServerProtocol {
 
@@ -38,19 +33,5 @@ public class ProtocolPassthrough extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
-        // login
-        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-                // it's needed for < 1.3 protocols
-                if (getTo().getRegistryId() <= MinecraftVersion.B1_4.getRegistryId()) {
-                    session.getUserData().setUsername(data.read(Type.UTF8_STRING, 1));
-                } else {
-                    session.getUserData().setUsername(data.read(Type.STRING, 1));
-                }
-                return data;
-            }
-        });
     }
 }

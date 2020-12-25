@@ -184,15 +184,20 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // multi block change
         addTranslator(0x22, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
             @Override
-            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+            public PacketData translate(ServerSession session, PacketData data) {
                 V1_2MultiBlockArray blockArray = data.read(Type.V1_2MULTIBLOCK_ARRAY, 2);
                 DataInput dis = new DataInputStream(new ByteArrayInputStream(blockArray.getData()));
 
                 BlockChangeRecord[] blockChangeRecords = new BlockChangeRecord[blockArray.getRecordCount()];
 
                 for (int i = 0; i < blockArray.getRecordCount(); i++) {
-                    blockChangeRecords[i] = new BlockChangeRecord(dis.readShort(), dis.readShort());
+                    try {
+                        blockChangeRecords[i] = new BlockChangeRecord(dis.readShort(), dis.readShort());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 return PacketUtil.createPacket(0x22, new TypeHolder[]{
