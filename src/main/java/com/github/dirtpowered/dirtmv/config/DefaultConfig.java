@@ -84,6 +84,6 @@ public class DefaultConfig implements Configuration {
 
     @Override
     public int getMaxPacketsPerSecond() {
-        return 200;
+        return 150;
     }
 }
