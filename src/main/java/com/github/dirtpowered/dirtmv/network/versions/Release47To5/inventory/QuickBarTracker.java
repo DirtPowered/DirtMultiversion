@@ -22,8 +22,6 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory;
 
-import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,9 +33,8 @@ public class QuickBarTracker {
         quickBarItems.put(slot, itemId);
     }
 
-    public ItemStack getItemInHand() {
-        int itemId = quickBarItems.getOrDefault(currentSlot, 0);
-        return new ItemStack(itemId, 0, 0, null);
+    public int getItemInHand() {
+        return quickBarItems.getOrDefault(currentSlot, 0);
     }
 
     public void setCurrentHotBarSlot(int currentSlot) {

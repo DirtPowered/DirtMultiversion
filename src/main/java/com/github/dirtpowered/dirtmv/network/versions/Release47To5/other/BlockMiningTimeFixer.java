@@ -55,7 +55,7 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
             QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
             assert quickBarTracker != null;
 
-            return quickBarTracker.getItemInHand().getItemId();
+            return quickBarTracker.getItemInHand();
         }
         return 0;
     }
@@ -95,6 +95,16 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
 
         // send raw packet
         session.getClientSession().sendPacket(blockDig);
+
+        // send block break effect
+        PacketData blockEffect = PacketUtil.createPacket(0x28, new TypeHolder[]{
+                new TypeHolder(Type.INT, 2001),
+                new TypeHolder(Type.LONG, ProtocolRelease47To5.toBlockPosition(pos.getX(), pos.getY(), pos.getZ())),
+                new TypeHolder(Type.INT, blockId),
+                new TypeHolder(Type.BOOLEAN, false)
+        });
+
+        session.sendPacket(blockEffect, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_8);
     }
 
     private void removeSlownessEffect() {
