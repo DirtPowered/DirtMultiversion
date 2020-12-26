@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TranslatorRegistry {
 
     @Getter
-    private Map<Integer, ServerProtocol> protocols = new ConcurrentHashMap<>();
+    private final Map<Integer, ServerProtocol> protocols = new ConcurrentHashMap<>();
 
     private DirtMultiVersion main;
 

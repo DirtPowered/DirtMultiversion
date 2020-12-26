@@ -22,11 +22,11 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block;
 
-import java.util.HashMap;
-import java.util.Map;
+import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
+import it.unimi.dsi.fastutil.ints.Int2BooleanOpenHashMap;
 
 public class SolidBlockList {
-    private static final Map<Integer, Boolean> BLOCK_LIST = new HashMap<>();
+    private static final Int2BooleanMap BLOCK_LIST = new Int2BooleanOpenHashMap();
 
     static {
         BLOCK_LIST.put(1, true);
@@ -128,6 +128,6 @@ public class SolidBlockList {
     }
 
     public static boolean isSolid(int blockId) {
-        return BLOCK_LIST.get(blockId) == null ? false : BLOCK_LIST.get(blockId);
+        return BLOCK_LIST.get(blockId);
     }
 }

@@ -23,18 +23,17 @@
 package com.github.dirtpowered.dirtmv.data.transformers.block;
 
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class ItemBlockDataTransformer {
 
     @Getter
-    private Map<Integer, Block> blockReplacementsMap = new HashMap<>();
+    private final Int2ObjectMap<Block> blockReplacementsMap = new Int2ObjectOpenHashMap<>();
 
     @Getter
-    private Map<Integer, Block> itemReplacementsMap = new HashMap<>();
+    private final Int2ObjectMap<Block> itemReplacementsMap = new Int2ObjectOpenHashMap<>();
 
     protected ItemBlockDataTransformer() {
         registerReplacements();

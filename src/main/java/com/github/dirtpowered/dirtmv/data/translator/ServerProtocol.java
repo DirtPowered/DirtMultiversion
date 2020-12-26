@@ -28,20 +28,21 @@ import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeObject;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Getter
 public abstract class ServerProtocol implements ConnectionHandler {
-    private Map<TranslatorKeyObj, PacketTranslator> registeredTranslators = new HashMap<>();
+    private final Object2ObjectMap<TranslatorKeyObj, PacketTranslator> registeredTranslators;
     private MinecraftVersion from;
     private MinecraftVersion to;
 
     public ServerProtocol(MinecraftVersion from, MinecraftVersion to) {
+        this.registeredTranslators = new Object2ObjectOpenHashMap<>();
+        ;
         this.from = from;
         this.to = to;
 

@@ -22,11 +22,11 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk;
 
-import java.util.ArrayList;
-import java.util.List;
+import it.unimi.dsi.fastutil.longs.LongArraySet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 
 public class LoadedChunkTracker {
-    private List<Long> loadedChunks = new ArrayList<>();
+    private final LongSet loadedChunks = new LongArraySet();
 
     public void setChunkLoaded(int chunkX, int chunkZ) {
         loadedChunks.add(getKey(chunkX, chunkZ));
