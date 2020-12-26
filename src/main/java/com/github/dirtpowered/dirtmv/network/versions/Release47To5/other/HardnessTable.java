@@ -48,7 +48,9 @@ public enum HardnessTable {
     WOOD_STAIRS(53, 2.0F, false, -1),
     WORKBENCH(58, 2.5F, false, -1),
     IRON_DOOR_BLOCK(71, 5.0F, false, 278, 257, 274, 270, 285),
-    SOUL_SAND(88, 0.5F, false, 277, 256, 284, 273);
+    SOUL_SAND(88, 0.5F, false, 277, 256, 284, 273),
+    SIGN_POST(63, 1.0F, false, -1),
+    WALL_SIGN(68, 1.0F, false, -1);
 
     private final int blockId;
     private final float oldHardness;
