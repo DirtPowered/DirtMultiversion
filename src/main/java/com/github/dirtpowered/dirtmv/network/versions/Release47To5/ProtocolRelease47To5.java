@@ -44,6 +44,7 @@ import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.DataFixers;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
@@ -204,7 +205,15 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 for (int i = 0; i < blockArray.getRecordCount(); i++) {
                     try {
-                        blockChangeRecords[i] = new BlockChangeRecord(dis.readShort(), dis.readShort());
+                        short pos = dis.readShort();
+                        short packedBlock = dis.readShort();
+
+                        int blockId = packedBlock >> 4;
+                        int blockData = packedBlock & 15;
+
+                        blockData = DataFixers.getCorrectedDataFor(blockId, blockData);
+
+                        blockChangeRecords[i] = new BlockChangeRecord(pos, (short) (blockId & 4095) << 4 | blockData & 15);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -230,9 +239,14 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 short y = data.read(Type.UNSIGNED_BYTE, 1);
                 int z = data.read(Type.INT, 2);
 
+                int blockId = data.read(Type.VAR_INT, 3) << 4;
+                int blockData = data.read(Type.UNSIGNED_BYTE, 4) & 15;
+
+                blockData = DataFixers.getCorrectedDataFor(blockId, blockData);
+
                 return PacketUtil.createPacket(0x23, new TypeHolder[]{
                         set(Type.LONG, toBlockPosition(x, y, z)),
-                        set(Type.VAR_INT, data.read(Type.VAR_INT, 3) << 4 | (data.read(Type.UNSIGNED_BYTE, 4) & 15))
+                        set(Type.VAR_INT, blockId | blockData)
                 });
             }
         });

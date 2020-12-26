@@ -96,9 +96,12 @@ public class V1_3ToV1_8ChunkTranslator extends PacketTranslator {
                 int y = j >> 8 & 15;
                 int z = j >> 4 & 15;
 
+                int blockId = blockArray[j] & 255;
                 int blockData = blockStorage.getBlockMetadataArray().getNibble(x, y, z);
 
-                char c = (char) (blockArray[j] << 4 | blockData);
+                blockData = DataFixers.getCorrectedDataFor(blockId, blockData);
+
+                char c = (char) (blockId << 4 | blockData);
                 data[totalSize++] = (byte) (c & 255);
                 data[totalSize++] = (byte) (c >> 8 & 255);
             }
