@@ -272,5 +272,38 @@ public class InventoryPackets extends ServerProtocol {
                 return data;
             }
         });
+
+        // window property
+        addTranslator(0x31, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                int property = data.read(Type.SHORT, 1);
+
+                switch (property) {
+                    case 0:
+                        property = 2;
+                        PacketData windowProperty = PacketUtil.createPacket(0x31, new TypeHolder[]{
+                                data.read(0),
+                                set(Type.SHORT, (short) 3),
+                                set(Type.SHORT, (short) 200)
+                        });
+                        session.sendPacket(windowProperty, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                        break;
+                    case 1:
+                        property = 0;
+                        break;
+                    case 2:
+                        property = 1;
+                        break;
+                }
+
+                return PacketUtil.createPacket(0x31, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.SHORT, property),
+                        data.read(2)
+                });
+            }
+        });
     }
 }
