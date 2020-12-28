@@ -35,6 +35,7 @@ import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.EncryptionUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.*;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model.AbstractEntity;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.item.CreativeItemList;
@@ -860,31 +861,68 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                byte type = data.read(Type.BYTE, 3);
+                int x = data.read(Type.INT, 0);
+                int y = data.read(Type.SHORT, 1);
+                int z = data.read(Type.INT, 2);
 
-                short blockId = 0;
+                byte type = data.read(Type.BYTE, 3);
+                byte pitch = data.read(Type.BYTE, 4);
+
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+
+                short blockId;
+
+                if (!storage.hasObject(BlockStorage.class)) {
+                    blockId = 25;
+                } else {
+                    BlockStorage blockStorage = storage.get(BlockStorage.class);
+                    // TODO: use local block storage
+                    assert blockStorage != null;
+
+                    blockId = (short) blockStorage.getBlockAt(x, y, z);
+                }
+
+                WorldSound worldSound;
 
                 switch (type) {
                     case 0:
+                        if (blockId == 33 || blockId == 29) {
+                            worldSound = WorldSound.PISTON_OUT;
+                        } else {
+                            worldSound = WorldSound.NOTE_HARP;
+                        }
                         break;
                     case 1:
+                        if (blockId == 54) {
+                            if (pitch == 1) {
+                                worldSound = WorldSound.CHEST_OPEN;
+                            } else {
+                                worldSound = WorldSound.CHEST_CLOSE;
+                            }
+                        } else if (blockId == 33 || blockId == 29) {
+                            worldSound = WorldSound.PISTON_IN;
+                        } else {
+                            worldSound = WorldSound.NOTE_BASS_ATTACK;
+                        }
                         break;
                     case 2:
-                        blockId = 25; // noteblock
+                        worldSound = WorldSound.NOTE_SNARE;
                         break;
                     case 3:
-                        blockId = 25;
+                        worldSound = WorldSound.NOTE_HAT;
                         break;
                     case 4:
-                        blockId = 25;
+                        worldSound = WorldSound.NOTE_CLICK;
                         break;
                     default:
-                        blockId = 25;
+                        worldSound = WorldSound.NOTE_HARP;
                         break;
                 }
 
-                // TODO: Chunk cache
-                return PacketUtil.createPacket(0x36, new TypeHolder[] {
+                float correctedPitch = (float) (0.5f * (Math.pow(2, pitch / 12.0f)));
+                WorldEntityEvent.playSoundAt(session, new Location(x, y, z), worldSound, 1.33f, correctedPitch);
+
+                return PacketUtil.createPacket(0x36, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),

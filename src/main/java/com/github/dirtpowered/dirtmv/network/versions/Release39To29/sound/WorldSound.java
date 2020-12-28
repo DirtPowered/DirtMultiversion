@@ -23,6 +23,15 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound;
 
 public enum WorldSound {
+    NOTE_SNARE("note.snare"),
+    NOTE_HAT("note.hat"),
+    NOTE_CLICK("note.bd"),
+    NOTE_HARP("note.harp"),
+    NOTE_BASS_ATTACK("note.bassattack"),
+    PISTON_OUT("tile.piston.out"),
+    PISTON_IN("tile.piston.in"),
+    CHEST_OPEN("random.chestopen"),
+    CHEST_CLOSE("random.chestclosed"),
     RANDOM_FUSE("random.fuse"),
     RANDOM_EXPLODE("random.explode"),
     RANDOM_POP("random.pop"),
