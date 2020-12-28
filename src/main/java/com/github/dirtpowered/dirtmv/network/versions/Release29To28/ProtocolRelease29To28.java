@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
@@ -67,6 +68,31 @@ public class ProtocolRelease29To28 extends ServerProtocol {
 
                 // cancel packet
                 return new PacketData(-1);
+            }
+        });
+
+        // window click
+        addTranslator(0x66, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                // 1.2.5 introduced shift-clicking support in furnaces. We have to block that action
+                int windowId = data.read(Type.BYTE, 0);
+                boolean shiftClick = (data.read(Type.BYTE, 4) == 1);
+                ItemStack item = data.read(Type.V1_0R_ITEM, 5);
+
+                if (shiftClick && windowId != 0 /* generic inventory */) {
+                    item.setItemId(999); // sending invalid item will cancel any inventory interaction
+                }
+
+                return PacketUtil.createPacket(0x66, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        data.read(3),
+                        data.read(4),
+                        set(Type.V1_0R_ITEM, item)
+                });
             }
         });
     }
