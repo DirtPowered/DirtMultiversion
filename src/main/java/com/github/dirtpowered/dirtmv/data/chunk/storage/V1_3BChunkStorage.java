@@ -27,21 +27,20 @@ import com.github.dirtpowered.dirtmv.data.chunk.NibbleArray;
 import lombok.Getter;
 
 public class V1_3BChunkStorage implements Chunk {
-
-    private final static byte[] EMPTY_CHUNK = new byte[16 * 16 * 128];
-
-    private byte[] blockArray;
-    private NibbleArray blockDataArray;
-    private NibbleArray blockLightArray;
-    private NibbleArray skyLightArray;
+    private final byte[] blockArray;
+    private final NibbleArray blockDataArray;
+    private final NibbleArray blockLightArray;
+    private final NibbleArray skyLightArray;
 
     @Getter
-    private int chunkX;
+    private final int chunkX;
 
     @Getter
-    private int chunkZ;
+    private final int chunkZ;
 
     public V1_3BChunkStorage(int chunkX, int chunkZ) {
+        byte[] EMPTY_CHUNK = new byte[16 * 16 * 128];
+
         this.blockArray = EMPTY_CHUNK;
         this.blockDataArray = new NibbleArray(EMPTY_CHUNK.length);
         this.blockLightArray = new NibbleArray(EMPTY_CHUNK.length);
