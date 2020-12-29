@@ -40,7 +40,12 @@ import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.Vehic
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_5RTo1_6RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
+import com.google.common.collect.ImmutableList;
 import lombok.extern.log4j.Log4j2;
+import net.kyori.adventure.nbt.BinaryTagTypes;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.DoubleBinaryTag;
+import net.kyori.adventure.nbt.ListBinaryTag;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,8 +53,8 @@ import java.util.Map;
 @Log4j2
 public class ProtocolRelease73To61 extends ServerProtocol {
 
-    private SoundRemapper soundRemapper;
-    private V1_5RTo1_6RMetadataTransformer metadataTransformer;
+    private final SoundRemapper soundRemapper;
+    private final V1_5RTo1_6RMetadataTransformer metadataTransformer;
 
     public ProtocolRelease73To61() {
         super(MinecraftVersion.R1_6_1, MinecraftVersion.R1_5_2);
@@ -333,6 +338,69 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                         data.read(3),
                         data.read(4),
                         data.read(5),
+                });
+            }
+        });
+
+        // set slot
+        addTranslator(0x67, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack itemStack = data.read(Type.V1_3R_ITEM, 2);
+
+                if (itemStack != null) {
+                    ListBinaryTag listTag = ListBinaryTag.of(BinaryTagTypes.DOUBLE, ImmutableList.of(DoubleBinaryTag.of(0.0D)));
+                    CompoundBinaryTag binaryTag = itemStack.getCompoundTag();
+
+                    if (binaryTag != null) {
+                        binaryTag.put("AttributeModifiers", listTag);
+                    } else {
+                        CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder().put("AttributeModifiers", listTag);
+                        binaryTag = builder.build();
+                    }
+
+                    itemStack.setCompoundTag(binaryTag);
+                }
+
+                return PacketUtil.createPacket(0x67, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        set(Type.V1_3R_ITEM, itemStack)
+                });
+            }
+        });
+
+        // window items
+        addTranslator(0x68, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack[] itemArray = data.read(Type.V1_3R_ITEM_ARRAY, 1);
+                ListBinaryTag listTag = ListBinaryTag.of(BinaryTagTypes.DOUBLE, ImmutableList.of(DoubleBinaryTag.of(0.0D)));
+
+                for (int i = 0; i < itemArray.length; i++) {
+                    ItemStack itemStack = itemArray[i];
+
+                    if (itemStack != null) {
+                        CompoundBinaryTag binaryTag = itemStack.getCompoundTag();
+
+                        if (binaryTag != null) {
+                            binaryTag.put("AttributeModifiers", listTag);
+                        } else {
+                            CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder().put("AttributeModifiers", listTag);
+                            binaryTag = builder.build();
+                        }
+
+                        itemStack.setCompoundTag(binaryTag);
+                    }
+
+                    itemArray[i] = itemStack;
+                }
+
+                return PacketUtil.createPacket(0x68, new TypeHolder[] {
+                        data.read(0),
+                        set(Type.V1_3R_ITEM_ARRAY, itemArray)
                 });
             }
         });
