@@ -107,9 +107,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                if (data.getObjects().length < 3)
-                    return new PacketData(-1);
-
                 String username = data.read(Type.STRING, 1);
                 session.getUserData().setUsername(username);
 

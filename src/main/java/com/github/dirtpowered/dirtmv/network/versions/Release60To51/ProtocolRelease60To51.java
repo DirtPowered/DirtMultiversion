@@ -49,9 +49,6 @@ public class ProtocolRelease60To51 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                if (data.getObjects().length < 3) {
-                    return new PacketData(-1);
-                }
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
                         set(Type.BYTE, 51),

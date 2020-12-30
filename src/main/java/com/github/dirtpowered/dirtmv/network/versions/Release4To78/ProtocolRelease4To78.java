@@ -175,7 +175,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                log.debug("received encryption packet");
                 UserData userData = session.getUserData();
                 String username = userData.getUsername();
 
