@@ -161,10 +161,10 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 });
 
                 userData.setUsername(username);
-                session.sendPacket(handshake, PacketDirection.CLIENT_TO_SERVER, getFrom());
+                session.sendPacket(handshake, PacketDirection.CLIENT_TO_SERVER, null);
 
                 // client command
-                session.sendPacket(clientCommand, PacketDirection.CLIENT_TO_SERVER, getFrom());
+                session.sendPacket(clientCommand, PacketDirection.CLIENT_TO_SERVER, null);
 
                 return new PacketData(-1);
             }
@@ -175,6 +175,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                log.debug("received encryption packet");
                 UserData userData = session.getUserData();
                 String username = userData.getUsername();
 

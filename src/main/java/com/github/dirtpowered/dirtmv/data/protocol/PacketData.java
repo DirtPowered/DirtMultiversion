@@ -24,8 +24,10 @@ package com.github.dirtpowered.dirtmv.data.protocol;
 
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
+import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 
@@ -37,8 +39,18 @@ public class PacketData {
     @Getter
     private TypeHolder[] objects;
 
+    @Getter
+    @Setter
+    private ProtocolState nettyState;
+
     public PacketData(int opCode, TypeHolder... objects) {
         this.opCode = opCode;
+        this.objects = objects;
+    }
+
+    public PacketData(int opCode, ProtocolState state, TypeHolder... objects) {
+        this.opCode = opCode;
+        this.nettyState = state;
         this.objects = objects;
     }
 

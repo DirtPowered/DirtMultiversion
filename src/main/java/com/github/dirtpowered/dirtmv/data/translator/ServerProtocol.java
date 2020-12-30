@@ -42,7 +42,6 @@ public abstract class ServerProtocol implements ConnectionHandler {
 
     public ServerProtocol(MinecraftVersion from, MinecraftVersion to) {
         this.registeredTranslators = new Object2ObjectOpenHashMap<>();
-        ;
         this.from = from;
         this.to = to;
 

@@ -115,13 +115,15 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         for (ServerProtocol protocol : protocols) {
             boolean isNetty = userData.getClientVersion().isNettyProtocol();
             ProtocolState state = isNetty ? userData.getProtocolState() : ProtocolState.PRE_NETTY;
+            if (target == null) {
+                return;
+            }
+
+            // packet queue workaround
+            state = packet.getNettyState() != null ? packet.getNettyState() : state;
 
             if (!protocol.getFrom().isNettyProtocol()) {
                 state = ProtocolState.PRE_NETTY;
-            }
-
-            if (target == null) {
-                return;
             }
 
             PacketTranslator translator = protocol.getTranslatorFor(target.getOpCode(), state, direction);
@@ -168,6 +170,8 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
                 return;
             }
 
+            // queued packets are always login packets
+            target.setNettyState(ProtocolState.LOGIN);
             initialPacketQueue.add(target);
         }
     }
@@ -314,7 +318,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         if (getClientSession() == null) {
             client.createClient(key, () -> {
                 while (!initialPacketQueue.isEmpty()) {
-                    sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, null);
+                    sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, userData.getClientVersion());
                 }
             });
         }
