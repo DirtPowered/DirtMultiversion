@@ -615,5 +615,8 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // custom payload
         addTranslator(0x3F, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+
+        // map data
+        addTranslator(0x34, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
     }
 }
