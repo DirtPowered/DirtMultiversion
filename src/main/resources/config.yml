@@ -1,0 +1,33 @@
+# DirtMultiVersion configuration file
+
+# Server version
+#
+# Allowed values:
+# B1_3, B1_4, B1_5, B1_6_6, B1_7_3, B1_8_1,
+# R1_0, R1_1, R1_2_1, R1_2_4, R1_3_1,
+# R1_4_6, R1_5_1, R1_5_2, R1_6_1, R1_6_2, R1_6_4
+server_version: "B1_7_3"
+# Address to listen for connections
+bind_address: "localhost"
+# Port to listen for connections
+bind_port: 25565
+# Remote server address
+remote_address: "localhost"
+# Remote server port
+remote_port: 25567
+# Max packets per second
+#
+# change that value when normal players
+# are getting disconnected by doing completely normal things
+max_packets_per_second: 150
+# Caches blocks only above Y 20 (for b1.7 servers)
+reduce_blockstorage_memory: true
+# Max connections to proxy (not server)
+max_proxy_connections: 20
+# MOTD for versions where Server Ping Protocol was not available
+prerelease_motd: "A Minecraft Server"
+# Visible max online in MOTD
+prerelease_motd_max_online: 20
+# Server icon (for all < 1.7 servers)
+# Use base64 string. Make sure the image is 64x64
+server_icon: ""
