@@ -38,6 +38,7 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.RotationUtil;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.SolidBlockList;
+import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.other.KeepAliveTask;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.HardnessTable;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
@@ -66,6 +67,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
         storage.set(BlockStorage.class, new BlockStorage());
         storage.set(PlayerTabListCache.class, new PlayerTabListCache());
+        storage.set(KeepAliveTask.class, new KeepAliveTask(session));
 
         session.broadcastPacket(createTabEntryPacket(session.getUserData().getUsername(), true), getFrom());
     }
@@ -77,6 +79,14 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
+        // keep-alive
+        addTranslator(0x00, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                return PacketUtil.createPacket(0x00, new TypeHolder[0]);
+            }
+        });
 
         // ping request
         addTranslator(0xFE, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
