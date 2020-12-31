@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Dirt Powered
+ * Copyright (c) 2020-2021 Dirt Powered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -270,15 +270,14 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     }
 
     public void disconnect(String message) {
-        if (message == null || message.isEmpty()) {
-            channel.close();
-        } else {
+        if (message != null && !message.isEmpty()) {
             log.warn("[{}] disconnected with message: {}", getLogTag(), message);
             sendDisconnectPacket(message);
         }
 
         initialPacketQueue.clear();
         packetQueue.clear();
+        channel.close();
     }
 
     private void sendDisconnectPacket(String message) {
