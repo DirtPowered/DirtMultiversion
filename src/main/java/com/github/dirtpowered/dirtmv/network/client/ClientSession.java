@@ -74,7 +74,10 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
 
             if (preNettyFlag || postNettyFlag) {
                 for (ServerProtocol t : serverSession.getMain().getTranslatorRegistry().getProtocols().values()) {
-                    t.onConnect(serverSession);
+
+                    if (serverSession.getUserData().getClientVersion().getRegistryId() >= t.getFrom().getRegistryId()) {
+                        t.onConnect(serverSession);
+                    }
                 }
 
                 stateLock = true;

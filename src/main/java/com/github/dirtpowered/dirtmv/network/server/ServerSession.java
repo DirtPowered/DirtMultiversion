@@ -207,7 +207,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, PacketData packetData) throws IOException {
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, PacketData packetData) {
         // client to server packets
         sendPacket(packetData, PacketDirection.CLIENT_TO_SERVER, null);
         packetCounter.getAndIncrement();
@@ -226,7 +226,10 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
         // notify other sessions
         for (ServerProtocol t : main.getTranslatorRegistry().getProtocols().values()) {
-            t.onDisconnect(this);
+
+            if (userData.getClientVersion().getRegistryId() >= t.getFrom().getRegistryId()) {
+                t.onDisconnect(this);
+            }
         }
 
         ClientSession clientSession = getClientSession();
