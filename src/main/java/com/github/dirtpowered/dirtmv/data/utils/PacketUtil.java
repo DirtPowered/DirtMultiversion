@@ -33,11 +33,10 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.utils.other.PreNettyPacketNames;
 import com.google.common.base.Preconditions;
-import lombok.extern.log4j.Log4j2;
+import org.pmw.tinylog.Logger;
 
 import java.io.IOException;
 
-@Log4j2
 public class PacketUtil {
 
     public static PacketData readModernPacket(MinecraftVersion ver, ProtocolState state, PacketInput buf, PacketDirection dir, int id) throws IOException {
@@ -45,7 +44,7 @@ public class PacketUtil {
         DataType[] parts = protocol.getStateDependedProtocol().getInstruction(id, state, dir);
 
         if (parts == null) {
-            log.warn("Unknown packet id {} ({}), state: {}, direction: {}", StringUtils.intToHexStr(id), id, state, dir);
+            Logger.warn("Unknown packet id {} ({}), state: {}, direction: {}", StringUtils.intToHexStr(id), id, state, dir);
 
             return new PacketData(0);
         }

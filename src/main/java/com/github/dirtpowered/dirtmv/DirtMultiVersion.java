@@ -68,8 +68,8 @@ import com.github.dirtpowered.dirtmv.session.MultiSession;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.util.ResourceLeakDetector;
 import lombok.Getter;
+import org.pmw.tinylog.Logger;
 
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -149,6 +149,7 @@ public class DirtMultiVersion implements Runnable {
 
             // release loop group
             loopGroup.shutdownGracefully();
+            Logger.info("bye!");
         }));
 
         new Server(this);
@@ -160,7 +161,6 @@ public class DirtMultiVersion implements Runnable {
     }
 
     public static void main(String... args) {
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
         new DirtMultiVersion();
     }
 

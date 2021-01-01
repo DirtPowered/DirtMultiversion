@@ -23,7 +23,7 @@
 package com.github.dirtpowered.dirtmv.config;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
-import lombok.extern.log4j.Log4j2;
+import org.pmw.tinylog.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
 
-@Log4j2
 public class YamlConfig implements Configuration {
     private Map<String, Object> objects;
 
@@ -76,7 +75,7 @@ public class YamlConfig implements Configuration {
         try {
             version = MinecraftVersion.valueOf(val);
         } catch (IllegalArgumentException e) {
-            log.error("invalid server version {}, stopping", val);
+            Logger.error("invalid server version {}, stopping", val);
             System.exit(0);
         }
         return version;

@@ -26,8 +26,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.IOUtils;
+import org.pmw.tinylog.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,7 +38,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-@Log4j2
 public class SoundRemapper {
 
     private static final Map<String, String> SOUND_MAPPINGS = new HashMap<>();
@@ -88,7 +87,7 @@ public class SoundRemapper {
                 }
             }
 
-            log.info("loaded {} sound replacements from '{}'", count, fileName);
+            Logger.info("loaded {} sound replacements from '{}'", count, fileName);
         } catch (Exception e) {
             e.printStackTrace();
         }

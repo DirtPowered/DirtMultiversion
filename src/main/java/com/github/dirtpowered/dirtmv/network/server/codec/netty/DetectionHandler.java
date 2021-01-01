@@ -32,9 +32,8 @@ import com.github.dirtpowered.dirtmv.network.server.codec.PacketEncoder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import lombok.extern.log4j.Log4j2;
+import org.pmw.tinylog.Logger;
 
-@Log4j2
 public class DetectionHandler extends ChannelInboundHandlerAdapter {
 
     private UserData userData;
@@ -52,7 +51,7 @@ public class DetectionHandler extends ChannelInboundHandlerAdapter {
             short packetId = buffer.readUnsignedByte();
 
             if (packetId != 0x02 && packetId != 0xFE) {
-                log.debug("detected client is netty-based, using modern pipeline");
+                Logger.debug("detected client is netty-based, using modern pipeline");
 
                 ctx.channel().pipeline()
                         .addAfter(ChannelConstants.DETECTION_HANDLER, ChannelConstants.NETTY_LENGTH_DECODER, new VarIntFrameDecoder())
@@ -61,7 +60,7 @@ public class DetectionHandler extends ChannelInboundHandlerAdapter {
                         .addAfter(ChannelConstants.NETTY_LENGTH_ENCODER, ChannelConstants.NETTY_PACKET_DECODER, new NettyPacketDecoder(main, userData, PacketDirection.CLIENT_TO_SERVER))
                         .addAfter(ChannelConstants.NETTY_PACKET_DECODER, ChannelConstants.NETTY_PACKET_ENCODER, new NettyPacketEncoder());
             } else {
-                log.debug("detected client is not netty-based");
+                Logger.debug("detected client is not netty-based");
 
                 ctx.channel().pipeline()
                         .addAfter(ChannelConstants.DETECTION_HANDLER, ChannelConstants.LEGACY_PING, new LegacyPingVersionHandler(userData))

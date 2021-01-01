@@ -41,12 +41,10 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release51To39.item.CreativeItemList;
 import io.netty.buffer.Unpooled;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 import java.util.*;
 
-@Log4j2
 public class ProtocolRelease51To39 extends ServerProtocol {
 
     private SoundRemapper soundRemapper;

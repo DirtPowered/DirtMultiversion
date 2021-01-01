@@ -48,7 +48,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import org.pmw.tinylog.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -61,7 +61,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Server to Client connection session
  */
-@Log4j2
 public class ServerSession extends SimpleChannelInboundHandler<PacketData> implements Tickable {
 
     @Getter
@@ -145,12 +144,12 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
                     if (target.getOpCode() == -1) {
                         if (state == ProtocolState.PRE_NETTY && debug) {
-                            log.debug("cancelling {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
+                            Logger.debug("cancelling {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
                         }
                         return;
                     }
                     if (state == ProtocolState.PRE_NETTY && debug) {
-                        log.debug("translating {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
+                        Logger.debug("translating {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
                     }
                 }
             }
@@ -271,7 +270,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     public void disconnect(String message) {
         if (message != null && !message.isEmpty()) {
-            log.warn("[{}] disconnected with message: {}", getLogTag(), message);
+            Logger.warn("[{}] disconnected with message: {}", getLogTag(), message);
             sendDisconnectPacket(message);
         }
 

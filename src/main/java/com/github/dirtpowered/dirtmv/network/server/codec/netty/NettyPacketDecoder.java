@@ -33,13 +33,12 @@ import com.github.dirtpowered.dirtmv.data.user.UserData;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import lombok.extern.log4j.Log4j2;
+import org.pmw.tinylog.Logger;
 
 import java.util.List;
 
 import static com.github.dirtpowered.dirtmv.data.utils.PacketUtil.readModernPacket;
 
-@Log4j2
 public class NettyPacketDecoder extends ByteToMessageDecoder {
 
     private PacketDirection packetDirection;
@@ -85,7 +84,7 @@ public class NettyPacketDecoder extends ByteToMessageDecoder {
 
         if (readableBytes > 0) {
             byteBuf.skipBytes(readableBytes);
-            log.warn("skipping {} bytes for packet id: {}, direction: {}", readableBytes, i, packetDirection);
+            Logger.warn("skipping {} bytes for packet id: {}, direction: {}", readableBytes, i, packetDirection);
         } else {
             list.add(packet);
         }

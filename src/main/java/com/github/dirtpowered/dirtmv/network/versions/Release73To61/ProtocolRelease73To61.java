@@ -41,16 +41,15 @@ import com.github.dirtpowered.dirtmv.network.versions.Release73To61.item.Creativ
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_5RTo1_6RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import com.google.common.collect.ImmutableList;
-import lombok.extern.log4j.Log4j2;
 import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.DoubleBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
+import org.pmw.tinylog.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Log4j2
 public class ProtocolRelease73To61 extends ServerProtocol {
 
     private final SoundRemapper soundRemapper;
@@ -243,7 +242,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 }
 
                 if (entityType == null) {
-                    log.warn("[{}] skipping translating metadata for {}. Entity is not tracked", session.getLogTag(), entityId);
+                    Logger.warn("[{}] skipping translating metadata for {}. Entity is not tracked", session.getLogTag(), entityId);
                     return new PacketData(-1);
                 }
 

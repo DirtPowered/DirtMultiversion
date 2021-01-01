@@ -46,11 +46,9 @@ import com.github.dirtpowered.dirtmv.network.versions.Release4To78.item.ItemRema
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import com.google.common.base.Charsets;
-import lombok.extern.log4j.Log4j2;
 
 import java.util.UUID;
 
-@Log4j2
 public class ProtocolRelease4To78 extends ServerProtocol {
 
     private SoundRemapper soundRemapper;
