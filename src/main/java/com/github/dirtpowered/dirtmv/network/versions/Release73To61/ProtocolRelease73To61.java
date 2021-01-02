@@ -40,14 +40,8 @@ import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.Vehic
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_5RTo1_6RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
-import com.google.common.collect.ImmutableList;
-import net.kyori.adventure.nbt.BinaryTagTypes;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.DoubleBinaryTag;
-import net.kyori.adventure.nbt.ListBinaryTag;
 import org.pmw.tinylog.Logger;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -335,72 +329,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                         data.read(3),
                         data.read(4),
                         data.read(5),
-                });
-            }
-        });
-
-        // set slot
-        addTranslator(0x67, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-                ItemStack itemStack = data.read(Type.V1_3R_ITEM, 2);
-
-                if (itemStack != null) {
-                    CompoundBinaryTag tag = CompoundBinaryTag.builder().put("", DoubleBinaryTag.of(0.0D)).build();
-                    ListBinaryTag listTag = ListBinaryTag.of(BinaryTagTypes.COMPOUND, ImmutableList.of(tag));
-
-                    CompoundBinaryTag binaryTag = itemStack.getCompoundTag();
-
-                    if (binaryTag != null) {
-                        binaryTag.put("AttributeModifiers", listTag);
-                    } else {
-                        CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder().put("AttributeModifiers", listTag);
-                        binaryTag = builder.build();
-                    }
-
-                    itemStack.setCompoundTag(binaryTag);
-                }
-
-                return PacketUtil.createPacket(0x67, new TypeHolder[] {
-                        data.read(0),
-                        data.read(1),
-                        set(Type.V1_3R_ITEM, itemStack)
-                });
-            }
-        });
-
-        // window items
-        addTranslator(0x68, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-                ItemStack[] itemArray = data.read(Type.V1_3R_ITEM_ARRAY, 1);
-                CompoundBinaryTag tag = CompoundBinaryTag.builder().put("", DoubleBinaryTag.of(0.0D)).build();
-                ListBinaryTag listTag = ListBinaryTag.of(BinaryTagTypes.COMPOUND, ImmutableList.of(tag));
-
-                for (int i = 0; i < itemArray.length; i++) {
-                    ItemStack itemStack = itemArray[i];
-
-                    if (itemStack != null) {
-                        CompoundBinaryTag binaryTag = itemStack.getCompoundTag();
-
-                        if (binaryTag != null) {
-                            binaryTag.put("AttributeModifiers", listTag);
-                        } else {
-                            CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder().put("AttributeModifiers", listTag);
-                            binaryTag = builder.build();
-                        }
-
-                        itemStack.setCompoundTag(binaryTag);
-                    }
-
-                    itemArray[i] = itemStack;
-                }
-
-                return PacketUtil.createPacket(0x68, new TypeHolder[] {
-                        data.read(0),
-                        set(Type.V1_3R_ITEM_ARRAY, itemArray)
                 });
             }
         });
