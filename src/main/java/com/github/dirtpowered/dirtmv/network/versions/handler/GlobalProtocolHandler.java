@@ -30,6 +30,7 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import org.pmw.tinylog.Logger;
 
 public class GlobalProtocolHandler extends ServerProtocol {
 
@@ -89,8 +90,6 @@ public class GlobalProtocolHandler extends ServerProtocol {
     }
 
     private void onChat(ServerSession session, String message) {
-        if (message.startsWith("/")) {
-            // TODO: command system
-        }
+        Logger.info("{}: {}", session.getUserData().getUsername(), message);
     }
 }

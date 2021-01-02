@@ -31,12 +31,11 @@ import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthrough;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthroughEncrypted;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolStateHandler;
 import com.github.dirtpowered.dirtmv.network.versions.handler.GlobalProtocolHandler;
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
+import org.pmw.tinylog.Logger;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TranslatorRegistry {
@@ -68,6 +67,8 @@ public class TranslatorRegistry {
         MinecraftVersion from = data.getClientVersion();
         Configuration c = main.getConfiguration();
 
+        GlobalProtocolHandler globalProtocolHandler = new GlobalProtocolHandler(from, versionTo);
+
         // check if translating is needed
         if (from == c.getServerVersion()) {
             ServerProtocol serverProtocol;
@@ -81,7 +82,7 @@ public class TranslatorRegistry {
                 serverProtocol = new ProtocolPassthrough(from, versionTo);
             }
 
-            return Collections.singletonList(serverProtocol);
+            return Arrays.asList(serverProtocol, globalProtocolHandler);
         } else {
             if (from.getRegistryId() < 39) {
                 serverProtocols.add(new ProtocolPassthrough(from, versionTo));
@@ -112,7 +113,7 @@ public class TranslatorRegistry {
         }
 
         // track packets in all protocols
-        serverProtocols.add(new GlobalProtocolHandler(from, versionTo));
+        serverProtocols.add(globalProtocolHandler);
 
         return serverProtocols;
     }
