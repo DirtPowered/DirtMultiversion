@@ -126,7 +126,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 float exp = data.read(Type.BYTE, 0).floatValue();
-                int level = data.read(Type.BYTE, 1).intValue();
+                short level = data.read(Type.BYTE, 1).shortValue();
 
                 exp = (exp - 1) / (10 * level);
 
