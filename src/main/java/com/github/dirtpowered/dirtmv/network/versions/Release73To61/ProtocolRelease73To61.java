@@ -40,13 +40,12 @@ import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.Vehic
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_5RTo1_6RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
-import com.google.common.collect.ImmutableList;
 import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.DoubleBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import org.pmw.tinylog.Logger;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -346,7 +345,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 ItemStack itemStack = data.read(Type.V1_3R_ITEM, 2);
 
                 if (itemStack != null) {
-                    ListBinaryTag listTag = ListBinaryTag.of(BinaryTagTypes.DOUBLE, ImmutableList.of(DoubleBinaryTag.of(0.0D)));
+                    ListBinaryTag listTag = ListBinaryTag.of(BinaryTagTypes.COMPOUND, Collections.emptyList());
                     CompoundBinaryTag binaryTag = itemStack.getCompoundTag();
 
                     if (binaryTag != null) {
@@ -373,7 +372,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 ItemStack[] itemArray = data.read(Type.V1_3R_ITEM_ARRAY, 1);
-                ListBinaryTag listTag = ListBinaryTag.of(BinaryTagTypes.DOUBLE, ImmutableList.of(DoubleBinaryTag.of(0.0D)));
+                ListBinaryTag listTag = ListBinaryTag.of(BinaryTagTypes.COMPOUND, Collections.emptyList());
 
                 for (int i = 0; i < itemArray.length; i++) {
                     ItemStack itemStack = itemArray[i];
