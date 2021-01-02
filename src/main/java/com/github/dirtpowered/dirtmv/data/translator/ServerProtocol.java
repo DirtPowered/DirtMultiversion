@@ -28,55 +28,59 @@ import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeObject;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.Getter;
 
-@Getter
 public abstract class ServerProtocol implements ConnectionHandler {
-    private final Object2ObjectMap<TranslatorKeyObj, PacketTranslator> registeredTranslators;
-    private MinecraftVersion from;
-    private MinecraftVersion to;
+    private final Long2ObjectMap<PacketTranslator> registeredTranslators;
+
+    @Getter
+    private final MinecraftVersion from;
+
+    @Getter
+    private final MinecraftVersion to;
 
     public ServerProtocol(MinecraftVersion from, MinecraftVersion to) {
-        this.registeredTranslators = new Object2ObjectOpenHashMap<>();
+        this.registeredTranslators = new Long2ObjectOpenHashMap<>();
         this.from = from;
         this.to = to;
 
         registerTranslators();
     }
 
+    private long toLongKey(long a, long b, long c) {
+        return (a << 32L) | (b << 16) | c;
+    }
+
     public abstract void registerTranslators();
 
     protected void addTranslator(int opCode, PacketDirection direction, PacketTranslator packetTranslator) {
-        TranslatorKeyObj obj = new TranslatorKeyObj(opCode, ProtocolState.PRE_NETTY, direction);
-
-        registeredTranslators.put(obj, packetTranslator);
+        long key = toLongKey(opCode, ProtocolState.PRE_NETTY.getStateId(), direction.getDirectionId());
+        registeredTranslators.put(key, packetTranslator);
     }
 
     protected void addTranslator(int opCode, ProtocolState state, PacketDirection direction, PacketTranslator packetTranslator) {
-        TranslatorKeyObj obj = new TranslatorKeyObj(opCode, state, direction);
-
-        registeredTranslators.put(obj, packetTranslator);
+        long key = toLongKey(opCode, state.getStateId(), direction.getDirectionId());
+        registeredTranslators.put(key, packetTranslator);
     }
 
     protected void addTranslator(int opCode, int opCodeTo, ProtocolState state, PacketDirection direction) {
-        TranslatorKeyObj obj = new TranslatorKeyObj(opCode, state, direction);
+        long key = toLongKey(opCode, state.getStateId(), direction.getDirectionId());
 
-        registeredTranslators.put(obj, new PacketTranslator() {
+        registeredTranslators.put(key, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-
                 return PacketUtil.createPacket(opCodeTo, data.getObjects());
             }
         });
     }
 
     public PacketTranslator getTranslatorFor(int opCode, ProtocolState state, PacketDirection direction) {
-        return registeredTranslators.get(new TranslatorKeyObj(opCode, state, direction));
+        long key = toLongKey(opCode, state.getStateId(), direction.getDirectionId());
+
+        return registeredTranslators.get(key);
     }
 
     public TypeHolder set(TypeObject type, Object obj) {
@@ -84,7 +88,7 @@ public abstract class ServerProtocol implements ConnectionHandler {
     }
 
     public void addGroup(ServerProtocol translators) {
-        registeredTranslators.putAll(translators.getRegisteredTranslators());
+        registeredTranslators.putAll(translators.registeredTranslators);
     }
 
     @Override
@@ -95,13 +99,5 @@ public abstract class ServerProtocol implements ConnectionHandler {
     @Override
     public void onDisconnect(ServerSession session) {
         // it will be overridden when needed
-    }
-
-    @AllArgsConstructor
-    @EqualsAndHashCode
-    private static class TranslatorKeyObj {
-        private int packetId;
-        private ProtocolState protocolState;
-        private PacketDirection packetDirection;
     }
 }

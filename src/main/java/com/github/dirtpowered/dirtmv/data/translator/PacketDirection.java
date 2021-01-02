@@ -22,6 +22,15 @@
 
 package com.github.dirtpowered.dirtmv.data.translator;
 
+import lombok.Getter;
+
 public enum PacketDirection {
-    SERVER_TO_CLIENT, CLIENT_TO_SERVER
+    SERVER_TO_CLIENT(0), CLIENT_TO_SERVER(1);
+
+    @Getter
+    private final int directionId;
+
+    PacketDirection(int directionId) {
+        this.directionId = directionId;
+    }
 }
