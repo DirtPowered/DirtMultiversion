@@ -326,7 +326,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     }
 
     private boolean hasServerPingProtocol() {
-        return main.getConfiguration().getServerVersion().getRegistryId() > 17;
+        return main.getConfiguration().getServerVersion().getRegistryId() >= 17;
     }
 
     public int getConnectionCount() {
