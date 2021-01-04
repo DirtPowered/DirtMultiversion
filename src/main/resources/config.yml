@@ -5,7 +5,7 @@
 # Allowed values:
 # B1_3, B1_4, B1_5, B1_6_6, B1_7_3, B1_8_1,
 # R1_0, R1_1, R1_2_1, R1_2_4, R1_3_1,
-# R1_4_6, R1_5_1, R1_5_2, R1_6_1, R1_6_2, R1_6_4
+# R1_4_6, R1_5_1, R1_5_2, R1_6_1, R1_6_2, R1_6_4, R1_7_2, R1_7_6
 server_version: "B1_7_3"
 # Address to listen for connections
 bind_address: "localhost"
