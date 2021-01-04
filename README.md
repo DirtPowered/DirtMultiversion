@@ -20,7 +20,7 @@ Proxy that allows connecting to almost all minecraft versions. Work in progress
 - [X] Release 1.6
 - [X] Release 1.7.2
 - [X] Release 1.7.10
-- [ ] Release 1.8
+- [X] Release 1.8
 
 ### Bugs
 - [x] all listed above protocols are unfinished, buggy
