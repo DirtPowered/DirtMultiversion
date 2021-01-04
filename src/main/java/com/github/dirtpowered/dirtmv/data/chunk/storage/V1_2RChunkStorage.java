@@ -93,6 +93,56 @@ public class V1_2RChunkStorage implements Chunk {
         columnStorage[y >> 4].setSkylightValue(x, y & 15, z, value);
     }
 
+    public void readChunk(boolean groundUp, int bitmapValue, byte[] data) {
+        int totalSize = 0;
+        for (int i = 0; i < columnStorage.length; ++i) {
+            if ((bitmapValue & 1 << i) != 0) {
+                if (columnStorage[i] == null) {
+                    columnStorage[i] = new ExtendedBlockStorage(skylight, false);
+                }
+
+                byte[] blockLSBArray = columnStorage[i].getBlockLSBArray();
+                System.arraycopy(data, totalSize, blockLSBArray, 0, blockLSBArray.length);
+                totalSize += blockLSBArray.length;
+            } else if (groundUp && columnStorage[i] != null) {
+                columnStorage[i] = null;
+            }
+        }
+
+        for (int i = 0; i < columnStorage.length; ++i) {
+            if ((bitmapValue & 1 << i) != 0 && columnStorage[i] != null) {
+                NibbleArray nibbleArray = columnStorage[i].getBlockMetadataArray();
+
+                System.arraycopy(data, totalSize, nibbleArray.getData(), 0, nibbleArray.getData().length);
+                totalSize += nibbleArray.getData().length;
+            }
+        }
+
+        for (int i = 0; i < columnStorage.length; ++i) {
+            if ((bitmapValue & 1 << i) != 0 && columnStorage[i] != null) {
+                NibbleArray nibbleArray = columnStorage[i].getBlockLightArray();
+
+                System.arraycopy(data, totalSize, nibbleArray.getData(), 0, nibbleArray.getData().length);
+                totalSize += nibbleArray.getData().length;
+            }
+        }
+
+        if (skylight) {
+            for (int i = 0; i < columnStorage.length; ++i) {
+                if ((bitmapValue & 1 << i) != 0 && columnStorage[i] != null) {
+                    NibbleArray nibbleArray = columnStorage[i].getSkylightArray();
+
+                    System.arraycopy(data, totalSize, nibbleArray.getData(), 0, nibbleArray.getData().length);
+                    totalSize += nibbleArray.getData().length;
+                }
+            }
+        }
+
+        if (groundUp) {
+            System.arraycopy(data, totalSize, biomeData, 0, biomeData.length);
+        }
+    }
+
     public byte[] getCompressedData(boolean groundUp, int bitmapValue) {
         int totalSize = 0;
         int primaryBitmap = bitmapValue;

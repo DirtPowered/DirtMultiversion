@@ -25,67 +25,54 @@ package com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk;
 import com.github.dirtpowered.dirtmv.data.chunk.ChunkUtils;
 import com.github.dirtpowered.dirtmv.data.chunk.storage.ExtendedBlockStorage;
 import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_2RChunkStorage;
-import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
-import com.github.dirtpowered.dirtmv.data.protocol.Type;
-import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8Chunk;
-import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
-import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
-import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class V1_3ToV1_8ChunkTranslator extends PacketTranslator {
+public class V1_3ToV1_8ChunkTranslator {
+    private final V1_2RChunkStorage chunkStorage;
+    private final int bitmapValue;
+    private final boolean groundUp;
+    private final boolean oldChunk;
 
-    @Override
-    public PacketData translate(ServerSession session, PacketData data) {
-        V1_2Chunk chunk = data.read(Type.V1_3_CHUNK, 0);
+    public V1_3ToV1_8ChunkTranslator(byte[] data, int bitmapValue, boolean skyLight, boolean groundUp) {
+        V1_2RChunkStorage chunkStorage = new V1_2RChunkStorage(skyLight, false, 0, 0);
+        this.bitmapValue = bitmapValue;
+        this.groundUp = groundUp;
+        this.oldChunk = false;
 
-        int chunkX = chunk.getChunkX();
-        int chunkZ = chunk.getChunkZ();
-
-        short bitmap = chunk.getPrimaryBitmap();
-        boolean groundUp = chunk.isGroundUp();
-
-        byte[] finalChunkData;
-
-        // use existing chunk storage (pre 1.2 servers)
-        if (chunk.getStorage() != null) {
-            finalChunkData = getChunkData(chunk.getStorage(), groundUp, bitmap);
-        } else {
-            finalChunkData = new byte[0];
-            // TODO: deserialize
-        }
-
-        V1_8Chunk newChunk = new V1_8Chunk(chunkX, chunkZ, groundUp, bitmap, finalChunkData);
-
-        return PacketUtil.createPacket(0x21, new TypeHolder[] {
-                new TypeHolder(Type.V1_8R_CHUNK, newChunk)
-        });
+        chunkStorage.readChunk(groundUp, bitmapValue, data);
+        this.chunkStorage = chunkStorage;
     }
 
-    private byte[] getChunkData(V1_2RChunkStorage storage, boolean groundUp, int bitmapValue) {
-        boolean skylight = storage.isSkylight();
-        byte[] biomes = storage.getBiomeData();
+    public V1_3ToV1_8ChunkTranslator(V1_2RChunkStorage storage, boolean groundUp, int bitmapValue) {
+        this.chunkStorage = storage;
+        this.groundUp = groundUp;
+        this.bitmapValue = bitmapValue;
+        this.oldChunk = true;
+    }
 
-        ExtendedBlockStorage[] columnStorage = storage.getColumnStorage();
-
+    public byte[] getChunkData() {
+        ExtendedBlockStorage[] columnStorage = chunkStorage.getColumnStorage();
         List<ExtendedBlockStorage> blockStorages = new ArrayList<>();
+
+        boolean skyLight = chunkStorage.isSkylight();
+        byte[] biomes = chunkStorage.getBiomeData();
+
         int columnBits = 0;
 
         for (int i = 0; i < columnStorage.length; ++i) {
             ExtendedBlockStorage extendedblockstorage = columnStorage[i];
-            if (extendedblockstorage != null && (!groundUp || !extendedblockstorage.isEmpty()) && (bitmapValue & 1 << i) != 0) {
+            boolean f = extendedblockstorage != null && oldChunk != columnStorage[i].isEmpty();
+
+            if (extendedblockstorage != null && (this.bitmapValue & 1 << i) != 0 && (!this.groundUp || f)) {
                 columnBits |= 1 << i;
 
                 blockStorages.add(extendedblockstorage);
             }
         }
 
-        byte[] data = new byte[ChunkUtils.calculateDataSize(Integer.bitCount(columnBits), skylight)];
-
+        byte[] data = new byte[ChunkUtils.calculateDataSize(Integer.bitCount(columnBits), skyLight)];
         int totalSize = 0;
 
         for (ExtendedBlockStorage blockStorage : blockStorages) {
@@ -111,13 +98,13 @@ public class V1_3ToV1_8ChunkTranslator extends PacketTranslator {
             totalSize = writeData(blockStorage.getBlockLightArray().getData(), data, totalSize);
         }
 
-        if (skylight) {
+        if (skyLight) {
             for (ExtendedBlockStorage blockStorage : blockStorages) {
                 totalSize = writeData(blockStorage.getSkylightArray().getData(), data, totalSize);
             }
         }
 
-        if (groundUp) {
+        if (this.groundUp) {
             totalSize = writeData(biomes, data, totalSize);
         }
 

@@ -36,5 +36,6 @@ public class V1_2Chunk {
     private short additionalBitmap;
     private int compressedDataSize;
     private byte[] data;
+    private byte[] uncompressedData;
     private V1_2RChunkStorage storage;
 }

@@ -26,10 +26,7 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockChangeRecord;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.OptionalPosition;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.GameProfile;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.Property;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.PlayerListEntry;
@@ -191,7 +188,81 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // chunk data
-        addTranslator(0x21, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new V1_3ToV1_8ChunkTranslator());
+        addTranslator(0x21, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                V1_2Chunk chunk = data.read(Type.V1_3_CHUNK, 0);
+
+                int chunkX = chunk.getChunkX();
+                int chunkZ = chunk.getChunkZ();
+
+                short bitmap = chunk.getPrimaryBitmap();
+                boolean groundUp = chunk.isGroundUp();
+
+                if (groundUp && bitmap == 0) {
+                    V1_8Chunk emptyChunk = new V1_8Chunk(chunkX, chunkZ, true, bitmap, new byte[0]);
+
+                    return PacketUtil.createPacket(0x21, new TypeHolder[]{
+                            new TypeHolder(Type.V1_8R_CHUNK, emptyChunk)
+                    });
+                }
+
+                V1_3ToV1_8ChunkTranslator chunkTransformer;
+                if (chunk.getStorage() != null) {
+                    // use existing chunk storage (pre 1.2 servers)
+                    chunkTransformer = new V1_3ToV1_8ChunkTranslator(chunk.getStorage(), groundUp, bitmap);
+                } else {
+                    chunkTransformer = new V1_3ToV1_8ChunkTranslator(chunk.getUncompressedData(), bitmap, true, groundUp);
+                }
+
+                V1_8Chunk newChunk = new V1_8Chunk(chunkX, chunkZ, groundUp, bitmap, chunkTransformer.getChunkData());
+
+                return PacketUtil.createPacket(0x21, new TypeHolder[]{
+                        new TypeHolder(Type.V1_8R_CHUNK, newChunk)
+                });
+            }
+        });
+
+        // chunk bulk
+        addTranslator(0x26, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                V1_3_4ChunkBulk oldChunkBulk = data.read(Type.V1_4CHUNK_BULK, 0);
+
+                int[] x = oldChunkBulk.getColumnX();
+                int[] z = oldChunkBulk.getColumnZ();
+
+                int columnAmount = oldChunkBulk.getChunks().length;
+
+                V1_3ToV1_8ChunkTranslator[] bulks = new V1_3ToV1_8ChunkTranslator[columnAmount];
+
+                for (int i = 0; i < columnAmount; i++) {
+                    bulks[i] = new V1_3ToV1_8ChunkTranslator(
+                            oldChunkBulk.getChunks()[i],
+                            oldChunkBulk.getPrimaryBitmaps()[i],
+                            oldChunkBulk.isSkylight(),
+                            true
+                    );
+                }
+
+                V1_8ChunkBulk.Chunk[] chunks = new V1_8ChunkBulk.Chunk[columnAmount];
+
+                for (int i = 0; i < columnAmount; i++) {
+                    chunks[i] = new V1_8ChunkBulk.Chunk();
+
+                    chunks[i].setData(bulks[i].getChunkData());
+                    chunks[i].setDataSize(oldChunkBulk.getPrimaryBitmaps()[i]);
+                }
+
+                V1_8ChunkBulk chunkBulk = new V1_8ChunkBulk(oldChunkBulk.isSkylight(), x, z, chunks);
+
+                return PacketUtil.createPacket(0x26, new TypeHolder[]{
+                        set(Type.V1_8R_CHUNK_BULK, chunkBulk)
+                });
+            }
+        });
 
         // multi block change
         addTranslator(0x22, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
@@ -226,9 +297,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 });
             }
         });
-
-        // chunk bulk
-        addTranslator(0x26, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // block change
         addTranslator(0x23, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {

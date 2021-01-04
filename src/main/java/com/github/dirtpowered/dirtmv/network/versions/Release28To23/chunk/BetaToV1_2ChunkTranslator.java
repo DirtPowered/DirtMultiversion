@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
-    private ItemBlockDataTransformer blockDataTransformer;
+    private final ItemBlockDataTransformer blockDataTransformer;
     private static final int BLOCK_CHANGE_CHUNK_SIZE = 128;
     private static final int MAX_SINGLE_BLOCK_UPDATE_PACKETS = 8;
 
@@ -131,6 +131,7 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                             (short) 0,
                             newChunkStorage.getCompressedSize(),
                             compressedData,
+                            new byte[0],
                             newChunkStorage
                     ))
             }), PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_2_1);
