@@ -31,11 +31,12 @@ import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthrough;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolPassthroughEncrypted;
 import com.github.dirtpowered.dirtmv.network.versions.ProtocolStateHandler;
 import com.github.dirtpowered.dirtmv.network.versions.handler.GlobalProtocolHandler;
-import com.google.common.collect.ImmutableList;
 import lombok.Getter;
-import org.pmw.tinylog.Logger;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TranslatorRegistry {
@@ -43,7 +44,7 @@ public class TranslatorRegistry {
     @Getter
     private final Map<Integer, ServerProtocol> protocols = new ConcurrentHashMap<>();
 
-    private DirtMultiVersion main;
+    private final DirtMultiVersion main;
 
     public TranslatorRegistry(DirtMultiVersion main) {
         this.main = main;

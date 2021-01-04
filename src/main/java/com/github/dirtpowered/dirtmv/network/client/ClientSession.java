@@ -86,8 +86,7 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        Logger.info("[{}] connected to remote server using {} client",
-                serverSession.getLogTag(), serverSession.getUserData().getClientVersion().getFriendlyName());
+        Logger.info("[{}] connected to remote server", serverSession.getLogTag());
         serverSession.getMain().getSessionRegistry().addSession(key, new MultiSession(this, serverSession));
 
         callback.onComplete();

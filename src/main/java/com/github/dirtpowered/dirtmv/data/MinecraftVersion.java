@@ -30,7 +30,7 @@ public enum MinecraftVersion {
     B1_5(11, false, "b1.5"),
     B1_6_6(13, false, "b1.6"),
     B1_7_3(14, false, "b1.7.3"),
-    B1_8_1(17, false, "b.1.8"),
+    B1_8_1(17, false, "b1.8"),
     R1_0(22, false, "1.0"),
     R1_1(23, false, "1.1"),
     R1_2_1(28, false, "1.2.1"),

@@ -39,10 +39,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class PacketDecoder extends ReplayingDecoder<PacketData> {
-
-    private PacketDirection packetDirection;
-    private UserData userData;
-    private DirtMultiVersion main;
+    private final PacketDirection packetDirection;
+    private final UserData userData;
+    private final DirtMultiVersion main;
 
     public PacketDecoder(DirtMultiVersion main, PacketDirection packetDirection, UserData userData) {
         this.packetDirection = packetDirection;
@@ -97,7 +96,6 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
 
             if (packetId == 0x01 /* login */) {
                 clientVersion = MinecraftVersion.fromRegistryId(buffer.readInt());
-
                 userData.setProtocolDetected(true);
             } else if (packetId == 0x02 /* handshake */) {
 
