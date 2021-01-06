@@ -30,6 +30,11 @@ import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.GameProfile;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.Property;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.PlayerListEntry;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListAction;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListEntry;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
@@ -43,7 +48,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.Entit
 import java.util.UUID;
 
 public class EntityPackets extends ServerProtocol {
-    private V1_7RTo1_8RMetadataTransformer metadataTransformer;
+    private final V1_7RTo1_8RMetadataTransformer metadataTransformer;
 
     EntityPackets() {
         super(MinecraftVersion.R1_8, MinecraftVersion.R1_7_6);
@@ -153,10 +158,20 @@ public class EntityPackets extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 UUID playerOfflineUUID = UUID.fromString(data.read(Type.V1_7_STRING, 1));
+                String username = data.read(Type.V1_7_STRING, 2);
+
                 WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 10);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
 
-                return PacketUtil.createPacket(0x0C, new TypeHolder[]{
+                TabListEntry tabAddListEntry = new TabListEntry(TabListAction.ADD_PLAYER, new PlayerListEntry[] {
+                        new PlayerListEntry(new GameProfile(playerOfflineUUID, username), new Property[0], 0, 0, null)
+                });
+
+                PacketData tabEntry = PacketUtil.createPacket(0x38, new TypeHolder[] {
+                        set(Type.TAB_LIST_ENTRY, tabAddListEntry)
+                });
+
+                PacketData playerSpawn = PacketUtil.createPacket(0x0C, new TypeHolder[]{
                         data.read(0),
                         set(Type.UUID, playerOfflineUUID),
                         data.read(4),
@@ -167,6 +182,14 @@ public class EntityPackets extends ServerProtocol {
                         data.read(9),
                         set(Type.V1_8R_METADATA, newMeta)
                 });
+
+                // seems that client overwrites old tab packet after sending a new one
+                session.sendPacket(tabEntry, PacketDirection.SERVER_TO_CLIENT, getFrom());
+
+                // send player spawn (right after tablist packet)
+                session.sendPacket(playerSpawn, PacketDirection.SERVER_TO_CLIENT, getFrom());
+
+                return new PacketData(-1);
             }
         });
 
