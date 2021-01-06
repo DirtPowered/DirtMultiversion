@@ -45,6 +45,8 @@ import com.github.dirtpowered.dirtmv.session.MultiSession;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ProtocolBeta17to14 extends ServerProtocol {
 
@@ -103,7 +105,22 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                         set(Type.STRING, message + "§" + online + "§" + max)
                 });
 
-                session.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                // Dear Mojang Devs!
+                // I wanna know who broke server latency calculation in release 1.8, really
+                if (session.getUserData().getClientVersion() == MinecraftVersion.R1_8) {
+                    new Timer().schedule(
+                            new TimerTask() {
+                                @Override
+                                public void run() {
+                                    session.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                                }
+                            },
+                            session.getMain().getSharedRandom().nextInt(70)
+                    );
+                } else {
+                    session.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                }
+
                 return new PacketData(-1); // cancel sending
             }
         });
