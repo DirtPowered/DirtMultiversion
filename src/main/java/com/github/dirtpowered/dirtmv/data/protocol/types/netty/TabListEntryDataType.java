@@ -29,11 +29,11 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProto
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.GameProfile;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.Property;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.PlayerListEntry;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListAction;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListEntry;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 import java.io.IOException;
 import java.util.UUID;

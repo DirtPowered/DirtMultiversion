@@ -30,8 +30,6 @@ import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.GameProfile;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.Property;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.PlayerListEntry;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListAction;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListEntry;
@@ -43,7 +41,10 @@ import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.metadata.V1_7RTo1_8RMetadataTransformer;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.GameProfileFetcher;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 import java.util.UUID;
 
@@ -54,6 +55,43 @@ public class EntityPackets extends ServerProtocol {
         super(MinecraftVersion.R1_8, MinecraftVersion.R1_7_6);
 
         metadataTransformer = new V1_7RTo1_8RMetadataTransformer();
+    }
+
+    private void refreshPlayerProfile(ServerSession session, GameProfile gameProfile, PacketData originalSpawn, PacketData translatedSpawn) {
+        UUID uniqueId = UUID.fromString(originalSpawn.read(Type.V1_7_STRING, 1));
+        int entityId = originalSpawn.read(Type.VAR_INT, 0);
+
+        GameProfile filledProfile = new GameProfile(uniqueId, gameProfile.getName());
+        filledProfile.getProperties().putAll(gameProfile.getProperties());
+
+        Property[] propertyArray = gameProfile.getProperties().values().toArray(new Property[0]);
+
+        TabListEntry tabRemoveListEntry = new TabListEntry(TabListAction.REMOVE_PLAYER, new PlayerListEntry[]{
+                new PlayerListEntry(new GameProfile(uniqueId, gameProfile.getName()), new Property[0], 0, 0, null)
+        });
+
+        PacketData removeTab = PacketUtil.createPacket(0x38, new TypeHolder[]{
+                set(Type.TAB_LIST_ENTRY, tabRemoveListEntry)
+        });
+
+        PacketData destroyPlayer = PacketUtil.createPacket(0x13, new TypeHolder[]{
+                set(Type.VAR_INT_ARRAY, new int[]{
+                        entityId
+                })
+        });
+
+        TabListEntry tabAddListEntry = new TabListEntry(TabListAction.ADD_PLAYER, new PlayerListEntry[]{
+                new PlayerListEntry(filledProfile, propertyArray, 0, 0, null)
+        });
+
+        PacketData addTab = PacketUtil.createPacket(0x38, new TypeHolder[]{
+                set(Type.TAB_LIST_ENTRY, tabAddListEntry)
+        });
+
+        session.sendPacket(removeTab, PacketDirection.SERVER_TO_CLIENT, getFrom());
+        session.sendPacket(destroyPlayer, PacketDirection.SERVER_TO_CLIENT, getFrom());
+        session.sendPacket(addTab, PacketDirection.SERVER_TO_CLIENT, getFrom());
+        session.sendPacket(translatedSpawn, PacketDirection.SERVER_TO_CLIENT, getFrom());
     }
 
     @Override
@@ -157,23 +195,15 @@ public class EntityPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                UUID playerOfflineUUID = UUID.fromString(data.read(Type.V1_7_STRING, 1));
+                UUID uniqueId = UUID.fromString(data.read(Type.V1_7_STRING, 1));
                 String username = data.read(Type.V1_7_STRING, 2);
 
                 WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 10);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
 
-                TabListEntry tabAddListEntry = new TabListEntry(TabListAction.ADD_PLAYER, new PlayerListEntry[] {
-                        new PlayerListEntry(new GameProfile(playerOfflineUUID, username), new Property[0], 0, 0, null)
-                });
-
-                PacketData tabEntry = PacketUtil.createPacket(0x38, new TypeHolder[] {
-                        set(Type.TAB_LIST_ENTRY, tabAddListEntry)
-                });
-
                 PacketData playerSpawn = PacketUtil.createPacket(0x0C, new TypeHolder[]{
                         data.read(0),
-                        set(Type.UUID, playerOfflineUUID),
+                        set(Type.UUID, uniqueId),
                         data.read(4),
                         data.read(5),
                         data.read(6),
@@ -183,11 +213,27 @@ public class EntityPackets extends ServerProtocol {
                         set(Type.V1_8R_METADATA, newMeta)
                 });
 
+                // create fake profile
+                GameProfile profile = new GameProfile(uniqueId, username);
+
+                TabListEntry tabAddListEntry = new TabListEntry(TabListAction.ADD_PLAYER, new PlayerListEntry[]{
+                        new PlayerListEntry(profile, new Property[0], 0, 0, null)
+                });
+
+                PacketData tabEntry = PacketUtil.createPacket(0x38, new TypeHolder[]{
+                        set(Type.TAB_LIST_ENTRY, tabAddListEntry)
+                });
+
                 // seems that client overwrites old tab packet after sending a new one
                 session.sendPacket(tabEntry, PacketDirection.SERVER_TO_CLIENT, getFrom());
 
                 // send player spawn (right after tablist packet)
                 session.sendPacket(playerSpawn, PacketDirection.SERVER_TO_CLIENT, getFrom());
+
+                // apply skin
+                GameProfileFetcher.getSkinFor(username).whenComplete((gameProfile, throwable) -> {
+                    refreshPlayerProfile(session, gameProfile, data, playerSpawn);
+                });
 
                 return new PacketData(-1);
             }

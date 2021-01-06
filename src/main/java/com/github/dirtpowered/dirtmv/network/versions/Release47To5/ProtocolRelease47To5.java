@@ -27,8 +27,6 @@ import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.GameProfile;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.Property;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.PlayerListEntry;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListAction;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListEntry;
@@ -51,6 +49,8 @@ import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.Hardnes
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;

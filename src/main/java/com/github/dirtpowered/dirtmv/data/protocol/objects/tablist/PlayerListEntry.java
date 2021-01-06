@@ -22,8 +22,8 @@
 
 package com.github.dirtpowered.dirtmv.data.protocol.objects.tablist;
 
-import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.GameProfile;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.profile.Property;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import lombok.Data;
 
 @Data
