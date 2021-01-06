@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk;
 
+import com.github.dirtpowered.dirtmv.config.Configuration;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.chunk.biome.OldChunkData;
 import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_2RChunkStorage;
@@ -146,6 +147,10 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                 return new PacketData(-1);
             }
 
+            Configuration c = session.getMain().getConfiguration();
+            boolean replaceChests = session.getUserData()
+                    .getClientVersion().getRegistryId() >= 39 && c.replaceChests();
+
             List<WorldBlock> worldBlocks = getUpdatedBlockList(
                     oldChunk.getX(),
                     oldChunk.getY(),
@@ -153,7 +158,8 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                     oldChunk.getXSize(),
                     oldChunk.getYSize(),
                     oldChunk.getZSize(),
-                    oldChunk.getChunk()
+                    oldChunk.getChunk(),
+                    replaceChests
             );
 
             int records = worldBlocks.size();
@@ -214,7 +220,7 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
         return new PacketData(-1);
     }
 
-    private List<WorldBlock> getUpdatedBlockList(int x, int y, int z, int xSize, int ySize, int zSize, byte[] packetData) {
+    private List<WorldBlock> getUpdatedBlockList(int x, int y, int z, int xSize, int ySize, int zSize, byte[] packetData, boolean replaceChests) {
         List<WorldBlock> worldBlocks = new ArrayList<>();
 
         int chunkX = x >> 4;
@@ -243,8 +249,12 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                     for (int posY = startY; posY < endY; posY++) {
                         for (int posZ = startZ; posZ < newZSize; posZ++) {
                             int oldBlockId = oldChunk.getBlockId(posX, posY, posZ);
-
                             int oldBlockData = oldChunk.getBlockData(posX, posY, posZ);
+
+                            if (oldBlockId == 54 && replaceChests) {
+                                oldBlockId = 130;
+                                oldBlockData = 2;
+                            }
 
                             Block b = blockDataTransformer.replaceBlock(oldBlockId, oldBlockData);
                             worldBlocks.add(new WorldBlock(x + (posX - startX), posY, z + (posZ - startZ), b.getBlockId(), b.getBlockData()));

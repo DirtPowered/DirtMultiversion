@@ -82,7 +82,12 @@ public interface Configuration {
     int getMaxConnections();
 
     /**
-     *  Max packets per second (default 200)
+     * Max packets per second (default 200)
      */
     int getMaxPacketsPerSecond();
+
+    /**
+     * Replace chests to ender chests to prevent rendering glitches (r1.3+)
+     */
+    boolean replaceChests();
 }

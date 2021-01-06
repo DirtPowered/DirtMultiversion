@@ -115,4 +115,9 @@ public class YamlConfig implements Configuration {
     public int getMaxPacketsPerSecond() {
         return (int) objects.getOrDefault("max_packets_per_second", 20);
     }
+
+    @Override
+    public boolean replaceChests() {
+        return (boolean) objects.getOrDefault("replace_chests", true);
+    }
 }
