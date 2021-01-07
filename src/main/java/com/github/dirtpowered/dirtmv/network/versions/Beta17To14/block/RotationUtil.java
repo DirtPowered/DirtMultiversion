@@ -76,6 +76,8 @@ public class RotationUtil {
                 }
             }
         } else {
+            blockData = 5;
+
             if (rot1 == CHEST_BLOCK) {
                 rot5 = blockStorage.getBlockAt(startX - 1, startY, startZ - 1);
             } else {
@@ -86,12 +88,6 @@ public class RotationUtil {
                 rot6 = blockStorage.getBlockAt(startX + 1, startY, startZ - 1);
             } else {
                 rot6 = blockStorage.getBlockAt(startX + 1, startY, startZ + 1);
-            }
-
-            if (SolidBlockList.isSolid(rot3) || SolidBlockList.isSolid(rot5)) {
-                if (!SolidBlockList.isSolid(rot4) && !SolidBlockList.isSolid(rot6)) {
-                    blockData = 5;
-                }
             }
 
             if (SolidBlockList.isSolid(rot4) || SolidBlockList.isSolid(rot6)) {
