@@ -384,12 +384,9 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                             int z = location.getZ();
 
                             byte rotation = RotationUtil.fixBlockRotation(session, chunk.getX() + x, chunk.getY() + y, chunk.getZ() + z);
-                            int blockDataOffset = 32768;
                             int blockLightOffset = 65536;
 
-                            setNibble(chunkData, x, y, z, rotation, blockDataOffset);
                             setNibble(chunkData, x, y, z, (byte) 8, blockLightOffset);
-
                             sendDelayedBlockUpdate(session, chunk.getX() + x, chunk.getY() + y, chunk.getZ() + z, rotation);
                         }
 
