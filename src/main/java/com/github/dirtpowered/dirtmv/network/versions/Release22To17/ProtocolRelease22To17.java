@@ -189,6 +189,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
                 double x = data.read(Type.DOUBLE, 0);
                 double y = data.read(Type.DOUBLE, 1);
+                double originalStance = data.read(Type.DOUBLE, 2);
                 double z = data.read(Type.DOUBLE, 3);
 
                 MovementTranslator.updateBoundingBox(session, new Location(x, y, z));
@@ -197,7 +198,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 return PacketUtil.createPacket(0x0D, new TypeHolder[] {
                         set(Type.DOUBLE, loc.getX()),
                         set(Type.DOUBLE, loc.getY()),
-                        set(Type.DOUBLE, loc.getY() + 1.6200000047683716D), // stance
+                        set(Type.DOUBLE, loc.getY() + (originalStance - y)), // stance
                         set(Type.DOUBLE, loc.getZ()),
                         data.read(4),
                         data.read(5),
