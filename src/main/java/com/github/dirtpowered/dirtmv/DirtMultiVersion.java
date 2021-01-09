@@ -80,11 +80,12 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class DirtMultiVersion implements Runnable {
     private final ExecutorService executorService;
-    private SessionRegistry sessionRegistry;
-    private TranslatorRegistry translatorRegistry;
-    private Random sharedRandom;
-    private Configuration configuration;
-    private EventLoopGroup loopGroup;
+    private final SessionRegistry sessionRegistry;
+    private final TranslatorRegistry translatorRegistry;
+    private final Random sharedRandom;
+    private final Configuration configuration;
+    private final EventLoopGroup loopGroup;
+    private final Server server;
 
     private DirtMultiVersion() {
         configuration = new YamlConfig();
@@ -135,6 +136,7 @@ public class DirtMultiVersion implements Runnable {
 
         sharedRandom = new Random();
         loopGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
+        server = new Server(this);
 
         setupGlobalTask();
 
@@ -149,10 +151,12 @@ public class DirtMultiVersion implements Runnable {
 
             // release loop group
             loopGroup.shutdownGracefully();
+            server.stop();
+
             Logger.info("bye!");
         }));
 
-        new Server(this);
+        server.bind();
     }
 
     private void setupGlobalTask() {

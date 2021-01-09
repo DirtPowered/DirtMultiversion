@@ -28,8 +28,5 @@ max_proxy_connections: 20
 prerelease_motd: "A Minecraft Server"
 # Visible max online in MOTD
 prerelease_motd_max_online: 20
-# Server icon (for all < 1.7 servers)
-# Use base64 string. Make sure the image is 64x64
-server_icon: ""
 # Replace chests to ender chests to prevent rendering glitches (r1.3+)
 replace_chests: true

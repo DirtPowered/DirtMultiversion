@@ -64,30 +64,34 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ServerSession extends SimpleChannelInboundHandler<PacketData> implements Tickable {
 
     @Getter
-    private DirtMultiVersion main;
+    private final DirtMultiVersion main;
 
     @Getter
-    private SocketChannel channel;
+    private final SocketChannel channel;
 
     @Getter
-    private UserData userData;
+    private final UserData userData;
 
-    private Client client;
-    private UUID key;
+    private final Client client;
+    private final UUID key;
 
-    private Queue<PacketData> initialPacketQueue = new LinkedBlockingQueue<>();
-    private Queue<QueuedPacket> packetQueue = new LinkedBlockingQueue<>();
-    private AtomicInteger packetCounter = new AtomicInteger();
+    private final Queue<PacketData> initialPacketQueue = new LinkedBlockingQueue<>();
+    private final Queue<QueuedPacket> packetQueue = new LinkedBlockingQueue<>();
+    private final AtomicInteger packetCounter = new AtomicInteger();
 
     private int currentTick = 0;
 
-    ServerSession(SocketChannel channel, DirtMultiVersion server) {
+    @Getter
+    private final Server server;
+
+    ServerSession(SocketChannel channel, DirtMultiVersion instance, Server server) {
         this.key = UUID.randomUUID();
 
         this.userData = new UserData();
         this.channel = channel;
-        this.main = server;
+        this.main = instance;
         this.client = new Client(this);
+        this.server = server;
     }
 
     /**

@@ -92,11 +92,6 @@ public class YamlConfig implements Configuration {
     }
 
     @Override
-    public String getServerIcon() {
-        return (String) objects.getOrDefault("server-icon", "");
-    }
-
-    @Override
     public boolean isDebugMode() {
         return false;
     }

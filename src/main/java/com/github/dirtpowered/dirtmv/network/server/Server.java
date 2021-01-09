@@ -36,29 +36,42 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import lombok.Getter;
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.pmw.tinylog.Logger;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.MessageFormat;
+
 public class Server {
-    private EventLoopGroup bossGroup = new NioEventLoopGroup();
-    private EventLoopGroup workerGroup = new NioEventLoopGroup();
-    private DirtMultiVersion main;
+    private final EventLoopGroup bossGroup = new NioEventLoopGroup();
+    private final EventLoopGroup workerGroup = new NioEventLoopGroup();
+    private final DirtMultiVersion main;
+    private final Server instance;
+
+    @Getter
+    private String serverIcon;
 
     public Server(DirtMultiVersion main) {
         this.main = main;
-        bind();
+        this.instance = this;
+
+        setupServerIcon();
     }
 
-    private void bind() {
+    public void bind() {
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel channel) {
-                        ServerSession serverSession = new ServerSession(channel, main);
-
+                        ServerSession serverSession = new ServerSession(channel, main, instance);
                         channel.pipeline().addFirst(ChannelConstants.CONNECTION_THROTTLE, new ConnectionLimiterHandler(main.getConfiguration()));
-
                         channel.pipeline().addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(
                                 main, serverSession.getUserData(), PacketDirection.CLIENT_TO_SERVER))
                                 .addLast(ChannelConstants.SERVER_HANDLER, serverSession);
@@ -78,7 +91,31 @@ public class Server {
         }
     }
 
-    private void stop() {
+    private void setupServerIcon() {
+        File file = new File("server-icon.png");
+
+        if (!file.exists()) {
+            Logger.warn("couldn't find {}", file.getName());
+        } else {
+            try {
+                BufferedImage image = ImageIO.read(file);
+                if (image.getHeight() != 64 && image.getWidth() != 64) {
+                    Logger.warn("image must be 64x64 pixels");
+                    return;
+                }
+
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                Base64OutputStream base64Stream = new Base64OutputStream(outputStream);
+                ImageIO.write(image, "png", base64Stream);
+
+                this.serverIcon = MessageFormat.format("data:image/png;base64,{0}", outputStream.toString("UTF-8"));
+            } catch (IOException e) {
+                Logger.warn("couldn't read {}", file.getName());
+            }
+        }
+    }
+
+    public void stop() {
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
 

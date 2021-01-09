@@ -22,7 +22,6 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release4To78;
 
-import com.github.dirtpowered.dirtmv.config.Configuration;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
@@ -123,10 +122,10 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 serverPing.setVersion(version);
                 serverPing.setPlayers(players);
 
-                Configuration configuration = session.getMain().getConfiguration();
+                String serverIcon = session.getServer().getServerIcon();
 
-                if (configuration.getServerIcon() != null && !configuration.getServerIcon().isEmpty()) {
-                    serverPing.setFavicon(session.getMain().getConfiguration().getServerIcon());
+                if (serverIcon != null && !serverIcon.isEmpty()) {
+                    serverPing.setFavicon(serverIcon);
                 }
 
                 return PacketUtil.createPacket(0x00, new TypeHolder[]{
