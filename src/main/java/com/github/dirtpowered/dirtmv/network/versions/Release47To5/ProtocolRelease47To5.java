@@ -594,6 +594,15 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 long encodedPosition = data.read(Type.LONG, 0);
 
                 BlockLocation l = fromBlockPosition(encodedPosition);
+                ItemStack itemStack = data.read(Type.V1_8R_ITEM, 2);
+
+                if (itemStack.getItemId() == 387 /* written book */) {
+                    PacketData payload = PacketUtil.createPacket(0x3F, new TypeHolder[] {
+                            set(Type.V1_7_STRING, "MC|BOpen")
+                    });
+
+                    session.sendPacket(payload, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                }
 
                 return PacketUtil.createPacket(0x08, new TypeHolder[]{
                         set(Type.INT, l.getX()),
