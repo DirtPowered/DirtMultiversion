@@ -596,7 +596,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 BlockLocation l = fromBlockPosition(encodedPosition);
                 ItemStack itemStack = data.read(Type.V1_8R_ITEM, 2);
 
-                if (itemStack.getItemId() == 387 /* written book */) {
+                if (itemStack != null && itemStack.getItemId() == 387 /* written book */) {
                     PacketData payload = PacketUtil.createPacket(0x3F, new TypeHolder[] {
                             set(Type.V1_7_STRING, "MC|BOpen")
                     });
