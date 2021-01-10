@@ -28,11 +28,11 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtoco
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2.V1_2_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4.V1_4_6RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_5Team;
 import com.github.dirtpowered.dirtmv.data.protocol.types.scoreboard.V1_5RTeamDataType;
 
 public class V1_5RProtocol extends BaseProtocol {
-
-    public static final DataType TEAM;
+    public static final DataType<V1_5Team> TEAM;
 
     static {
         TEAM = new V1_5RTeamDataType();

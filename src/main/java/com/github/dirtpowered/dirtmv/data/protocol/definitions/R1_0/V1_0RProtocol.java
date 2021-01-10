@@ -26,13 +26,13 @@ import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.types.ItemArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.item.V1_0RItemDataType;
 
 public class V1_0RProtocol extends BaseProtocol {
-
-    public static final DataType ITEM;
-    public static final DataType ITEM_ARRAY;
+    public static final DataType<ItemStack> ITEM;
+    public static final DataType<ItemStack[]> ITEM_ARRAY;
 
     static {
         // custom instructions

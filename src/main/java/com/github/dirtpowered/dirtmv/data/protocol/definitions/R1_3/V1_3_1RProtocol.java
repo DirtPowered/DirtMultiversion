@@ -27,17 +27,19 @@ import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2.V1_2_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
 import com.github.dirtpowered.dirtmv.data.protocol.types.ItemArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.item.V1_3RItemDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_2_3RChunkDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_3_4RChunkBulkDataType;
 
 public class V1_3_1RProtocol extends BaseProtocol {
-
-    public static final DataType ITEM;
-    public static final DataType ITEM_ARRAY;
-    public final static DataType CHUNK;
-    public final static DataType CHUNK_BULK;
+    public static final DataType<ItemStack> ITEM;
+    public static final DataType<ItemStack[]> ITEM_ARRAY;
+    public final static DataType<V1_2Chunk> CHUNK;
+    public final static DataType<V1_3_4ChunkBulk> CHUNK_BULK;
 
     static {
         ITEM = new V1_3RItemDataType();

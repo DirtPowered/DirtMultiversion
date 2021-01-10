@@ -50,8 +50,8 @@ public class TabListEntryDataType extends DataType<TabListEntry> {
         PlayerListEntry[] entries = new PlayerListEntry[packetInput.readVarInt()];
 
         for (int i = 0; i < entries.length; i++) {
-            UUID uuid = (UUID) V1_8RProtocol.UUID.read(packetInput);
-            String username = (String) V1_7_2RProtocol.STRING.read(packetInput);
+            UUID uuid = V1_8RProtocol.UUID.read(packetInput);
+            String username = V1_7_2RProtocol.STRING.read(packetInput);
 
             GameProfile profile = action == TabListAction.ADD_PLAYER ? new GameProfile(uuid, username) : new GameProfile(uuid, null);
 
@@ -62,12 +62,12 @@ public class TabListEntryDataType extends DataType<TabListEntry> {
                 case ADD_PLAYER:
                     Property[] properties = new Property[packetInput.readVarInt()];
                     for (int j = 0; j < properties.length; j++) {
-                        String property = (String) V1_7_2RProtocol.STRING.read(packetInput);
-                        String value = (String) V1_7_2RProtocol.STRING.read(packetInput);
+                        String property = V1_7_2RProtocol.STRING.read(packetInput);
+                        String value = V1_7_2RProtocol.STRING.read(packetInput);
 
                         String signature = null;
                         if (packetInput.readBoolean()) {
-                            signature = (String) V1_7_2RProtocol.STRING.read(packetInput);
+                            signature = V1_7_2RProtocol.STRING.read(packetInput);
                         }
 
                         properties[j] = new Property(property, value, signature);
@@ -77,7 +77,7 @@ public class TabListEntryDataType extends DataType<TabListEntry> {
                     int ping = packetInput.readVarInt();
 
                     if (packetInput.readBoolean()) {
-                        displayName = (String) V1_7_2RProtocol.STRING.read(packetInput);
+                        displayName = V1_7_2RProtocol.STRING.read(packetInput);
                     }
 
                     listEntry = new PlayerListEntry(profile, properties, gameMode, ping, displayName);
@@ -90,7 +90,7 @@ public class TabListEntryDataType extends DataType<TabListEntry> {
                     break;
                 case UPDATE_DISPLAY_NAME:
                     if (packetInput.readBoolean()) {
-                        displayName = (String) V1_7_2RProtocol.STRING.read(packetInput);
+                        displayName = V1_7_2RProtocol.STRING.read(packetInput);
                     }
 
                     listEntry = new PlayerListEntry(profile, displayName);

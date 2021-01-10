@@ -40,7 +40,7 @@ public class V1_5RTeamDataType extends DataType<V1_5Team> {
 
     @Override
     public V1_5Team read(PacketInput packetInput) throws IOException {
-        String name = (String) BaseProtocol.STRING.read(packetInput);
+        String name = BaseProtocol.STRING.read(packetInput);
         int action = packetInput.readByte();
 
         String displayName = null;
@@ -52,25 +52,25 @@ public class V1_5RTeamDataType extends DataType<V1_5Team> {
 
         switch (action) {
             case 0:
-                displayName = (String) BaseProtocol.STRING.read(packetInput);
-                prefix = (String) BaseProtocol.STRING.read(packetInput);
-                suffix = (String) BaseProtocol.STRING.read(packetInput);
+                displayName = BaseProtocol.STRING.read(packetInput);
+                prefix = BaseProtocol.STRING.read(packetInput);
+                suffix = BaseProtocol.STRING.read(packetInput);
                 friendlyFire = packetInput.readByte();
                 players = new String[packetInput.readShort()];
 
-                for (int i = 0; i < players.length; i++) players[i] = (String) BaseProtocol.STRING.read(packetInput);
+                for (int i = 0; i < players.length; i++) players[i] = BaseProtocol.STRING.read(packetInput);
                 break;
             case 2:
-                displayName = (String) BaseProtocol.STRING.read(packetInput);
-                prefix = (String) BaseProtocol.STRING.read(packetInput);
-                suffix = (String) BaseProtocol.STRING.read(packetInput);
+                displayName = BaseProtocol.STRING.read(packetInput);
+                prefix = BaseProtocol.STRING.read(packetInput);
+                suffix = BaseProtocol.STRING.read(packetInput);
                 friendlyFire = packetInput.readByte();
                 break;
             case 3:
             case 4:
                 players = new String[packetInput.readShort()];
 
-                for (int i = 0; i < players.length; i++) players[i] = (String) BaseProtocol.STRING.read(packetInput);
+                for (int i = 0; i < players.length; i++) players[i] = BaseProtocol.STRING.read(packetInput);
                 break;
         }
 

@@ -83,7 +83,9 @@ public class Server {
         try {
             Configuration c = main.getConfiguration();
 
-            future = b.bind(c.getBindAddress(), c.getBindPort()).sync();
+            future = b.bind(c.getBindAddress(), c.getBindPort()).sync().addListener(callback -> {
+                Logger.info("ready for connections!");
+            });
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             Logger.error("address already in use: {}", e.getLocalizedMessage());

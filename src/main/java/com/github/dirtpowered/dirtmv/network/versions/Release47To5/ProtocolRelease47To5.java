@@ -26,6 +26,10 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
+import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.PlayerListEntry;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListAction;
@@ -51,6 +55,7 @@ import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import io.netty.buffer.Unpooled;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
@@ -490,6 +495,21 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // custom payload
+        addTranslator(0x3F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                byte[] bytes = data.read(Type.SHORT_BYTE_ARRAY, 1);
+
+                // TODO: TrList channel remap
+                return PacketUtil.createPacket(0x3F, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.READABLE_BYTES, bytes)
+                });
+            }
+        });
+
         // client packets
 
         // keep alive
@@ -662,6 +682,31 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // custom payload
+        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) throws IOException {
+                byte[] bytes = data.read(Type.READABLE_BYTES, 1);
+                String channel = data.read(Type.V1_7_STRING, 0);
+
+                if (channel.equals("MC|BEdit") || channel.equals("MC|BSign")) {
+                    NettyInputWrapper in = new NettyInputWrapper(Unpooled.wrappedBuffer(bytes));
+                    NettyOutputWrapper out = new NettyOutputWrapper(Unpooled.buffer());
+
+                    ItemStack compressedItem = V1_8RProtocol.ITEM.read(in);
+
+                    V1_3_1RProtocol.ITEM.write(new TypeHolder(Type.V1_3R_ITEM, compressedItem), out);
+                    bytes = out.array();
+                }
+
+                return PacketUtil.createPacket(0x17, new TypeHolder[]{
+                        data.read(0),
+                        set(Type.SHORT_BYTE_ARRAY, bytes)
+                });
+            }
+        });
+
         // player input
         addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
 
@@ -669,7 +714,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 byte status = data.read(Type.BYTE, 2);
 
-                return PacketUtil.createPacket(0x0C, new TypeHolder[] {
+                return PacketUtil.createPacket(0x0C, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.BOOLEAN, (status & 1) == 1),
@@ -680,9 +725,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // entity attributes
         addTranslator(0x20, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
-
-        // custom payload
-        addTranslator(0x3F, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
 
         // map data
         addTranslator(0x34, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);

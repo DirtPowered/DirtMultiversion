@@ -25,10 +25,11 @@ package com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_8;
 import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.types.item.V1_8BItemDataType;
 
 public class V1_8BProtocol extends BaseProtocol {
-    public static final DataType ITEM;
+    public static final DataType<ItemStack> ITEM;
 
     static {
         // custom instructions

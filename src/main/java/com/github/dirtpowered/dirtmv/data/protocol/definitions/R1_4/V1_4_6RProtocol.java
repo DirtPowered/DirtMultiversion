@@ -28,13 +28,14 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2.V1_2_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.MetadataDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_3_4RChunkBulkDataType;
 
 public class V1_4_6RProtocol extends BaseProtocol {
-
-    public final static DataType CHUNK_BULK;
-    public final static DataType METADATA;
+    public final static DataType<V1_3_4ChunkBulk> CHUNK_BULK;
+    public final static DataType<WatchableObject[]> METADATA;
 
     static {
         CHUNK_BULK = new V1_3_4RChunkBulkDataType(Type.V1_4CHUNK_BULK);

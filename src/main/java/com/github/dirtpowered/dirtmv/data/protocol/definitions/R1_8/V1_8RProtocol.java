@@ -26,31 +26,35 @@ import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListEntry;
 import com.github.dirtpowered.dirtmv.data.protocol.types.CompressedCompoundTagDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.ItemArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.MetadataDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.UseEntityDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.item.V1_8RItemDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.netty.ReadableBytesDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.TabListEntryDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.UuidDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.VarIntArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.V1_8RMultiBlockDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_8RChunkBulkDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_8RChunkDataType;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 public class V1_8RProtocol extends BaseProtocol {
-
-    public final static DataType CHUNK;
-    public final static DataType CHUNK_BULK;
-    public final static DataType UUID;
-    public final static DataType ITEM;
-    public final static DataType ITEM_ARRAY;
-    public final static DataType METADATA;
-    public final static DataType MULTIBLOCK_ARRAY;
-    public final static DataType OPTIONAL_POSITION;
-    public final static DataType VAR_INT_ARRAY;
-    public final static DataType TAB_LIST_ENTRY;
-    public final static DataType COMPRESSED_TAG;
+    public final static DataType<V1_8Chunk> CHUNK;
+    public final static DataType<V1_8ChunkBulk> CHUNK_BULK;
+    public final static DataType<java.util.UUID> UUID;
+    public final static DataType<ItemStack> ITEM;
+    public final static DataType<ItemStack[]> ITEM_ARRAY;
+    public final static DataType<WatchableObject[]> METADATA;
+    public final static DataType<BlockChangeRecord[]> MULTIBLOCK_ARRAY;
+    public final static DataType<OptionalPosition> OPTIONAL_POSITION;
+    public final static DataType<int[]> VAR_INT_ARRAY;
+    public final static DataType<TabListEntry> TAB_LIST_ENTRY;
+    public final static DataType<CompoundBinaryTag> COMPRESSED_TAG;
+    public final static DataType<byte[]> READABLE_BYTES;
 
     private static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
 
@@ -66,6 +70,7 @@ public class V1_8RProtocol extends BaseProtocol {
         VAR_INT_ARRAY = new VarIntArrayDataType();
         TAB_LIST_ENTRY = new TabListEntryDataType();
         COMPRESSED_TAG = new CompressedCompoundTagDataType();
+        READABLE_BYTES = new ReadableBytesDataType();
 
         STATE_DEPENDED_PROTOCOL = new V1_8ProtocolDefinitions();
     }

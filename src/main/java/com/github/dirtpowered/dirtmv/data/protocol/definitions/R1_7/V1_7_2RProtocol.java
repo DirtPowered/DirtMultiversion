@@ -26,6 +26,8 @@ import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.StateDependedProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_2EntityAttributes;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.protocol.types.ByteArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.MetadataDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.V1_6_2EntityAttributesDataType;
@@ -33,12 +35,11 @@ import com.github.dirtpowered.dirtmv.data.protocol.types.netty.V1_7StringDataTyp
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.VarIntDataType;
 
 public class V1_7_2RProtocol extends BaseProtocol {
-
-    public static final DataType VAR_INT;
-    public static final DataType STRING;
-    public static final DataType VAR_INT_BYTE_ARRAY;
-    public final static DataType METADATA;
-    public static final DataType ENTITY_ATTRIBUTES;
+    public static final DataType<Integer> VAR_INT;
+    public static final DataType<String> STRING;
+    public static final DataType<byte[]> VAR_INT_BYTE_ARRAY;
+    public final static DataType<WatchableObject[]> METADATA;
+    public static final DataType<V1_6_2EntityAttributes> ENTITY_ATTRIBUTES;
 
     public static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
 

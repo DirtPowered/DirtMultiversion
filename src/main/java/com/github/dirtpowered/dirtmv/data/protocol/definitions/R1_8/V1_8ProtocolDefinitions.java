@@ -213,6 +213,10 @@ public class V1_8ProtocolDefinitions extends StateDependedProtocol {
         });
 
         // custom payload
+        addPacket(0x17, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{
+                V1_7_2RProtocol.STRING, // channel name
+                V1_8RProtocol.READABLE_BYTES
+        });
 
         // spectate
         addPacket(0x18, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new DataType[]{

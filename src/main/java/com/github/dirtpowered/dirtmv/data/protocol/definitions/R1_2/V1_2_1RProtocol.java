@@ -27,13 +27,14 @@ import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_0.V1_0RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.V1_2RMultiBlockDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_2_3RChunkDataType;
 
 public class V1_2_1RProtocol extends BaseProtocol {
-
-    public final static DataType MULTIBLOCK_ARRAY;
-    public final static DataType CHUNK;
+    public final static DataType<V1_2MultiBlockArray> MULTIBLOCK_ARRAY;
+    public final static DataType<V1_2Chunk> CHUNK;
 
     static {
         // custom instructions

@@ -48,7 +48,7 @@ public class V1_6_1REntityAttributesDataType extends DataType<V1_6_1EntityAttrib
         Map<String, Double> attributes = new HashMap<>();
 
         for (int i = 0; i < attrCount; i++) {
-            attributes.put((String) BaseProtocol.STRING.read(packetInput), packetInput.readDouble());
+            attributes.put(BaseProtocol.STRING.read(packetInput), packetInput.readDouble());
         }
 
         return new V1_6_1EntityAttributes(entityId, attributes);

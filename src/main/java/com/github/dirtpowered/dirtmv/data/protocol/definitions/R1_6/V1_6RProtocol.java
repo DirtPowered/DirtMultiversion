@@ -29,11 +29,11 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2.V1_2_1RProto
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4.V1_4_6RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_5.V1_5RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.V1_6_1REntityAttributesDataType;
 
 public class V1_6RProtocol extends BaseProtocol {
-
-    public static final DataType ENTITY_ATTRIBUTES;
+    public static final DataType<V1_6_1EntityAttributes> ENTITY_ATTRIBUTES;
 
     static {
         ENTITY_ATTRIBUTES = new V1_6_1REntityAttributesDataType();

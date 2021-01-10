@@ -20,37 +20,29 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.protocol.io.model;
+package com.github.dirtpowered.dirtmv.data.protocol.types.netty;
 
-import io.netty.buffer.ByteBuf;
+import com.github.dirtpowered.dirtmv.data.protocol.DataType;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
+import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 
-public interface PacketInput {
+import java.io.IOException;
 
-    int readInt();
+public class ReadableBytesDataType extends DataType<byte[]> {
 
-    int readVarInt();
+    public ReadableBytesDataType() {
+        super(Type.READABLE_BYTES);
+    }
 
-    byte readByte();
+    @Override
+    public byte[] read(PacketInput packetInput) throws IOException {
+        return packetInput.readableBytes();
+    }
 
-    boolean readBoolean();
-
-    short readShort();
-
-    int readUnsignedShort();
-
-    short readUnsignedByte();
-
-    char readChar();
-
-    long readLong();
-
-    float readFloat();
-
-    double readDouble();
-
-    byte[] readBytes(int length);
-
-    byte[] readableBytes();
-
-    ByteBuf getBuffer();
+    @Override
+    public void write(TypeHolder typeHolder, PacketOutput packetOutput) throws IOException {
+        packetOutput.writeBytes((byte[]) typeHolder.getObject());
+    }
 }

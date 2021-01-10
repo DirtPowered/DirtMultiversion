@@ -25,6 +25,7 @@ package com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3;
 import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.DataType;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
 import com.github.dirtpowered.dirtmv.data.protocol.types.ItemArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.PositionArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.MetadataDataType;
@@ -34,13 +35,13 @@ import com.github.dirtpowered.dirtmv.data.protocol.types.world.V1_3BMultiBlockDa
 import com.github.dirtpowered.dirtmv.data.protocol.types.world.chunk.V1_3BChunkDataType;
 
 public class V1_3BProtocol extends BaseProtocol {
-    public static final DataType METADATA;
-    public static final DataType CHUNK;
-    public static final DataType ITEM;
-    public static final DataType ITEM_ARRAY;
-    public static final DataType POSITION_ARRAY;
-    public static final DataType MOTION;
-    public static final DataType MULTIBLOCK_ARRAY;
+    public static final DataType<WatchableObject[]> METADATA;
+    public static final DataType<V1_3BChunk> CHUNK;
+    public static final DataType<ItemStack> ITEM;
+    public static final DataType<ItemStack[]> ITEM_ARRAY;
+    public static final DataType<BlockLocation[]> POSITION_ARRAY;
+    public static final DataType<Motion> MOTION;
+    public static final DataType<V1_3BMultiBlockArray> MULTIBLOCK_ARRAY;
 
     static {
         // custom instructions
