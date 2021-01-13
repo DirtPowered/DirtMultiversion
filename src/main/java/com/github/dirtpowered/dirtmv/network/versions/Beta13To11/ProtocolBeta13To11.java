@@ -42,7 +42,7 @@ public class ProtocolBeta13To11 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // login
-        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -57,7 +57,7 @@ public class ProtocolBeta13To11 extends ServerProtocol {
         });
 
         // login
-        addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -72,7 +72,7 @@ public class ProtocolBeta13To11 extends ServerProtocol {
         });
 
         // respawn
-        addTranslator(0x09, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x09, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -81,7 +81,7 @@ public class ProtocolBeta13To11 extends ServerProtocol {
         });
 
         // respawn
-        addTranslator(0x09, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x09, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -92,7 +92,7 @@ public class ProtocolBeta13To11 extends ServerProtocol {
         });
 
         // vehicle spawn
-        addTranslator(0x17, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x17, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

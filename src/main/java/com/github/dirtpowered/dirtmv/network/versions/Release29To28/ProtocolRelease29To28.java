@@ -42,7 +42,7 @@ public class ProtocolRelease29To28 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // login
-        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -61,18 +61,18 @@ public class ProtocolRelease29To28 extends ServerProtocol {
         });
 
         // player abilities
-        addTranslator(0xCA, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0xCA, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
                 // cancel packet
-                return new PacketData(-1);
+                return cancel();
             }
         });
 
         // window click
-        addTranslator(0x66, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x66, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

@@ -46,7 +46,7 @@ public class KeepAliveTask implements Tickable {
 
             session.sendPacket(PacketUtil.createPacket(0x00, new TypeHolder[]{
                     new TypeHolder(Type.INT, rand)
-            }), PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.B1_8_1);
+            }), PacketDirection.TO_CLIENT, MinecraftVersion.B1_8_1);
         }
         currentTick++;
     }

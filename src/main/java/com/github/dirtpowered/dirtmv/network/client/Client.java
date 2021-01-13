@@ -67,7 +67,7 @@ public class Client {
             protected void initChannel(SocketChannel ch) {
                 ch.pipeline()
                         .addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(serverSession.getMain(),
-                                serverSession.getUserData(), PacketDirection.SERVER_TO_CLIENT))
+                                serverSession.getUserData(), PacketDirection.TO_CLIENT))
                         .addLast(ChannelConstants.CLIENT_HANDLER, new ClientSession(key, serverSession, ch, callback));
             }
         });

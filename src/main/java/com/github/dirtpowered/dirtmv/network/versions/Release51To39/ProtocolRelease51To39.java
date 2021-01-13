@@ -90,7 +90,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // login
-        addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -101,7 +101,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // respawn
-        addTranslator(0x09, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x09, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -112,7 +112,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // server ping request
-        addTranslator(0xFE, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0xFE, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -122,7 +122,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // kick disconnect
-        addTranslator(0xFF, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFF, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -142,7 +142,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // handshake
-        addTranslator(0x02, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x02, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -157,7 +157,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // client settings
-        addTranslator(0xCC, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0xCC, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -172,7 +172,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // map data
-        addTranslator(0x83, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x83, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -200,7 +200,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // update time
-        addTranslator(0x04, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x04, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -213,7 +213,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // vehicle spawn
-        addTranslator(0x17, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x17, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -232,7 +232,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // item spawn
-        addTranslator(0x15, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x15, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -265,19 +265,19 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         set(Type.V1_4R_METADATA, metadata.toArray(new WatchableObject[0]))
                 });
 
-                session.sendPacket(vehicleSpawn, PacketDirection.SERVER_TO_CLIENT, getFrom());
-                session.sendPacket(itemMetadata, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(vehicleSpawn, PacketDirection.TO_CLIENT, getFrom());
+                session.sendPacket(itemMetadata, PacketDirection.TO_CLIENT, getFrom());
 
-                return new PacketData(-1);
+                return cancel();
             }
         });
 
         // mob spawn
-        addTranslator(0x18, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x18, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                session.sendPacket(data, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(data, PacketDirection.TO_CLIENT, getFrom());
 
                 byte type = data.read(Type.BYTE, 1);
                 int itemId = 0;
@@ -298,15 +298,15 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                             set(Type.V1_3R_ITEM, itemStack)
                     });
 
-                    session.sendPacket(entityEquipment, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                    session.sendPacket(entityEquipment, PacketDirection.TO_CLIENT, getFrom());
                 }
 
-                return new PacketData(-1);
+                return cancel();
             }
         });
 
         // custom payload
-        addTranslator(0xFA, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFA, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @SneakyThrows
             @Override
@@ -349,7 +349,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // level sound
-        addTranslator(0x3E, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x3E, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -357,7 +357,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 String newSoundName = soundRemapper.getNewSoundName(soundName);
 
                 if (newSoundName.isEmpty())
-                    return new PacketData(-1);
+                    return cancel();
 
                 return PacketUtil.createPacket(0x3E, new TypeHolder[]{
                         set(Type.STRING, newSoundName),
@@ -371,7 +371,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // door change
-        addTranslator(0x3D, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x3D, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -388,7 +388,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // chunk bulk
-        addTranslator(0x38, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x38, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -403,7 +403,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // block place
-        addTranslator(0x0F, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x0F, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -429,7 +429,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // creative item get
-        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -451,7 +451,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
         });
 
         // spawn painting
-        addTranslator(0x19, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x19, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

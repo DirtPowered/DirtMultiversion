@@ -45,7 +45,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // handshake
-        addTranslator(0x02, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x02, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -60,7 +60,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
         });
 
         // open window
-        addTranslator(0x64, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x64, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -76,7 +76,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
         });
 
         // window click
-        addTranslator(0x66, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x66, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -118,8 +118,8 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                             set(Type.BYTE, (byte) 0)
                     });
 
-                    session.sendPacket(closeWindow, PacketDirection.SERVER_TO_CLIENT, getFrom());
-                    return new PacketData(-1);
+                    session.sendPacket(closeWindow, PacketDirection.TO_CLIENT, getFrom());
+                    return cancel();
                 }
 
                 // random item
@@ -128,7 +128,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                 ItemStack itemStack = item == null ? (slot < 0 ? null : i) : item;
 
                 if (itemStack == null && !clickingOutside)
-                    return new PacketData(-1);
+                    return cancel();
 
                 return PacketUtil.createPacket(0x66, new TypeHolder[] {
                         data.read(0),
@@ -142,7 +142,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
         });
 
         // vehicle spawn
-        addTranslator(0x17, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x17, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -184,7 +184,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
         });
 
         // creative item get
-        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

@@ -21,7 +21,7 @@ public class ProtocolRelease78To74 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // handshake
-        addTranslator(0x02, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x02, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -36,7 +36,7 @@ public class ProtocolRelease78To74 extends ServerProtocol {
         });
 
         // kick disconnect
-        addTranslator(0xFF, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFF, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

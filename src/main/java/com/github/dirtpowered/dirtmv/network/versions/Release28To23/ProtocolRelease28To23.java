@@ -68,7 +68,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // login
-        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -88,7 +88,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         });
 
         // login
-        addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -114,7 +114,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         });
 
         // pre chunk
-        addTranslator(0x32, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x32, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -134,10 +134,10 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         });
 
         // chunk
-        addTranslator(0x33, PacketDirection.SERVER_TO_CLIENT, new BetaToV1_2ChunkTranslator(blockDataTransformer));
+        addTranslator(0x33, PacketDirection.TO_CLIENT, new BetaToV1_2ChunkTranslator(blockDataTransformer));
 
         // multi block change
-        addTranslator(0x34, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x34, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -178,7 +178,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
                 assert chunkTracker != null;
                 if (!chunkTracker.isChunkLoaded(chunkX, chunkZ)) {
-                    return new PacketData(-1);
+                    return cancel();
                 }
 
                 return PacketUtil.createPacket(0x34, new TypeHolder[]{
@@ -190,7 +190,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         });
 
         // block change
-        addTranslator(0x35, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x35, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -205,7 +205,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
                 assert chunkTracker != null;
                 if (!chunkTracker.isChunkLoaded(chunkX, chunkZ)) {
-                    return new PacketData(-1);
+                    return cancel();
                 }
 
                 return PacketUtil.createPacket(0x35, new TypeHolder[]{
@@ -219,7 +219,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         });
 
         // mob spawn
-        addTranslator(0x18, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x18, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -239,7 +239,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         });
 
         // respawn
-        addTranslator(0x09, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x09, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -256,7 +256,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         });
 
         // respawn
-        addTranslator(0x09, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x09, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -272,7 +272,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         });
 
         // entity relative move look
-        addTranslator(0x21, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x21, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -282,13 +282,13 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                         data.read(4), // yaw
                 });
 
-                session.sendPacket(rotationPacket, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(rotationPacket, PacketDirection.TO_CLIENT, getFrom());
                 return data;
             }
         });
 
         // entity look
-        addTranslator(0x20, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x20, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -298,13 +298,13 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                         data.read(1),
                 });
 
-                session.sendPacket(rotationPacket, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(rotationPacket, PacketDirection.TO_CLIENT, getFrom());
                 return data;
             }
         });
 
         // door change
-        addTranslator(0x3D, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x3D, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -329,7 +329,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
         });
 
         // creative item get
-        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

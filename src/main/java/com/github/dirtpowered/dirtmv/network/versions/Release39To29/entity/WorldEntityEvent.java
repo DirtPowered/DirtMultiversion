@@ -102,6 +102,6 @@ public class WorldEntityEvent {
                 new TypeHolder(Type.UNSIGNED_BYTE, correctedPitch),
         });
 
-        session.sendPacket(namedSound, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_3_1);
+        session.sendPacket(namedSound, PacketDirection.TO_CLIENT, MinecraftVersion.R1_3_1);
     }
 }

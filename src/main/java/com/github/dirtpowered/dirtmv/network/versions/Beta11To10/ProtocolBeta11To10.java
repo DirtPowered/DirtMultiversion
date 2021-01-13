@@ -42,7 +42,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // handshake
-        addTranslator(0x02, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x02, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -54,7 +54,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
         });
 
         // handshake
-        addTranslator(0x02, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x02, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -66,7 +66,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
         });
 
         // login
-        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -82,7 +82,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
         });
 
         // login
-        addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -97,7 +97,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
         });
 
         // chat
-        addTranslator(0x03, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x03, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -109,7 +109,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
         });
 
         // chat
-        addTranslator(0x03, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x03, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -121,7 +121,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
         });
 
         // kick disconnect
-        addTranslator(0xFF, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFF, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -133,7 +133,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
         });
 
         // named entity spawn
-        addTranslator(0x14, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x14, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -152,7 +152,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
         });
 
         // spawn painting
-        addTranslator(0x19, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x19, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -169,7 +169,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
         });
 
         // update sign
-        addTranslator(0x82, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x82, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -187,7 +187,7 @@ public class ProtocolBeta11To10 extends ServerProtocol {
         });
 
         // window click
-        addTranslator(0x66, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x66, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

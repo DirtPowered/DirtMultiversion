@@ -57,14 +57,14 @@ public class DetectionHandler extends ChannelInboundHandlerAdapter {
                         .addAfter(ChannelConstants.DETECTION_HANDLER, ChannelConstants.NETTY_LENGTH_DECODER, new VarIntFrameDecoder())
                         .addAfter(ChannelConstants.NETTY_LENGTH_DECODER, ChannelConstants.NETTY_LENGTH_ENCODER, new VarIntFrameEncoder())
 
-                        .addAfter(ChannelConstants.NETTY_LENGTH_ENCODER, ChannelConstants.NETTY_PACKET_DECODER, new NettyPacketDecoder(main, userData, PacketDirection.CLIENT_TO_SERVER))
+                        .addAfter(ChannelConstants.NETTY_LENGTH_ENCODER, ChannelConstants.NETTY_PACKET_DECODER, new NettyPacketDecoder(main, userData, PacketDirection.TO_SERVER))
                         .addAfter(ChannelConstants.NETTY_PACKET_DECODER, ChannelConstants.NETTY_PACKET_ENCODER, new NettyPacketEncoder());
             } else {
                 Logger.debug("detected client is not netty-based");
 
                 ctx.channel().pipeline()
                         .addAfter(ChannelConstants.DETECTION_HANDLER, ChannelConstants.LEGACY_PING, new LegacyPingVersionHandler(userData))
-                        .addAfter(ChannelConstants.LEGACY_PING, ChannelConstants.LEGACY_DECODER, new PacketDecoder(main, PacketDirection.CLIENT_TO_SERVER, userData))
+                        .addAfter(ChannelConstants.LEGACY_PING, ChannelConstants.LEGACY_DECODER, new PacketDecoder(main, PacketDirection.TO_SERVER, userData))
                         .addAfter(ChannelConstants.LEGACY_DECODER, ChannelConstants.LEGACY_ENCODER, new PacketEncoder());
             }
         } catch (RuntimeException e) {

@@ -50,7 +50,7 @@ public class PipelineFactory extends ChannelInitializer {
 
     @Override
     protected void initChannel(Channel channel) {
-        if (packetDirection == PacketDirection.CLIENT_TO_SERVER) {
+        if (packetDirection == PacketDirection.TO_SERVER) {
             channel.pipeline()
                     .addFirst(ChannelConstants.DETECTION_HANDLER, new DetectionHandler(main, userData));
         } else {

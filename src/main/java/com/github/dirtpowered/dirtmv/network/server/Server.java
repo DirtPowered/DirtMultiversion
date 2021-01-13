@@ -73,7 +73,7 @@ public class Server {
                         ServerSession serverSession = new ServerSession(channel, main, instance);
                         channel.pipeline().addFirst(ChannelConstants.CONNECTION_THROTTLE, new ConnectionLimiterHandler(main.getConfiguration()));
                         channel.pipeline().addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(
-                                main, serverSession.getUserData(), PacketDirection.CLIENT_TO_SERVER))
+                                main, serverSession.getUserData(), PacketDirection.TO_SERVER))
                                 .addLast(ChannelConstants.SERVER_HANDLER, serverSession);
                     }
                 })

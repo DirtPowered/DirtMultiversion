@@ -82,7 +82,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // keep-alive
-        addTranslator(0x00, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x00, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -91,7 +91,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // ping request
-        addTranslator(0xFE, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0xFE, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -112,21 +112,21 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                             new TimerTask() {
                                 @Override
                                 public void run() {
-                                    session.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                                    session.sendPacket(packetData, PacketDirection.TO_CLIENT, getFrom());
                                 }
                             },
                             session.getMain().getSharedRandom().nextInt(70)
                     );
                 } else {
-                    session.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                    session.sendPacket(packetData, PacketDirection.TO_CLIENT, getFrom());
                 }
 
-                return new PacketData(-1); // cancel sending
+                return cancel(); // cancel sending
             }
         });
 
         // login
-        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -141,13 +141,13 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // login
-        addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 session.getMain().getSessionRegistry().getSessions().forEach((uuid, multiSession) -> {
                     String s = multiSession.getServerSession().getUserData().getUsername();
-                    session.queuePacket(createTabEntryPacket(s, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
+                    session.queuePacket(createTabEntryPacket(s, true), PacketDirection.TO_CLIENT, getFrom());
                 });
 
                 int max = session.getMain().getConfiguration().getMaxOnline();
@@ -167,7 +167,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // update health
-        addTranslator(0x08, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x08, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -181,7 +181,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // respawn
-        addTranslator(0x09, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x09, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -192,7 +192,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // respawn
-        addTranslator(0x09, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x09, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -207,7 +207,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // open window
-        addTranslator(0x64, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x64, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -222,7 +222,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // game state
-        addTranslator(0x46, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x46, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -235,14 +235,14 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // entity action
-        addTranslator(0x13, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x13, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 byte state = data.read(Type.BYTE, 1);
 
                 if (state == 5 || state == 4) { // sprinting (stop/start)
-                    return new PacketData(-1); // cancel sending
+                    return cancel(); // cancel sending
                 }
 
                 return data;
@@ -250,7 +250,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // named entity spawn
-        addTranslator(0x14, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x14, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -260,7 +260,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 if (!isConnectedThroughProxy(session.getMain(), username)) {
                     PlayerTabListCache cache = session.getUserData().getProtocolStorage().get(PlayerTabListCache.class);
                     if (cache != null) {
-                        session.sendPacket(createTabEntryPacket(username, true), PacketDirection.SERVER_TO_CLIENT, getFrom());
+                        session.sendPacket(createTabEntryPacket(username, true), PacketDirection.TO_CLIENT, getFrom());
                         cache.getTabPlayers().put(entityId, username);
                     }
                 }
@@ -269,7 +269,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // entity destroy
-        addTranslator(0x1D, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x1D, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -280,7 +280,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 if (cache != null && cache.getTabPlayers().containsKey(entityId)) {
                     String username = cache.getTabPlayers().get(entityId);
 
-                    session.sendPacket(createTabEntryPacket(username, false), PacketDirection.SERVER_TO_CLIENT, getFrom());
+                    session.sendPacket(createTabEntryPacket(username, false), PacketDirection.TO_CLIENT, getFrom());
                     cache.getTabPlayers().remove(entityId);
                 }
                 return data;
@@ -288,7 +288,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // block change
-        addTranslator(0x35, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x35, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -319,7 +319,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // unload chunk
-        addTranslator(0x32, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x32, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -340,7 +340,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         });
 
         // chunk data
-        addTranslator(0x33, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x33, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -411,7 +411,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 new TypeHolder(Type.BYTE, data)
         });
 
-        session.queuePacket(blockUpdate, PacketDirection.SERVER_TO_CLIENT, getFrom());
+        session.queuePacket(blockUpdate, PacketDirection.TO_CLIENT, getFrom());
     }
 
     private void setNibble(byte[] data, int x, int y, int z, byte value, int offset) {

@@ -40,6 +40,7 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.V1_7EntityTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.metadata.V1_7RTo1_8RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.GameProfileFetcher;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
@@ -88,20 +89,29 @@ public class EntityPackets extends ServerProtocol {
                 set(Type.TAB_LIST_ENTRY, tabAddListEntry)
         });
 
-        session.sendPacket(removeTab, PacketDirection.SERVER_TO_CLIENT, getFrom());
-        session.sendPacket(destroyPlayer, PacketDirection.SERVER_TO_CLIENT, getFrom());
-        session.sendPacket(addTab, PacketDirection.SERVER_TO_CLIENT, getFrom());
-        session.sendPacket(translatedSpawn, PacketDirection.SERVER_TO_CLIENT, getFrom());
+        session.sendPacket(removeTab, PacketDirection.TO_CLIENT, getFrom());
+        session.sendPacket(destroyPlayer, PacketDirection.TO_CLIENT, getFrom());
+        session.sendPacket(addTab, PacketDirection.TO_CLIENT, getFrom());
+        session.sendPacket(translatedSpawn, PacketDirection.TO_CLIENT, getFrom());
     }
 
     @Override
     public void registerTranslators() {
         // spawn mob
-        addTranslator(0x0F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x0F, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
                 EntityType entityType = EntityType.fromEntityTypeId(data.read(Type.BYTE, 1));
+
+                if (storage.hasObject(V1_7EntityTracker.class)) {
+                    V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
+                    int entityId = data.read(Type.VAR_INT, 0);
+
+                    assert tracker != null;
+                    tracker.addEntity(entityId, entityType);
+                }
 
                 WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 11);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(entityType, oldMeta);
@@ -124,23 +134,31 @@ public class EntityPackets extends ServerProtocol {
         });
 
         // entity metadata
-        addTranslator(0x1C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x1C, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                // get existing entity tracker (TODO: create if not exist)
-                ProtocolStorage protocolStorage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
 
-                if (!protocolStorage.hasObject(EntityTracker.class)) {
-                    return new PacketData(-1);
+                EntityType entityType = null;
+                int entityId = data.read(Type.INT, 0);
+
+                if (storage.hasObject(EntityTracker.class)) {
+                    EntityTracker tracker = storage.get(EntityTracker.class);
+
+                    assert tracker != null;
+                    entityType = tracker.getEntityById(entityId);
+                } else if (storage.hasObject(V1_7EntityTracker.class)) {
+                    V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
+
+                    assert tracker != null;
+                    entityType = tracker.getEntityById(entityId);
                 }
 
-                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
-                assert tracker != null;
+                if (entityType == null)
+                    return cancel();
 
-                EntityType entityType = tracker.getEntityById(data.read(Type.INT, 0));
                 WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 1);
-
                 WatchableObject[] watchableObjects = metadataTransformer.transformMetadata(entityType, oldMeta);
 
                 for (int i = 0; i < watchableObjects.length; i++) {
@@ -164,7 +182,7 @@ public class EntityPackets extends ServerProtocol {
         });
 
         // entity velocity
-        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -179,24 +197,43 @@ public class EntityPackets extends ServerProtocol {
         });
 
         // entity destroy
-        addTranslator(0x13, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x13, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                int[] entities = data.read(Type.BYTE_INT_ARRAY, 0);
 
+                if (storage.hasObject(V1_7EntityTracker.class)) {
+                    for (int entityId : entities) {
+                        V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
+
+                        assert tracker != null;
+                        tracker.removeEntity(entityId);
+                    }
+                }
                 return PacketUtil.createPacket(0x13, new TypeHolder[]{
-                        set(Type.VAR_INT_ARRAY, data.read(Type.BYTE_INT_ARRAY, 0))
+                        set(Type.VAR_INT_ARRAY, entities)
                 });
             }
         });
 
         // spawn player
-        addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
                 UUID uniqueId = UUID.fromString(data.read(Type.V1_7_STRING, 1));
                 String username = data.read(Type.V1_7_STRING, 2);
+
+                if (storage.hasObject(V1_7EntityTracker.class)) {
+                    V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
+                    int entityId = data.read(Type.VAR_INT, 0);
+
+                    assert tracker != null;
+                    tracker.addEntity(entityId, EntityType.HUMAN);
+                }
 
                 WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 10);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
@@ -225,22 +262,22 @@ public class EntityPackets extends ServerProtocol {
                 });
 
                 // seems that client overwrites old tab packet after sending a new one
-                session.sendPacket(tabEntry, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(tabEntry, PacketDirection.TO_CLIENT, getFrom());
 
                 // send player spawn (right after tablist packet)
-                session.sendPacket(playerSpawn, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(playerSpawn, PacketDirection.TO_CLIENT, getFrom());
 
                 // apply skin
                 GameProfileFetcher.getSkinFor(username).whenComplete((gameProfile, throwable) -> {
                     refreshPlayerProfile(session, gameProfile, data, playerSpawn);
                 });
 
-                return new PacketData(-1);
+                return cancel();
             }
         });
 
         // entity equipment
-        addTranslator(0x04, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x04, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -254,7 +291,7 @@ public class EntityPackets extends ServerProtocol {
         });
 
         // update tile entity
-        addTranslator(0x35, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x35, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -271,7 +308,7 @@ public class EntityPackets extends ServerProtocol {
         });
 
         // spawn painting
-        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -306,7 +343,7 @@ public class EntityPackets extends ServerProtocol {
         });
 
         // entity effect
-        addTranslator(0x1D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x1D, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -322,7 +359,7 @@ public class EntityPackets extends ServerProtocol {
         });
 
         // remove entity effect
-        addTranslator(0x1E, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x1E, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -335,15 +372,24 @@ public class EntityPackets extends ServerProtocol {
         });
 
         // spawn object
-        addTranslator(0x0E, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x0E, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
                 int x = data.read(Type.INT, 2);
                 int y = data.read(Type.INT, 3);
                 int z = data.read(Type.INT, 4);
 
                 byte type = data.read(Type.BYTE, 1);
+
+                if (storage.hasObject(V1_7EntityTracker.class)) {
+                    V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
+                    int entityId = data.read(Type.VAR_INT, 0);
+
+                    assert tracker != null;
+                    tracker.addEntity(entityId, EntityType.ITEM);
+                }
 
                 // fixes entity bouncing
                 switch (type) {

@@ -109,7 +109,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
         List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(userData, version);
 
-        boolean flag = direction == PacketDirection.SERVER_TO_CLIENT;
+        boolean flag = direction == PacketDirection.TO_CLIENT;
 
         if (!flag) Collections.reverse(protocols);
 
@@ -212,7 +212,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, PacketData packetData) {
         // client to server packets
-        sendPacket(packetData, PacketDirection.CLIENT_TO_SERVER, null);
+        sendPacket(packetData, PacketDirection.TO_SERVER, null);
         packetCounter.getAndIncrement();
     }
 
@@ -256,7 +256,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
                     return;
                 }
 
-                serverSession.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, from);
+                serverSession.sendPacket(packetData, PacketDirection.TO_CLIENT, from);
             }
         }
     }
@@ -323,7 +323,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         if (getClientSession() == null) {
             client.createClient(key, () -> {
                 while (!initialPacketQueue.isEmpty()) {
-                    sendPacket(initialPacketQueue.poll(), PacketDirection.CLIENT_TO_SERVER, userData.getClientVersion());
+                    sendPacket(initialPacketQueue.poll(), PacketDirection.TO_SERVER, userData.getClientVersion());
                 }
             });
         }

@@ -27,7 +27,7 @@ public class ProtocolRelease74To73 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // handshake
-        addTranslator(0x02, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x02, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -42,7 +42,7 @@ public class ProtocolRelease74To73 extends ServerProtocol {
         });
 
         // entity attributes/properties
-        addTranslator(0x2C, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x2C, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -62,7 +62,7 @@ public class ProtocolRelease74To73 extends ServerProtocol {
         });
 
         // kick disconnect
-        addTranslator(0xFF, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFF, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -83,7 +83,7 @@ public class ProtocolRelease74To73 extends ServerProtocol {
         });
 
         // creative item get
-        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -105,7 +105,7 @@ public class ProtocolRelease74To73 extends ServerProtocol {
         });
 
         // block place
-        addTranslator(0x0F, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x0F, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -140,7 +140,7 @@ public class ProtocolRelease74To73 extends ServerProtocol {
                             set(Type.INT, z), // z
                     });
 
-                    session.sendPacket(signEditor, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                    session.sendPacket(signEditor, PacketDirection.TO_CLIENT, getFrom());
                 }
                 return data;
             }

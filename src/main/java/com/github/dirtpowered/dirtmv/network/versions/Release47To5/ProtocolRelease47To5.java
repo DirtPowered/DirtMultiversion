@@ -46,11 +46,13 @@ import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockSt
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.DataFixers;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.V1_7EntityTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.WindowTypeTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.BlockMiningTimeFixer;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.HardnessTable;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
+import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.mojang.authlib.GameProfile;
@@ -80,6 +82,11 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         storage.set(WindowTypeTracker.class, new WindowTypeTracker());
         storage.set(QuickBarTracker.class, new QuickBarTracker());
 
+        // check if 1.6 entity tracker exists - if not, create one
+        if (!storage.hasObject(EntityTracker.class)) {
+            storage.set(V1_7EntityTracker.class, new V1_7EntityTracker());
+        }
+
         // fixes block hardness inconsistencies
         if (session.getMain().getConfiguration().getServerVersion() == MinecraftVersion.B1_7_3) {
             storage.set(BlockMiningTimeFixer.class, new BlockMiningTimeFixer(session));
@@ -101,7 +108,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // status ping
-        addTranslator(0x00, ProtocolState.STATUS, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x00, ProtocolState.STATUS, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -121,7 +128,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // keep alive
-        addTranslator(0x00, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x00, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -133,7 +140,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // join game
-        addTranslator(0x01, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x01, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -151,7 +158,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // spawn position
-        addTranslator(0x05, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x05, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -166,7 +173,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // update health
-        addTranslator(0x06, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x06, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -180,7 +187,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // chat
-        addTranslator(0x02, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x02, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -193,7 +200,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // chunk data
-        addTranslator(0x21, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x21, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -230,7 +237,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // chunk bulk
-        addTranslator(0x26, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x26, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -270,7 +277,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // multi block change
-        addTranslator(0x22, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x22, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -304,7 +311,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // block change
-        addTranslator(0x23, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x23, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -325,7 +332,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // block action
-        addTranslator(0x24, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x24, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -343,7 +350,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // block break animation
-        addTranslator(0x25, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x25, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -360,7 +367,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // effect
-        addTranslator(0x28, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x28, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -378,7 +385,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // update sign
-        addTranslator(0x33, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x33, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -402,7 +409,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // sign editor
-        addTranslator(0x36, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x36, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -417,13 +424,13 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // tab list item
-        addTranslator(0x38, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x38, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 String u = data.read(Type.V1_7_STRING, 0);
                 if (u == null) { // skip if server is updating ping or something
-                    return new PacketData(-1);
+                    return cancel();
                 }
 
                 String username = ChatUtils.stripColor(u);
@@ -453,7 +460,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // set experience
-        addTranslator(0x1F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x1F, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -467,7 +474,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // use bed
-        addTranslator(0x0A, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x0A, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -483,7 +490,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // collect item
-        addTranslator(0x0D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x0D, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -496,7 +503,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // custom payload
-        addTranslator(0x3F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x3F, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -513,7 +520,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         // client packets
 
         // keep alive
-        addTranslator(0x00, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x00, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -525,7 +532,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // use entity
-        addTranslator(0x02, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x02, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -533,7 +540,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 int action = optPos.getAction();
 
                 if (action == 2) {
-                    return new PacketData(-1);
+                    return cancel();
                 }
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[] {
@@ -544,7 +551,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // player digging
-        addTranslator(0x07, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x07, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -570,7 +577,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                             break;
                         case 2: // finish digging
                             if (HardnessTable.exist(blockStorage.getBlockAt(l.getX(), l.getY(), l.getZ()))) {
-                                return new PacketData(-1);
+                                return cancel();
                             }
                             break;
                     }
@@ -587,7 +594,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // place block
-        addTranslator(0x08, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x08, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -601,7 +608,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                             set(Type.V1_7_STRING, "MC|BOpen")
                     });
 
-                    session.sendPacket(payload, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                    session.sendPacket(payload, PacketDirection.TO_CLIENT, getFrom());
                 }
 
                 return PacketUtil.createPacket(0x08, new TypeHolder[]{
@@ -618,7 +625,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // animation
-        addTranslator(0x0A, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x0A, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -631,7 +638,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // entity action
-        addTranslator(0x0B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x0B, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -646,7 +653,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // update sign
-        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -675,7 +682,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // client settings
-        addTranslator(0x15, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x15, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -692,7 +699,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // custom payload
-        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) throws IOException {
@@ -717,7 +724,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // player input
-        addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -733,9 +740,9 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         });
 
         // entity attributes
-        addTranslator(0x20, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x20, -1, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // map data
-        addTranslator(0x34, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x34, -1, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
     }
 }

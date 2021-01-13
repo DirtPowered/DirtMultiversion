@@ -64,7 +64,7 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, PacketData packetData) {
         // server to client packets
-        serverSession.sendPacket(packetData, PacketDirection.SERVER_TO_CLIENT, null);
+        serverSession.sendPacket(packetData, PacketDirection.TO_CLIENT, null);
 
         // notify other sessions
         if (!stateLock) {

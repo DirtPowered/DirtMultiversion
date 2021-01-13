@@ -48,7 +48,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
     public void registerTranslators() {
 
         // login
-        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -66,7 +66,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
         });
 
         // block place
-        addTranslator(0x0F, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x0F, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -82,7 +82,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
         });
 
         // window click
-        addTranslator(0x66, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x66, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -99,7 +99,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
         });
 
         // creative set slot
-        addTranslator(0x6B, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x6B, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -121,7 +121,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
         });
 
         // set experience
-        addTranslator(0x2B, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x2B, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -139,7 +139,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
         });
 
         // set slot
-        addTranslator(0x67, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x67, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -157,7 +157,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
         });
 
         // window items
-        addTranslator(0x68, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x68, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -178,7 +178,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
 
         // player look move
-        addTranslator(0x0D, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x0D, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -208,7 +208,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
         });
 
         // player position
-        addTranslator(0x0B, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x0B, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

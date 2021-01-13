@@ -51,7 +51,7 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
 
     @Override
     protected void decode(ChannelHandlerContext context, ByteBuf buffer, List<Object> list) throws IOException {
-        boolean flag = packetDirection == PacketDirection.SERVER_TO_CLIENT;
+        boolean flag = packetDirection == PacketDirection.TO_CLIENT;
 
         setUserProtocol(flag, buffer);
         PacketInput inputBuffer = new NettyInputWrapper(buffer);
@@ -66,7 +66,7 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
         if (userData.getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME)
             return;
 
-        if (data.getOpCode() == 255 && packetDirection == PacketDirection.SERVER_TO_CLIENT) {
+        if (data.getOpCode() == 255 && packetDirection == PacketDirection.TO_CLIENT) {
             if (!userData.getClientVersion().isNettyProtocol()) {
                 userData.setPreNettyProtocolState(PreNettyProtocolState.STATUS);
                 return;

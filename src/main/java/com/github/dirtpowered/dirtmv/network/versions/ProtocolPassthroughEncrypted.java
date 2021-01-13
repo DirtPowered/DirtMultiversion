@@ -50,7 +50,7 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // server auth data
-        addTranslator(0xFD, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFD, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @SneakyThrows
             @Override
@@ -82,7 +82,7 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
                             set(Type.SHORT_BYTE_ARRAY, encryptedData)
                     });
 
-                    session.sendPacket(response, PacketDirection.CLIENT_TO_SERVER, getFrom());
+                    session.sendPacket(response, PacketDirection.TO_SERVER, getFrom());
                 } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
                     e.printStackTrace();
                 }
@@ -92,7 +92,7 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
         });
 
         // client shared key
-        addTranslator(0xFC, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0xFC, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @SneakyThrows
             @Override
@@ -104,20 +104,20 @@ public class ProtocolPassthroughEncrypted extends ServerProtocol {
 
                 // enable encryption
                 EncryptionUtils.setEncryption(session.getChannel(), shared);
-                return new PacketData(-1); // cancel packet
+                return cancel(); // cancel packet
             }
         });
 
 
         // client shared key
-        addTranslator(0xFC, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFC, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 // enable client connection encryption
                 EncryptionUtils.setEncryption(session.getClientSession().getChannel(), session.getUserData().getSecretKey());
 
-                return new PacketData(-1); // cancel packet
+                return cancel(); // cancel packet
             }
         });
     }

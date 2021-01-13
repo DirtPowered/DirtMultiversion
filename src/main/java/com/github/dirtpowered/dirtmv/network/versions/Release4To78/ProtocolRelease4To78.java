@@ -68,7 +68,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // server info request
-        addTranslator(0x00, ProtocolState.STATUS, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x00, ProtocolState.STATUS, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -89,7 +89,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // ping
-        addTranslator(0x01, ProtocolState.STATUS, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, ProtocolState.STATUS, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -97,13 +97,13 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                         data.read(0)
                 });
 
-                session.sendPacket(response, PacketDirection.SERVER_TO_CLIENT, getFrom());
-                return new PacketData(-1);
+                session.sendPacket(response, PacketDirection.TO_CLIENT, getFrom());
+                return cancel();
             }
         });
 
         // kick disconnect
-        addTranslator(0xFF, ProtocolState.STATUS, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFF, ProtocolState.STATUS, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -135,12 +135,12 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // login start
-        addTranslator(0x00, ProtocolState.LOGIN, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x00, ProtocolState.LOGIN, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 if (data.getObjects().length > 1)
-                    return new PacketData(-1);
+                    return cancel();
 
                 UserData userData = session.getUserData();
                 String username = data.read(Type.V1_7_STRING, 0);
@@ -158,17 +158,17 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 });
 
                 userData.setUsername(username);
-                session.sendPacket(handshake, PacketDirection.CLIENT_TO_SERVER, null);
+                session.sendPacket(handshake, PacketDirection.TO_SERVER, null);
 
                 // client command
-                session.sendPacket(clientCommand, PacketDirection.CLIENT_TO_SERVER, null);
+                session.sendPacket(clientCommand, PacketDirection.TO_SERVER, null);
 
-                return new PacketData(-1);
+                return cancel();
             }
         });
 
         // encryption
-        addTranslator(0xFD, ProtocolState.LOGIN, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFD, ProtocolState.LOGIN, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -180,15 +180,15 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                         set(Type.V1_7_STRING, username)
                 });
 
-                session.sendPacket(loginSuccess, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                session.sendPacket(loginSuccess, PacketDirection.TO_CLIENT, getFrom());
                 userData.setProtocolState(ProtocolState.PLAY);
 
-                return new PacketData(-1);
+                return cancel();
             }
         });
 
         // login kick disconnect
-        addTranslator(0xFF, ProtocolState.LOGIN, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFF, ProtocolState.LOGIN, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -202,7 +202,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // pre-netty login
-        addTranslator(0x01, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x01, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -219,7 +219,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x03 SC 0x02 (chat)
-        addTranslator(0x03, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x03, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -233,7 +233,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0xFF SC 0x40 (kick disconnect)
-        addTranslator(0xFF, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFF, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -247,7 +247,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x35 SC 0x23 (block change)
-        addTranslator(0x35, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x35, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -263,7 +263,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x18 SC 0x0F (spawn mob)
-        addTranslator(0x18, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x18, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -286,7 +286,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0xC9 SC 0x38 (player tab entry)
-        addTranslator(0xC9, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xC9, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -300,7 +300,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x09 SC 0x07 (respawn)
-        addTranslator(0x09, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x09, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -315,7 +315,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x0D SC 0x08 (player pos look)
-        addTranslator(0x0D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x0D, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -332,7 +332,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x47 SC 0x2C (spawn global entity)
-        addTranslator(0x47, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x47, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -348,7 +348,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x17 SC 0x0E (spawn vehicle -> spawn object)
-        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -367,7 +367,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x36 SC 0x24 (play note block -> block action)
-        addTranslator(0x36, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x36, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -384,7 +384,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x28 SC 0x1C (entity metadata)
-        addTranslator(0x28, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x28, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -410,7 +410,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x46 SC 0x2B (game event)
-        addTranslator(0x46, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x46, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -430,7 +430,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x64 SC 0x2D (open window) // TODO: optional horse data
-        addTranslator(0x64, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x64, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -446,7 +446,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x3C SC 0x27 (explosion)
-        addTranslator(0x3C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x3C, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -465,7 +465,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x3E SC 0x29 (level sound)
-        addTranslator(0x3E, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x3E, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -473,7 +473,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 String newSoundName = soundRemapper.getNewSoundName(soundName);
 
                 if (newSoundName.isEmpty())
-                    return new PacketData(-1);
+                    return cancel();
 
                 return PacketUtil.createPacket(0x29, new TypeHolder[] {
                         set(Type.V1_7_STRING, soundName),
@@ -487,7 +487,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x14 CS 0x0C (named entity spawn)
-        addTranslator(0x14, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x14, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -509,7 +509,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x82 CS 0x33 (update sign)
-        addTranslator(0x82, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x82, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -527,7 +527,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x1A SC 0x11 (spawn experience orb)
-        addTranslator(0x1A, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x1A, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -543,7 +543,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x19 SC 0x10 (spawn painting)
-        addTranslator(0x19, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x19, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -560,7 +560,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x10 SC 0x09 (held slot change)
-        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -572,7 +572,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0xCB SC 0x3A (tab complete)
-        addTranslator(0xCB, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xCB, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -592,7 +592,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x37 SC 0x25 (block break animation)
-        addTranslator(0x37, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x37, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -608,7 +608,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0xCE SC 0x3B (set objective)
-        addTranslator(0xCE, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xCE, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -622,7 +622,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0xCF SC 0x3C (update score)
-        addTranslator(0xCF, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xCF, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -644,7 +644,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0xD0 SC 0x3D (set display objective)
-        addTranslator(0xD0, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xD0, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -657,7 +657,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x3F SC 0x2A (world particles)
-        addTranslator(0x3F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x3F, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -677,7 +677,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x85 SC 0x36 (open sign editor)
-        addTranslator(0x85, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x85, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -691,7 +691,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x11 SC 0x0A (use bed)
-        addTranslator(0x11, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x11, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -706,7 +706,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x12 SC 0x0B (entity animation)
-        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -741,7 +741,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0xFA SC 0x3F (custom payload)
-        addTranslator(0xFA, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xFA, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -754,7 +754,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x83 SC 0x34 (map data)
-        addTranslator(0x83, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x83, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -767,18 +767,18 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0xD1 SC 0x3E (set team) // TODO: translate
-        addTranslator(0xD1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0xD1, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 V1_5Team team = data.read(Type.V1_5_TEAM, 0);
 
-                return new PacketData(-1);
+                return cancel();
             }
         });
 
         // 0x2C SC 0x20 (entity attributes)
-        addTranslator(0x2C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x2C, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -790,7 +790,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x67 SC 0x2F (inventory set slot)
-        addTranslator(0x67, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x67, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -815,7 +815,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x68 SC 0x30 (inventory window items)
-        addTranslator(0x68, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x68, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -840,7 +840,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x3D SC 0x28 (door change -> effect)
-        addTranslator(0x3D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x3D, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -856,95 +856,95 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
         // 0xC8 SC 0x37 -> cancel (statistics)
-        addTranslator(0xC8, -1, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0xC8, -1, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x27 SC 0x1B (entity attach)
-        addTranslator(0x27, 0x1B, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x27, 0x1B, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x69 SC 0x31 (update progress bar -> window property)
-        addTranslator(0x69, 0x31, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x69, 0x31, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x65 SC 0x2E (window close)
-        addTranslator(0x65, 0x2E, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x65, 0x2E, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x29 SC 0x1D (entity effect)
-        addTranslator(0x29, 0x1D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x29, 0x1D, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x2A SC 0x1E (clear entity effect)
-        addTranslator(0x2A, 0x1E, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x2A, 0x1E, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x84 SC 0x35 (update tile entity)
-        addTranslator(0x84, 0x35, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x84, 0x35, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x6A SC 0x32 (inventory transaction)
-        addTranslator(0x6A, 0x32, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x6A, 0x32, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0xCA SC 0x39 (player abilities)
-        addTranslator(0xCA, 0x39, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0xCA, 0x39, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x2B SC 0x1F (set experience)
-        addTranslator(0x2B, 0x1F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x2B, 0x1F, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x38 SC 0x26 (chunk bulk)
-        addTranslator(0x38, 0x26, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x38, 0x26, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x26 SC 0x1A (entity status)
-        addTranslator(0x26, 0x1A, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x26, 0x1A, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x23 SC 0x19 (entity head look)
-        addTranslator(0x23, 0x19, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x23, 0x19, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x21 SC 0x17 (entity relative move look)
-        addTranslator(0x21, 0x17, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x21, 0x17, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x1E SC 0x14 (entity ground state)
-        addTranslator(0x1E, 0x14, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x1E, 0x14, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x05 SC 0x04 (entity equipment)
-        addTranslator(0x05, 0x04, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x05, 0x04, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x08 SC 0x06 (health update)
-        addTranslator(0x08, 0x06, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x08, 0x06, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x04 SC 0x03 (update time)
-        addTranslator(0x04, 0x03, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x04, 0x03, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x06 SC 0x05 (spawn position)
-        addTranslator(0x06, 0x05, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x06, 0x05, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x33 SC 0x21 (chunk data)
-        addTranslator(0x33, 0x21, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x33, 0x21, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x34 SC 0x22 (multi block change)
-        addTranslator(0x34, 0x22, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x34, 0x22, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x1F SC 0x15 (entity relative move)
-        addTranslator(0x1F, 0x15, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x1F, 0x15, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x1C SC 0x12 (entity velocity)
-        addTranslator(0x1C, 0x12, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x1C, 0x12, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x1D SC 0x13 (entity destroy)
-        addTranslator(0x1D, 0x13, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x1D, 0x13, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x20 SC 0x16 (entity look)
-        addTranslator(0x20, 0x16, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x20, 0x16, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x22 SC 0x18 (entity teleport)
-        addTranslator(0x22, 0x18, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x22, 0x18, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x16 SC 0x0D (item collect)
-        addTranslator(0x16, 0x0D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT);
+        addTranslator(0x16, 0x0D, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x17 CS 0xFA (custom payload)
-        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 String channel = data.read(Type.V1_7_STRING, 0);
 
                 if (channel.equals("MC|AdvCmd")) { // TODO: fix command blocks
-                    return new PacketData(-1);
+                    return cancel();
                 }
 
                 return PacketUtil.createPacket(0xFA, new TypeHolder[] {
@@ -955,7 +955,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x01 CS 0x03 (chat)
-        addTranslator(0x01, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -967,7 +967,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x16 CS 0xCD (client command)
-        addTranslator(0x16, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x16, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -978,13 +978,13 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                             set(Type.BYTE, (byte) 1) // perform respawn
                     });
                 } else {
-                    return new PacketData(-1);
+                    return cancel();
                 }
             }
         });
 
         // 0x02 SC 0x07 (use entity)
-        addTranslator(0x02, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x02, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -998,7 +998,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x14 CS 0xCB (tab complete)
-        addTranslator(0x14, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x14, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -1010,7 +1010,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x15 CS 0xCC (player settings)
-        addTranslator(0x15, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x15, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -1026,7 +1026,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x12 CS 0x82 (set sign text)
-        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x12, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -1044,7 +1044,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x08 CS 0x0F (block placement)
-        addTranslator(0x08, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x08, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -1063,7 +1063,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x07 CS 0x0E (block digging)
-        addTranslator(0x07, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x07, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -1079,7 +1079,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // creative item get
-        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -1101,42 +1101,42 @@ public class ProtocolRelease4To78 extends ServerProtocol {
         });
 
         // 0x0F CS 0x6A (confirm transaction)
-        addTranslator(0x0F, 0x6A, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x0F, 0x6A, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x0C CS 0x1B (steer vehicle / player input)
-        addTranslator(0x0C, 0x1B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x0C, 0x1B, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x13 CS 0xCA (player abilities)
-        addTranslator(0x13, 0xCA, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x13, 0xCA, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x11 CS 0x6C (enchant slot selection)
-        addTranslator(0x11, 0x6C, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x11, 0x6C, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x09 CS 0x10 (held slot change)
-        addTranslator(0x09, 0x10, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x09, 0x10, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x03 CS 0x0A (player ground state)
-        addTranslator(0x03, 0x0A, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x03, 0x0A, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x04 CS 0x0B (player position)
-        addTranslator(0x04, 0x0B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x04, 0x0B, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x05 CS 0x0C (player look)
-        addTranslator(0x05, 0x0C, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x05, 0x0C, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x06 CS 0x0D (player position look)
-        addTranslator(0x06, 0x0D, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x06, 0x0D, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x0A CS 0x12 (player animation)
-        addTranslator(0x0A, 0x12, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x0A, 0x12, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x0D CS 0x65 (window close)
-        addTranslator(0x0D, 0x65, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x0D, 0x65, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x0E CS 0x66 (click window)
-        addTranslator(0x0E, 0x66, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x0E, 0x66, ProtocolState.PLAY, PacketDirection.TO_SERVER);
 
         // 0x0B CS 0x13 (entity action)
-        addTranslator(0x0B, 0x13, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER);
+        addTranslator(0x0B, 0x13, ProtocolState.PLAY, PacketDirection.TO_SERVER);
     }
 }

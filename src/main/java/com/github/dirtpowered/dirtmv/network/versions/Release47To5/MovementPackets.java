@@ -43,7 +43,7 @@ public class MovementPackets extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // entity
-        addTranslator(0x14, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x14, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
@@ -54,7 +54,7 @@ public class MovementPackets extends ServerProtocol {
         });
 
         // entity relative move
-        addTranslator(0x15, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x15, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -78,7 +78,7 @@ public class MovementPackets extends ServerProtocol {
         });
 
         // entity look
-        addTranslator(0x16, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x16, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -100,7 +100,7 @@ public class MovementPackets extends ServerProtocol {
         });
 
         // entity look move
-        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x17, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -126,7 +126,7 @@ public class MovementPackets extends ServerProtocol {
         });
 
         // entity teleport
-        addTranslator(0x18, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x18, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -152,7 +152,7 @@ public class MovementPackets extends ServerProtocol {
         });
 
         // entity head look
-        addTranslator(0x19, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x19, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -165,7 +165,7 @@ public class MovementPackets extends ServerProtocol {
         });
 
         // position and look
-        addTranslator(0x08, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x08, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -182,7 +182,7 @@ public class MovementPackets extends ServerProtocol {
         });
 
         // player
-        addTranslator(0x03, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x03, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -194,7 +194,7 @@ public class MovementPackets extends ServerProtocol {
         });
 
         // player position
-        addTranslator(0x04, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x04, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -210,7 +210,7 @@ public class MovementPackets extends ServerProtocol {
         });
 
         // player look
-        addTranslator(0x05, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x05, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -224,7 +224,7 @@ public class MovementPackets extends ServerProtocol {
         });
 
         // player pos look
-        addTranslator(0x06, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x06, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

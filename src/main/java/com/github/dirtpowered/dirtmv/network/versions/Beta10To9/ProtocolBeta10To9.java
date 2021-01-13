@@ -41,7 +41,7 @@ public class ProtocolBeta10To9 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // login
-        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

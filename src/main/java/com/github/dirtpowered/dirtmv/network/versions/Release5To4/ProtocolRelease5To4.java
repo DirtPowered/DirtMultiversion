@@ -50,7 +50,7 @@ public class ProtocolRelease5To4 extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // status ping
-        addTranslator(0x00, ProtocolState.STATUS, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x00, ProtocolState.STATUS, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -78,7 +78,7 @@ public class ProtocolRelease5To4 extends ServerProtocol {
         });
 
         // login success
-        addTranslator(0x02, ProtocolState.LOGIN, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x02, ProtocolState.LOGIN, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -92,7 +92,7 @@ public class ProtocolRelease5To4 extends ServerProtocol {
         });
 
         // spawn player
-        addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

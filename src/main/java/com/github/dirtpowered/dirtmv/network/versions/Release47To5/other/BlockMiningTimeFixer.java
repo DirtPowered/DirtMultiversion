@@ -104,7 +104,7 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
                 new TypeHolder(Type.BOOLEAN, false)
         });
 
-        session.sendPacket(blockEffect, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_8);
+        session.sendPacket(blockEffect, PacketDirection.TO_CLIENT, MinecraftVersion.R1_8);
     }
 
     private void removeSlownessEffect() {
@@ -170,7 +170,7 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
                 new TypeHolder(Type.VAR_INT, randomEid),
                 new TypeHolder(Type.LONG, ProtocolRelease47To5.toBlockPosition(pos.getX(), position.getY(), pos.getZ())),
                 new TypeHolder(Type.BYTE, stage)
-        }), PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_8);
+        }), PacketDirection.TO_CLIENT, MinecraftVersion.R1_8);
     }
 
     private void sendEffect(boolean remove) {
@@ -188,9 +188,9 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
         });
 
         if (remove) {
-            session.sendPacket(removeEffect, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_8);
+            session.sendPacket(removeEffect, PacketDirection.TO_CLIENT, MinecraftVersion.R1_8);
         } else {
-            session.sendPacket(addEffect, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_8);
+            session.sendPacket(addEffect, PacketDirection.TO_CLIENT, MinecraftVersion.R1_8);
         }
     }
 }

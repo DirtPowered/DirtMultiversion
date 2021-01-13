@@ -20,17 +20,25 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.translator;
+package com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity;
 
-import lombok.Getter;
+import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 
-public enum PacketDirection {
-    TO_CLIENT(0), TO_SERVER(1);
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-    @Getter
-    private final int directionId;
+public class V1_7EntityTracker {
+    private final Map<Integer, EntityType> entities = new ConcurrentHashMap<>();
 
-    PacketDirection(int directionId) {
-        this.directionId = directionId;
+    public void addEntity(int entityId, EntityType entity) {
+        entities.putIfAbsent(entityId, entity);
+    }
+
+    public EntityType getEntityById(int entityId) {
+        return entities.get(entityId);
+    }
+
+    public void removeEntity(int entityId) {
+        entities.remove(entityId);
     }
 }

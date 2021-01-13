@@ -37,6 +37,7 @@ import com.github.dirtpowered.dirtmv.data.transformers.block.Block;
 import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
@@ -135,16 +136,16 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                             new byte[0],
                             newChunkStorage
                     ))
-            }), PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_2_1);
+            }), PacketDirection.TO_CLIENT, MinecraftVersion.R1_2_1);
 
             assert chunkTracker != null;
             chunkTracker.setChunkLoaded(chunkX, chunkZ);
 
-            return new PacketData(-1);
+            return ServerProtocol.cancel();
         } else {
             assert chunkTracker != null;
             if (!chunkTracker.isChunkLoaded(chunkX, chunkZ)) {
-                return new PacketData(-1);
+                return ServerProtocol.cancel();
             }
 
             Configuration c = session.getMain().getConfiguration();
@@ -165,7 +166,7 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
             int records = worldBlocks.size();
 
             if (worldBlocks.isEmpty()) {
-                return new PacketData(-1);
+                return ServerProtocol.cancel();
             }
 
             List<List<WorldBlock>> slicedList = getSlicedData(worldBlocks);
@@ -200,7 +201,7 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                             new TypeHolder(Type.V1_2MULTIBLOCK_ARRAY, blockArray)
                     });
 
-                    session.sendPacket(multiBlockChange, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_2_1);
+                    session.sendPacket(multiBlockChange, PacketDirection.TO_CLIENT, MinecraftVersion.R1_2_1);
                 }
             } else {
                 for (WorldBlock block : worldBlocks) {
@@ -212,12 +213,12 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                             new TypeHolder(Type.BYTE, (byte) block.getBlockData())
                     });
 
-                    session.sendPacket(blockUpdate, PacketDirection.SERVER_TO_CLIENT, MinecraftVersion.R1_2_1);
+                    session.sendPacket(blockUpdate, PacketDirection.TO_CLIENT, MinecraftVersion.R1_2_1);
                 }
             }
         }
 
-        return new PacketData(-1);
+        return ServerProtocol.cancel();
     }
 
     private List<WorldBlock> getUpdatedBlockList(int x, int y, int z, int xSize, int ySize, int zSize, byte[] packetData, boolean replaceChests) {
@@ -286,10 +287,10 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
     @Getter
     @AllArgsConstructor
     private static class WorldBlock {
-        private int x;
-        private int y;
-        private int z;
-        private int blockId;
-        private int blockData;
+        private final int x;
+        private final int y;
+        private final int z;
+        private final int blockId;
+        private final int blockData;
     }
 }

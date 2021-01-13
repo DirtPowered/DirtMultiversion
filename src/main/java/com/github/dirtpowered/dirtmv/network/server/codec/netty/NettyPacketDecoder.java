@@ -59,7 +59,7 @@ public class NettyPacketDecoder extends ByteToMessageDecoder {
         PacketInput inputBuffer = new NettyInputWrapper(byteBuf);
 
         int i = inputBuffer.readVarInt();
-        boolean flag = packetDirection == PacketDirection.SERVER_TO_CLIENT;
+        boolean flag = packetDirection == PacketDirection.TO_CLIENT;
 
         ProtocolState protocolState = userData.getProtocolState();
 

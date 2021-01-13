@@ -53,7 +53,7 @@ public class InventoryPackets extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // set slot
-        addTranslator(0x2F, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x2F, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -104,7 +104,7 @@ public class InventoryPackets extends ServerProtocol {
         });
 
         // window items
-        addTranslator(0x30, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x30, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -169,7 +169,7 @@ public class InventoryPackets extends ServerProtocol {
         });
 
         // open window
-        addTranslator(0x2D, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x2D, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -199,7 +199,7 @@ public class InventoryPackets extends ServerProtocol {
         });
 
         // window click
-        addTranslator(0x0E, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x0E, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -234,7 +234,7 @@ public class InventoryPackets extends ServerProtocol {
         });
 
         // creative item get
-        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x10, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -256,7 +256,7 @@ public class InventoryPackets extends ServerProtocol {
         });
 
         // change held slot
-        addTranslator(0x09, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x09, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -274,7 +274,7 @@ public class InventoryPackets extends ServerProtocol {
         });
 
         // window property
-        addTranslator(0x31, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x31, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -288,7 +288,7 @@ public class InventoryPackets extends ServerProtocol {
                                 set(Type.SHORT, (short) 3),
                                 set(Type.SHORT, (short) 200)
                         });
-                        session.sendPacket(windowProperty, PacketDirection.SERVER_TO_CLIENT, getFrom());
+                        session.sendPacket(windowProperty, PacketDirection.TO_CLIENT, getFrom());
                         break;
                     case 1:
                         property = 0;

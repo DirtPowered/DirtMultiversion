@@ -96,7 +96,7 @@ public class EncryptionUtils {
                 new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0])
         });
 
-        session.sendPacket(response, PacketDirection.SERVER_TO_CLIENT, from);
+        session.sendPacket(response, PacketDirection.TO_CLIENT, from);
     }
 
     /**

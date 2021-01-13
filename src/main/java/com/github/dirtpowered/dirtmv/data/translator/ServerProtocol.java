@@ -100,4 +100,8 @@ public abstract class ServerProtocol implements ConnectionHandler {
     public void onDisconnect(ServerSession session) {
         // it will be overridden when needed
     }
+
+    public static PacketData cancel() {
+        return new PacketData(-1);
+    }
 }

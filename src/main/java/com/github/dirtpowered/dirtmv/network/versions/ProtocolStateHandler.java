@@ -42,7 +42,7 @@ public class ProtocolStateHandler extends ServerProtocol {
 
     @Override
     public void registerTranslators() {
-        addTranslator(0x00, ProtocolState.HANDSHAKE, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x00, ProtocolState.HANDSHAKE, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -62,7 +62,7 @@ public class ProtocolStateHandler extends ServerProtocol {
             }
         });
 
-        addTranslator(0x02, ProtocolState.LOGIN, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x02, ProtocolState.LOGIN, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

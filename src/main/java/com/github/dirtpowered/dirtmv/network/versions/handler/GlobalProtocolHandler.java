@@ -41,7 +41,7 @@ public class GlobalProtocolHandler extends ServerProtocol {
     @Override
     public void registerTranslators() {
         // chat (pre-netty)
-        addTranslator(0x03, ProtocolState.PRE_NETTY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x03, ProtocolState.PRE_NETTY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -54,7 +54,7 @@ public class GlobalProtocolHandler extends ServerProtocol {
         });
 
         // chat (post-netty)
-        addTranslator(0x01, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -66,7 +66,7 @@ public class GlobalProtocolHandler extends ServerProtocol {
         });
 
         // login (pre-netty)
-        addTranslator(0x01, ProtocolState.PRE_NETTY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, ProtocolState.PRE_NETTY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -79,7 +79,7 @@ public class GlobalProtocolHandler extends ServerProtocol {
         });
 
         // login (post-netty)
-        addTranslator(0x00, ProtocolState.LOGIN, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x00, ProtocolState.LOGIN, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

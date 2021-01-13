@@ -46,7 +46,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
     public void registerTranslators() {
 
         // login
-        addTranslator(0x01, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_SERVER, new PacketTranslator() {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
@@ -64,7 +64,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
         });
 
         // login
-        addTranslator(0x01, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x01, PacketDirection.TO_CLIENT, new PacketTranslator() {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
@@ -83,7 +83,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
         });
 
         // respawn
-        addTranslator(0x09, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x09, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -99,7 +99,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
         });
 
         // respawn
-        addTranslator(0x09, PacketDirection.SERVER_TO_CLIENT, new PacketTranslator() {
+        addTranslator(0x09, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -116,16 +116,16 @@ public class ProtocolRelease23To22 extends ServerProtocol {
         });
 
         // custom payload
-        addTranslator(0xFA, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0xFA, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                return new PacketData(-1); // cancel packet
+                return cancel(); // cancel packet
             }
         });
 
         // chat
-        addTranslator(0x03, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x03, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
@@ -139,7 +139,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
         });
 
         // creative item get
-        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.CLIENT_TO_SERVER, new PacketTranslator() {
+        addTranslator(0x6B, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {

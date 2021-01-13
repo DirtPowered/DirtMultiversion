@@ -36,7 +36,7 @@ public class V1_7_6ProtocolDefinitions extends StateDependedProtocol {
         V1_7_2RProtocol.STATE_DEPENDED_PROTOCOL.getPackets().forEach((packetRegObj, dataTypes) -> getPackets().put(packetRegObj, dataTypes));
 
         // spawn player
-        addPacket(0x0C, ProtocolState.PLAY, PacketDirection.SERVER_TO_CLIENT, new DataType[]{
+        addPacket(0x0C, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
                 V1_7_2RProtocol.VAR_INT, // entity id
                 V1_7_2RProtocol.STRING, // uuid
                 V1_7_2RProtocol.STRING, // name
