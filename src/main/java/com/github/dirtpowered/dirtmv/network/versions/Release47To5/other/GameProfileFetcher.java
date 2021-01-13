@@ -98,7 +98,7 @@ public class GameProfileFetcher {
             bufferedReader.close();
             return builder.toString();
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.warn("Error while fething data from Mojang API: {}", e.getMessage());
         } finally {
             if (urlConnection != null) {
                 try {

@@ -30,6 +30,7 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
@@ -130,14 +131,12 @@ public class MovementPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                OnGroundTracker groundTracker = session.getUserData().getProtocolStorage().get(OnGroundTracker.class);
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                OnGroundTracker groundTracker = storage.get(OnGroundTracker.class);
                 int entityId = data.read(Type.INT, 0);
 
-                boolean onGround = false;
-
-                if (groundTracker != null) {
-                    onGround = groundTracker.isOnGround(entityId);
-                }
+                assert groundTracker != null;
+                boolean onGround = groundTracker.isOnGround(entityId);
 
                 return PacketUtil.createPacket(0x18, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),

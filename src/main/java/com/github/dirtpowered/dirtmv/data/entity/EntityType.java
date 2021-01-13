@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.data.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.pmw.tinylog.Logger;
 
 @AllArgsConstructor
 public enum EntityType {
@@ -58,15 +59,19 @@ public enum EntityType {
     VILLAGER(120, true),
     HUMAN(48, true),
     ITEM(1, false),
+    ARROW(2, false),
     PRIMED_TNT(20, false),
     MINECART(40, false),
-    BOAT(41, false);
+    BOAT(41, false),
+    FALLING_BLOCK(70, false),
+    WITHER_SKULL(66, false),
+    ITEM_FRAME(71, false);
 
     @Getter
-    private int entityTypeId;
+    private final int entityTypeId;
 
     @Getter
-    private boolean livingEntity;
+    private final boolean livingEntity;
 
     public static EntityType fromEntityTypeId(int entityTypeId) {
         for (EntityType entityType : EntityType.values()) {
@@ -75,6 +80,7 @@ public enum EntityType {
             }
         }
 
+        Logger.warn("missing mapping for entity type: {}", entityTypeId);
         return null;
     }
 }

@@ -54,7 +54,6 @@ public class EntityPackets extends ServerProtocol {
 
     EntityPackets() {
         super(MinecraftVersion.R1_8, MinecraftVersion.R1_7_6);
-
         metadataTransformer = new V1_7RTo1_8RMetadataTransformer();
     }
 
@@ -388,7 +387,8 @@ public class EntityPackets extends ServerProtocol {
                     int entityId = data.read(Type.VAR_INT, 0);
 
                     assert tracker != null;
-                    tracker.addEntity(entityId, EntityType.ITEM);
+                    EntityType entityType = EntityType.fromEntityTypeId(type);
+                    tracker.addEntity(entityId, entityType);
                 }
 
                 // fixes entity bouncing

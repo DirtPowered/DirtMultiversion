@@ -845,7 +845,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x28, new TypeHolder[] {
+                return PacketUtil.createPacket(0x28, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.BYTE, data.read(Type.SHORT, 2).byteValue()),
@@ -855,6 +855,23 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 });
             }
         });
+
+        // 0x84 SC 0x35 (update tile entity)
+        addTranslator(0x84, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x35, new TypeHolder[]{
+                        data.read(0),
+                        data.read(1),
+                        data.read(2),
+                        set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 3).shortValue()),
+                        data.read(4)
+                });
+            }
+        });
+
         // 0xC8 SC 0x37 -> cancel (statistics)
         addTranslator(0xC8, -1, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
@@ -872,9 +889,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
         // 0x2A SC 0x1E (clear entity effect)
         addTranslator(0x2A, 0x1E, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
-
-        // 0x84 SC 0x35 (update tile entity)
-        addTranslator(0x84, 0x35, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x6A SC 0x32 (inventory transaction)
         addTranslator(0x6A, 0x32, ProtocolState.PLAY, PacketDirection.TO_CLIENT);

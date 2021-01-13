@@ -29,6 +29,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtoco
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_2.V1_2_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_4.V1_4_6RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 
@@ -423,13 +424,23 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 V1_3_1RProtocol.ITEM_ARRAY // item array
         });
 
+        // open window
+        addPacket(0x2D, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
+                BaseProtocol.UNSIGNED_BYTE, // window id
+                BaseProtocol.UNSIGNED_BYTE,
+                V1_7_2RProtocol.STRING, // window title
+                BaseProtocol.UNSIGNED_BYTE,
+                BaseProtocol.BOOLEAN,
+                // TODO: horse window
+        });
+
         // update tile entity
         addPacket(0x35, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
                 BaseProtocol.INT,
                 BaseProtocol.SHORT,
                 BaseProtocol.INT,
-                BaseProtocol.BYTE,
-                BaseProtocol.COMPOUND_TAG
+                BaseProtocol.UNSIGNED_BYTE,
+                V1_8RProtocol.COMPOUND_TAG
         });
 
         // tab list item

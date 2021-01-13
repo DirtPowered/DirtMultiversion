@@ -55,10 +55,12 @@ public class V1_7RTo1_8RMetadataTransformer implements MetadataTransformer {
                     if (index == 0) {
                         newMetaData.add(watchableObject);
                     }
+                } else if (type == MetadataType.STRING && index == 10) {
+                    // custom display name
+                    newMetaData.add(new WatchableObject(MetadataType.STRING, 2, value));
                 } else {
                     newMetaData.add(watchableObject);
                 }
-                // TODO: Item frames, skin flags
             } else {
                 newMetaData.add(watchableObject);
             }

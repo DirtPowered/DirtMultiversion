@@ -29,6 +29,7 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import org.pmw.tinylog.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,7 +53,13 @@ public class NBTUtils {
                 return null;
             } else {
                 byte[] data = packetInput.readBytes(size);
-                return BinaryTagIO.readCompressedInputStream(new ByteArrayInputStream(data));
+                CompoundBinaryTag tag = null;
+                try {
+                    tag = BinaryTagIO.readCompressedInputStream(new ByteArrayInputStream(data));
+                } catch (IllegalArgumentException e) {
+                    Logger.error("error while parsing NBT data: {}", e.getMessage());
+                }
+                return tag;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,7 +84,13 @@ public class NBTUtils {
         } else {
             buf.readerIndex(readerIndex);
             try {
-                return BinaryTagIO.readInputStream(new ByteBufInputStream(buf));
+                CompoundBinaryTag tag = null;
+                try {
+                    tag = BinaryTagIO.readInputStream(new ByteBufInputStream(buf));
+                } catch (IllegalArgumentException e) {
+                    Logger.error("error while parsing NBT data: {}", e.getMessage());
+                }
+                return tag;
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
