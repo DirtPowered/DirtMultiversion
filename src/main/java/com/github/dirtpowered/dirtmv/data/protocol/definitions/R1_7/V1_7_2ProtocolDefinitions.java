@@ -159,6 +159,18 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.INT
         });
 
+        // explosion
+        addPacket(0x27, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[] {
+                BaseProtocol.FLOAT, // x
+                BaseProtocol.FLOAT, // y
+                BaseProtocol.FLOAT, // z
+                BaseProtocol.FLOAT, // size
+                V1_3BProtocol.POSITION_ARRAY, // destroyed block positions
+                BaseProtocol.FLOAT, // velocity X
+                BaseProtocol.FLOAT, // velocity Y
+                BaseProtocol.FLOAT, // velocity Z
+        });
+
         // spawn object
         addPacket(0x0E, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
                 V1_7_2RProtocol.VAR_INT, // entityId
