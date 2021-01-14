@@ -224,6 +224,24 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.INT,
         });
 
+        // update sign
+        addPacket(0x33, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
+                BaseProtocol.INT, // x
+                BaseProtocol.SHORT, // y
+                BaseProtocol.INT, // z
+                V1_7_2RProtocol.STRING, // line 0
+                V1_7_2RProtocol.STRING, // line 1
+                V1_7_2RProtocol.STRING, // line 2
+                V1_7_2RProtocol.STRING, // line 3
+        });
+
+        // confirm transaction
+        addPacket(0x32, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
+                BaseProtocol.UNSIGNED_BYTE,
+                BaseProtocol.SHORT,
+                BaseProtocol.BOOLEAN
+        });
+
         // spawn experience orb
         addPacket(0x11, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
                 V1_7_2RProtocol.VAR_INT, // entity id
@@ -432,6 +450,22 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.UNSIGNED_BYTE,
                 BaseProtocol.BOOLEAN,
                 // TODO: horse window
+        });
+
+        // scoreboard display
+        addPacket(0x3D, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[] {
+                BaseProtocol.BYTE,
+                V1_7_2RProtocol.STRING
+        });
+
+        // block action
+        addPacket(0x24, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
+                BaseProtocol.INT,
+                BaseProtocol.SHORT,
+                BaseProtocol.INT,
+                BaseProtocol.BYTE,
+                BaseProtocol.BYTE,
+                V1_7_2RProtocol.VAR_INT
         });
 
         // update tile entity
