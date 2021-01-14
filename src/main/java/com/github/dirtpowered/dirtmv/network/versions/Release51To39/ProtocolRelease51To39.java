@@ -224,8 +224,8 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         data.read(2),
                         data.read(3),
                         data.read(4),
-                        set(Type.BYTE, 0), // yaw
-                        set(Type.BYTE, 0), // pitch
+                        set(Type.BYTE, (byte) 0), // yaw
+                        set(Type.BYTE, (byte) 0), // pitch
                         data.read(5)
                 });
             }
