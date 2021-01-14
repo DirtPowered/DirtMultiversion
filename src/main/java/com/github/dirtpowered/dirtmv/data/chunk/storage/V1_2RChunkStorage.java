@@ -190,13 +190,15 @@ public class V1_2RChunkStorage implements Chunk {
             }
         }
 
-        for (int i = 0; i < 16; i++) {
-            if (columnStorage[i] != null && (!groundUp || !columnStorage[i].isEmpty()) && (primaryBitmap & 1 << i) != 0) {
-                NibbleArray skyLight = columnStorage[i].getSkylightArray();
+        if (skylight) {
+            for (int i = 0; i < 16; i++) {
+                if (columnStorage[i] != null && (!groundUp || !columnStorage[i].isEmpty()) && (primaryBitmap & 1 << i) != 0) {
+                    NibbleArray skyLight = columnStorage[i].getSkylightArray();
 
-                System.arraycopy(skyLight.getData(), 0, data, totalSize, skyLight.getData().length);
+                    System.arraycopy(skyLight.getData(), 0, data, totalSize, skyLight.getData().length);
 
-                totalSize += skyLight.getData().length;
+                    totalSize += skyLight.getData().length;
+                }
             }
         }
 
