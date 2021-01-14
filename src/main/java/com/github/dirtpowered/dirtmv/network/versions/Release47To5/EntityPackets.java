@@ -31,6 +31,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.PlayerListEntry;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListAction;
@@ -383,35 +384,65 @@ public class EntityPackets extends ServerProtocol {
                 int z = data.read(Type.INT, 4);
 
                 byte type = data.read(Type.BYTE, 1);
+                byte yaw = data.read(Type.BYTE, 6);
+
+                Motion motionData = data.read(Type.MOTION, 7);
+                ObjectType objectType = ObjectType.fromObjectTypeId(type);
+
+                if (objectType == null)
+                    return cancel();
+
+                switch (objectType) {
+                    case ITEM:
+                        y -= 4;
+                        break;
+                    case TNT_PRIMED:
+                        y -= 16;
+                        break;
+                    case FALLING_OBJECT:
+                        int itemId = motionData.getThrowerId();
+                        int itemData = motionData.getThrowerId() >> 16;
+                        short mX = motionData.getMotionX();
+                        short mY = motionData.getMotionY();
+                        short mZ = motionData.getMotionZ();
+
+                        y -= 16;
+                        motionData = new Motion(itemId | itemData << 12, mX, mY, mZ);
+                        break;
+                    case ITEM_FRAME:
+                        int rotation = motionData.getThrowerId();
+                        if (rotation == 0) {
+                            z += 32;
+                            yaw = 0;
+                        } else if (rotation == 1) {
+                            x -= 32;
+                            yaw = 64;
+                        } else if (rotation == 2) {
+                            z -= 32;
+                            yaw = -128;
+                        } else if (rotation == 3) {
+                            x += 32;
+                            yaw = -64;
+                        }
+                        break;
+                }
 
                 if (storage.hasObject(V1_7EntityTracker.class)) {
                     V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
                     int entityId = data.read(Type.VAR_INT, 0);
 
                     assert tracker != null;
-                    ObjectType objectType = ObjectType.fromObjectTypeId(type);
                     tracker.addEntity(entityId, objectType);
                 }
-
-                // fixes entity bouncing
-                switch (type) {
-                    case 2: // item
-                        y = (int) ((y / 32.0D) - 0.125D) * 32;
-                        break;
-                    case 50: // primed tnt
-                        y = (int) ((y / 32.0D) - 0.5D) * 32;
-                        break;
-                }
-
-                return PacketUtil.createPacket(0x0E, new TypeHolder[] {
+                return PacketUtil.createPacket(0x0E, new TypeHolder[]{
                         data.read(0),
-                        data.read(1),
+                        set(Type.BYTE, type),
                         set(Type.INT, x),
                         set(Type.INT, y),
                         set(Type.INT, z),
                         data.read(5),
-                        data.read(6),
-                        data.read(7)
+                        set(Type.BYTE, yaw),
+                        set(Type.MOTION, motionData)
                 });
             }
         });

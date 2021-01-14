@@ -23,6 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release47To5.metadata;
 
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.entity.ObjectType;
 import com.github.dirtpowered.dirtmv.data.entity.SpawnableObject;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
@@ -63,7 +64,15 @@ public class V1_7RTo1_8RMetadataTransformer implements MetadataTransformer {
                     newMetaData.add(watchableObject);
                 }
             } else {
-                newMetaData.add(watchableObject);
+                if (entityType == ObjectType.ITEM_FRAME) {
+                    if (type == MetadataType.BYTE && index == 3) {
+                        newMetaData.add(new WatchableObject(MetadataType.BYTE, 9, value));
+                    } else if (type == MetadataType.ITEM && index == 2) {
+                        newMetaData.add(new WatchableObject(MetadataType.ITEM, 8, value));
+                    }
+                } else {
+                    newMetaData.add(watchableObject);
+                }
             }
         }
 
