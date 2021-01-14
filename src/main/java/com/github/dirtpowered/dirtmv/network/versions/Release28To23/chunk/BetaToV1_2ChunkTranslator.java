@@ -64,7 +64,13 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
     @Override
     public PacketData translate(ServerSession session, PacketData data) {
-        LoadedChunkTracker chunkTracker = session.getUserData().getProtocolStorage().get(LoadedChunkTracker.class);
+        ProtocolStorage storage = session.getUserData().getProtocolStorage();
+
+        LoadedChunkTracker chunkTracker = storage.get(LoadedChunkTracker.class);
+        DimensionTracker dimensionTracker = storage.get(DimensionTracker.class);
+
+        assert dimensionTracker != null;
+        boolean hasSkylight = dimensionTracker.getDimension() == 0;
 
         V1_3BChunk oldChunk = (V1_3BChunk) data.read(0).getObject();
         boolean groundUp = true;
@@ -78,7 +84,7 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
         if (groundUp) {
             V1_3BChunkStorage oldChunkStorage = new V1_3BChunkStorage(chunkX, chunkZ);
-            V1_2RChunkStorage newChunkStorage = new V1_2RChunkStorage(true, true, chunkX, chunkZ);
+            V1_2RChunkStorage newChunkStorage = new V1_2RChunkStorage(hasSkylight, true, chunkX, chunkZ);
 
             oldChunkStorage.setChunkData(
                     oldChunk.getChunk(),
@@ -103,19 +109,19 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                         newChunkStorage.setBlockId(x, y, z, replacement.getBlockId());
                         newChunkStorage.setBlockMetadata(x, y, z, replacement.getBlockData());
                         newChunkStorage.setBlockLight(x, y, z, oldChunkStorage.getBlockLight(x, y, z));
-                        newChunkStorage.setSkyLight(x, y, z, oldChunkStorage.getSkyLight(x, y, z));
+                        if (hasSkylight) {
+                            newChunkStorage.setSkyLight(x, y, z, oldChunkStorage.getSkyLight(x, y, z));
+                        }
                     }
                 }
             }
-
-            ProtocolStorage storage = session.getUserData().getProtocolStorage();
             byte[] biomes = new byte[256];
 
             if (storage.hasObject(OldChunkData.class)) {
                 OldChunkData biomeData = storage.get(OldChunkData.class);
-
                 assert biomeData != null;
-                biomes = biomeData.getBiomeDataAt(chunkX, chunkZ, false);
+
+                biomes = biomeData.getBiomeDataAt(chunkX, chunkZ, !hasSkylight);
             } else {
                 Arrays.fill(biomes, (byte) 0x04); // forest
             }

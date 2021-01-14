@@ -40,6 +40,7 @@ import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.BetaToV1_2ChunkTranslator;
+import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.DimensionTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.LoadedChunkTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.item.CreativeItemList;
 
@@ -92,20 +93,29 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                storage.set(DimensionTracker.class, new DimensionTracker());
+
                 // biome data only for < b1.7 for now
                 if (session.getMain().getConfiguration().getServerVersion().getRegistryId() < 17) {
                     OldChunkData biomeData = new OldChunkData();
                     biomeData.initialize(data.read(Type.LONG, 2));
 
-                    session.getUserData().getProtocolStorage().set(OldChunkData.class, biomeData);
+                    storage.set(OldChunkData.class, biomeData);
                 }
+
+                int dimension = data.read(Type.BYTE, 5).intValue();
+                DimensionTracker dimensionTracker = storage.get(DimensionTracker.class);
+                assert dimensionTracker != null;
+
+                dimensionTracker.setDimension(dimension);
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(3),
                         data.read(4),
-                        set(Type.INT, data.read(Type.BYTE, 5).intValue()),
+                        set(Type.INT, dimension),
                         data.read(6),
                         data.read(7),
                         data.read(8)
@@ -260,9 +270,15 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                int dimension = data.read(Type.BYTE, 0).intValue();
+
+                DimensionTracker dimensionTracker = storage.get(DimensionTracker.class);
+                assert dimensionTracker != null;
+                dimensionTracker.setDimension(dimension);
 
                 return PacketUtil.createPacket(0x09, new TypeHolder[]{
-                        set(Type.INT, data.read(Type.BYTE, 0).intValue()),
+                        set(Type.INT, dimension),
                         data.read(1),
                         data.read(2),
                         data.read(3),
