@@ -24,6 +24,8 @@ package com.github.dirtpowered.dirtmv.network.versions.Release47To5;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.entity.ObjectType;
+import com.github.dirtpowered.dirtmv.data.entity.SpawnableObject;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
@@ -139,26 +141,26 @@ public class EntityPackets extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 ProtocolStorage storage = session.getUserData().getProtocolStorage();
 
-                EntityType entityType = null;
+                SpawnableObject entityObject = null;
                 int entityId = data.read(Type.INT, 0);
 
                 if (storage.hasObject(EntityTracker.class)) {
                     EntityTracker tracker = storage.get(EntityTracker.class);
 
                     assert tracker != null;
-                    entityType = tracker.getEntityById(entityId);
+                    entityObject = tracker.getEntityById(entityId);
                 } else if (storage.hasObject(V1_7EntityTracker.class)) {
                     V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
 
                     assert tracker != null;
-                    entityType = tracker.getEntityById(entityId);
+                    entityObject = tracker.getEntityById(entityId);
                 }
 
-                if (entityType == null)
+                if (entityObject == null)
                     return cancel();
 
                 WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 1);
-                WatchableObject[] watchableObjects = metadataTransformer.transformMetadata(entityType, oldMeta);
+                WatchableObject[] watchableObjects = metadataTransformer.transformMetadata(entityObject, oldMeta);
 
                 for (int i = 0; i < watchableObjects.length; i++) {
                     WatchableObject watchableObject = watchableObjects[i];
@@ -387,8 +389,8 @@ public class EntityPackets extends ServerProtocol {
                     int entityId = data.read(Type.VAR_INT, 0);
 
                     assert tracker != null;
-                    EntityType entityType = EntityType.fromEntityTypeId(type);
-                    tracker.addEntity(entityId, entityType);
+                    ObjectType objectType = ObjectType.fromObjectTypeId(type);
+                    tracker.addEntity(entityId, objectType);
                 }
 
                 // fixes entity bouncing

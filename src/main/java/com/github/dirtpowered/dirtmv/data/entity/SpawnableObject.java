@@ -20,25 +20,8 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity;
+package com.github.dirtpowered.dirtmv.data.entity;
 
-import com.github.dirtpowered.dirtmv.data.entity.SpawnableObject;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-public class V1_7EntityTracker {
-    private final Map<Integer, SpawnableObject> entities = new ConcurrentHashMap<>();
-
-    public void addEntity(int entityId, SpawnableObject entity) {
-        entities.putIfAbsent(entityId, entity);
-    }
-
-    public SpawnableObject getEntityById(int entityId) {
-        return entities.get(entityId);
-    }
-
-    public void removeEntity(int entityId) {
-        entities.remove(entityId);
-    }
+public interface SpawnableObject {
+    boolean isLivingEntity();
 }

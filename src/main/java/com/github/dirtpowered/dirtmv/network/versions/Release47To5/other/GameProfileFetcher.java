@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.network.versions.Release47To5.other;
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.google.common.base.Charsets;
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
@@ -60,7 +61,7 @@ public class GameProfileFetcher {
             .buildAsync(GameProfileFetcher::fetchBlocking);
 
     public static CompletableFuture<GameProfile> getSkinFor(String username) {
-        return skinCache.get(username);
+        return skinCache.get(ChatUtils.stripColor(username));
     }
 
     private static GameProfile fetchBlocking(String username) {

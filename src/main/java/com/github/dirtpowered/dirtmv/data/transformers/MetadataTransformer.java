@@ -22,10 +22,10 @@
 
 package com.github.dirtpowered.dirtmv.data.transformers;
 
-import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.entity.SpawnableObject;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 
 public interface MetadataTransformer {
 
-    WatchableObject[] transformMetadata(EntityType entityType, WatchableObject[] watchableObjects);
+    WatchableObject[] transformMetadata(SpawnableObject entityType, WatchableObject[] watchableObjects);
 }

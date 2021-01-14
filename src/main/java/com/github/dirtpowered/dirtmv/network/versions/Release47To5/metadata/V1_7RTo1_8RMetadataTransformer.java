@@ -23,6 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release47To5.metadata;
 
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.entity.SpawnableObject;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.transformers.MetadataTransformer;
@@ -34,7 +35,7 @@ import java.util.List;
 public class V1_7RTo1_8RMetadataTransformer implements MetadataTransformer {
 
     @Override
-    public WatchableObject[] transformMetadata(EntityType entityType, WatchableObject[] watchableObjects) {
+    public WatchableObject[] transformMetadata(SpawnableObject entityType, WatchableObject[] watchableObjects) {
         List<WatchableObject> newMetaData = new ArrayList<>();
 
         for (WatchableObject watchableObject : watchableObjects) {

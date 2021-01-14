@@ -20,25 +20,48 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity;
+package com.github.dirtpowered.dirtmv.data.entity;
 
-import com.github.dirtpowered.dirtmv.data.entity.SpawnableObject;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.pmw.tinylog.Logger;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+@AllArgsConstructor
+public enum ObjectType implements SpawnableObject {
+    BOAT(1),
+    ITEM(2),
+    MINECART(10),
+    FISH_HOOK(90),
+    TNT_PRIMED(50),
+    ENDER_CRYSTAL(51),
+    ARROW(60),
+    SNOWBALL(61),
+    EGG(62),
+    ENDER_PEARL(65),
+    FALLING_OBJECT(70),
+    ITEM_FRAME(71),
+    ENDER_EYE(72),
+    POTION(73),
+    EXP_BOTTLE(75),
+    FIREWORK_ROCKET(76),
+    LEASH(77);
 
-public class V1_7EntityTracker {
-    private final Map<Integer, SpawnableObject> entities = new ConcurrentHashMap<>();
+    @Getter
+    private final int objectTypeId;
 
-    public void addEntity(int entityId, SpawnableObject entity) {
-        entities.putIfAbsent(entityId, entity);
+    public static ObjectType fromObjectTypeId(int objectTypeId) {
+        for (ObjectType objectType : ObjectType.values()) {
+            if (objectType.objectTypeId == objectTypeId) {
+                return objectType;
+            }
+        }
+
+        Logger.warn("missing mapping for object type: {}", objectTypeId);
+        return null;
     }
 
-    public SpawnableObject getEntityById(int entityId) {
-        return entities.get(entityId);
-    }
-
-    public void removeEntity(int entityId) {
-        entities.remove(entityId);
+    @Override
+    public boolean isLivingEntity() {
+        return false;
     }
 }

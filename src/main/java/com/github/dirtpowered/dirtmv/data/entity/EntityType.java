@@ -27,7 +27,33 @@ import lombok.Getter;
 import org.pmw.tinylog.Logger;
 
 @AllArgsConstructor
-public enum EntityType {
+public enum EntityType implements SpawnableObject {
+    ITEM(1, false),
+    XP_ORB(2, false),
+    LEASH(8, false),
+    PAINTING(9, false),
+    ARROW(10, false),
+    SNOWBALL(11, false),
+    LARGE_FIREBALL(12, false),
+    SMALL_FIREBALL(13, false),
+    ENDER_PEARL(14, false),
+    ENDER_EYE(15, false),
+    POTION(16, false),
+    EXP_BOOTLE(17, false),
+    ITEM_FRAME(18, false),
+    WITHER_SKULL(19, false),
+    PRIMED_TNT(20, false),
+    FALLING_OBJECT(21, false),
+    FIREWORK(22, false),
+    BOAT(41, false),
+    MINECART(42, false),
+    CHEST_MINECART(43, false),
+    FURNACE_MINECART(44, false),
+    TNT_MINECART(45, false),
+    HOOPER_MINECART(46, false),
+    SPAWNER_MINECART(47, false),
+    HUMAN(48, true),
+    COMMANDBLOCK_MINECART(40, false),
     CREEPER(50, true),
     SKELETON(51, true),
     SPIDER(52, true),
@@ -56,16 +82,7 @@ public enum EntityType {
     OZELOT(98, true),
     IRON_GOLEM(99, true),
     HORSE(100, true),
-    VILLAGER(120, true),
-    HUMAN(48, true),
-    ITEM(1, false),
-    ARROW(2, false),
-    PRIMED_TNT(20, false),
-    MINECART(40, false),
-    BOAT(41, false),
-    FALLING_BLOCK(70, false),
-    WITHER_SKULL(66, false),
-    ITEM_FRAME(71, false);
+    VILLAGER(120, true);
 
     @Getter
     private final int entityTypeId;
