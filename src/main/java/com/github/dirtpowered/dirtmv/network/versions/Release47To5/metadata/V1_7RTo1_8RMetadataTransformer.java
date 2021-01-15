@@ -46,7 +46,10 @@ public class V1_7RTo1_8RMetadataTransformer implements MetadataTransformer {
             int index = watchableObject.getIndex();
 
             if (entityType.isLivingEntity()) {
-                if (type == MetadataType.INT && index == 12) {
+                if (type == MetadataType.BYTE && index == 11) {
+                    // nametag visibility
+                    newMetaData.add(new WatchableObject(MetadataType.BYTE, 3, value));
+                } else if (type == MetadataType.INT && index == 12) {
                     // ageable entities
                     newMetaData.add(new WatchableObject(MetadataType.BYTE, 12, ((Integer) value).byteValue()));
                 } else if (entityType == EntityType.ENDER_MAN && type == MetadataType.BYTE && index == 16) {

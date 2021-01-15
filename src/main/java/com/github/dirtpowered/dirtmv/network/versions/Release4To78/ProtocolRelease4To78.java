@@ -28,7 +28,6 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_5Team;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
@@ -50,8 +49,8 @@ import java.util.UUID;
 
 public class ProtocolRelease4To78 extends ServerProtocol {
 
-    private SoundRemapper soundRemapper;
-    private ItemBlockDataTransformer itemRemapper;
+    private final SoundRemapper soundRemapper;
+    private final ItemBlockDataTransformer itemRemapper;
 
     public ProtocolRelease4To78() {
         super(MinecraftVersion.R1_7_2, MinecraftVersion.R1_6_4);
@@ -576,18 +575,12 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                String arr = data.read(Type.STRING,0);
-                String[] commands = arr.split( "\0" );
+                String arr = data.read(Type.STRING, 0);
+                String[] commands = arr.split("\0");
 
-                TypeHolder[] types = new TypeHolder[commands.length + 1];
-                types[0] = set(Type.VAR_INT, commands.length);
-
-                for (int i = 0; i < commands.length; i++) {
-                    String command = commands[i];
-                    types[i + 1] = set(Type.V1_7_STRING, command);
-                }
-
-                return PacketUtil.createPacket(0x3A, types);
+                return PacketUtil.createPacket(0x3A, new TypeHolder[]{
+                        set(Type.STRING_ARRAY, commands)
+                });
             }
         });
 
@@ -771,8 +764,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                V1_5Team team = data.read(Type.V1_5_TEAM, 0);
-
                 return cancel();
             }
         });

@@ -426,4 +426,11 @@ public class Type {
             V1_8RProtocol.READABLE_BYTES.write(holder, packetOutput);
         }
     });
+
+    public static final TypeObject<String[]> STRING_ARRAY = new TypeObject<>(String[].class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_7_2RProtocol.STRING_ARRAY.write(holder, packetOutput);
+        }
+    });
 }

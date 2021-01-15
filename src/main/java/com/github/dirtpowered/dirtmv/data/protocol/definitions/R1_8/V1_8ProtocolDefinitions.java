@@ -197,6 +197,10 @@ public class V1_8ProtocolDefinitions extends StateDependedProtocol {
         });
 
         // tab complete
+        addPacket(0x14, ProtocolState.PLAY, PacketDirection.TO_SERVER, new DataType[]{
+                V1_7_2RProtocol.STRING,
+                BaseProtocol.BOOLEAN
+        });
 
         // client settings
         addPacket(0x15, ProtocolState.PLAY, PacketDirection.TO_SERVER, new DataType[]{

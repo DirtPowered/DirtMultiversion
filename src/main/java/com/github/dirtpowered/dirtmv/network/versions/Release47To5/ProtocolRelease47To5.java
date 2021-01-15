@@ -603,8 +603,12 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 BlockLocation l = fromBlockPosition(encodedPosition);
                 ItemStack itemStack = data.read(Type.V1_8R_ITEM, 2);
 
+                // 1.0+ servers are kicking players when placed block is 0. Should be null
+                if (itemStack != null && itemStack.getItemId() == 0)
+                    itemStack = null;
+
                 if (itemStack != null && itemStack.getItemId() == 387 /* written book */) {
-                    PacketData payload = PacketUtil.createPacket(0x3F, new TypeHolder[] {
+                    PacketData payload = PacketUtil.createPacket(0x3F, new TypeHolder[]{
                             set(Type.V1_7_STRING, "MC|BOpen")
                     });
 
@@ -616,7 +620,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         set(Type.UNSIGNED_BYTE, (short) l.getY()),
                         set(Type.INT, l.getZ()),
                         data.read(1),
-                        set(Type.V1_3R_ITEM, data.read(Type.V1_8R_ITEM, 2)),
+                        set(Type.V1_3R_ITEM, itemStack),
                         data.read(3),
                         data.read(4),
                         data.read(5),
@@ -677,6 +681,18 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         set(Type.V1_7_STRING, lines[1]),
                         set(Type.V1_7_STRING, lines[2]),
                         set(Type.V1_7_STRING, lines[3]),
+                });
+            }
+        });
+
+        // tab complete
+        addTranslator(0x14, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x14, new TypeHolder[]{
+                        data.read(0)
                 });
             }
         });
@@ -744,5 +760,8 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // map data
         addTranslator(0x34, -1, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
+
+        // spawn particle
+        addTranslator(0x2A, -1, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
     }
 }
