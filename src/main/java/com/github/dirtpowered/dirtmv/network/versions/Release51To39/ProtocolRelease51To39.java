@@ -46,8 +46,7 @@ import net.kyori.adventure.nbt.CompoundBinaryTag;
 import java.util.*;
 
 public class ProtocolRelease51To39 extends ServerProtocol {
-
-    private SoundRemapper soundRemapper;
+    private final SoundRemapper soundRemapper;
 
     public ProtocolRelease51To39() {
         super(MinecraftVersion.R1_4_6, MinecraftVersion.R1_3_1);
@@ -245,7 +244,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         data.read(6),
                         data.read(7),
                         data.read(8),
-                        set(Type.MOTION, new Motion(1, (short) 0, (short) 0, (short) 0))
+                        set(Type.MOTION, new Motion(0, (short) 0, (short) 0, (short) 0))
                 });
 
                 short itemId = data.read(Type.SHORT, 1);
