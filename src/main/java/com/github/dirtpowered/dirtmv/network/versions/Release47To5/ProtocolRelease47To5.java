@@ -675,8 +675,9 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 String[] lines = new String[4];
                 for (int i = 0; i < 4; i++) {
                     String msg = data.read(Type.V1_7_STRING, 1 + i);
-
-                    msg = ChatUtils.createChatComponentFromInvalidJson(msg);
+                    if (msg.startsWith("\"")) {
+                        msg = ChatUtils.createChatComponentFromInvalidJson(msg);
+                    }
                     msg = ChatUtils.jsonToLegacy(msg);
                     lines[i] = msg;
                 }
