@@ -30,7 +30,11 @@ import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
@@ -43,7 +47,11 @@ import io.netty.buffer.Unpooled;
 import lombok.SneakyThrows;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.WeakHashMap;
 
 public class ProtocolRelease51To39 extends ServerProtocol {
     private final SoundRemapper soundRemapper;

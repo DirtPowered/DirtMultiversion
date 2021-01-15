@@ -22,14 +22,22 @@
 
 package com.github.dirtpowered.dirtmv.data.protocol.types.entity;
 
-import com.github.dirtpowered.dirtmv.data.protocol.*;
+import com.github.dirtpowered.dirtmv.data.protocol.BaseProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.DataType;
+import com.github.dirtpowered.dirtmv.data.protocol.Type;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
+import com.github.dirtpowered.dirtmv.data.protocol.TypeObject;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Rotation;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 
 import java.io.IOException;
 import java.util.ArrayList;

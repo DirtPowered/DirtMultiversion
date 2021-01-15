@@ -22,7 +22,20 @@
 
 package com.github.dirtpowered.dirtmv.data.protocol;
 
-import com.github.dirtpowered.dirtmv.data.protocol.types.*;
+import com.github.dirtpowered.dirtmv.data.protocol.types.BooleanDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.ByteArrayDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.ByteDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.CompoundTagDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.DoubleDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.FloatDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.IntArrayDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.IntDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.LongDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.ShortDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.StringDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.UTF8StringDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.UnsignedByteDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.UnsignedShortDataType;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.nbt.CompoundBinaryTag;

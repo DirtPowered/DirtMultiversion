@@ -34,7 +34,22 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_6.V1_6_2RProto
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockChangeRecord;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.OptionalPosition;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BChunk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3BMultiBlockArray;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_5Team;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_2EntityAttributes;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8Chunk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8ChunkBulk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListEntry;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 

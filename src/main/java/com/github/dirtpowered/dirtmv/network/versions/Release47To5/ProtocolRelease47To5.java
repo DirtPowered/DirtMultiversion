@@ -30,7 +30,15 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProto
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.*;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockChangeRecord;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.OptionalPosition;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8Chunk;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8ChunkBulk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.PlayerListEntry;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListAction;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.tablist.TabListEntry;
@@ -398,7 +406,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                     lines[i] = ChatUtils.legacyToJsonString(data.read(Type.V1_7_STRING, 3 + i));
                 }
 
-                return PacketUtil.createPacket(0x33, new TypeHolder[] {
+                return PacketUtil.createPacket(0x33, new TypeHolder[]{
                         set(Type.LONG, toBlockPosition(x, y, z)),
                         set(Type.V1_7_STRING, lines[0]),
                         set(Type.V1_7_STRING, lines[1]),
@@ -417,7 +425,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 int y = data.read(Type.INT, 1);
                 int z = data.read(Type.INT, 2);
 
-                return PacketUtil.createPacket(0x36, new TypeHolder[] {
+                return PacketUtil.createPacket(0x36, new TypeHolder[]{
                         set(Type.LONG, toBlockPosition(x, y, z))
                 });
             }
@@ -440,19 +448,19 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));
 
                 if (online) {
-                    TabListEntry tabAddListEntry = new TabListEntry(TabListAction.ADD_PLAYER, new PlayerListEntry[] {
+                    TabListEntry tabAddListEntry = new TabListEntry(TabListAction.ADD_PLAYER, new PlayerListEntry[]{
                             new PlayerListEntry(new GameProfile(uuid, username), new Property[0], 0, 0, null)
                     });
 
-                    return PacketUtil.createPacket(0x38, new TypeHolder[] {
+                    return PacketUtil.createPacket(0x38, new TypeHolder[]{
                             set(Type.TAB_LIST_ENTRY, tabAddListEntry)
                     });
                 } else {
-                    TabListEntry tabRemoveListEntry = new TabListEntry(TabListAction.REMOVE_PLAYER, new PlayerListEntry[] {
+                    TabListEntry tabRemoveListEntry = new TabListEntry(TabListAction.REMOVE_PLAYER, new PlayerListEntry[]{
                             new PlayerListEntry(new GameProfile(uuid, username))
                     });
 
-                    return PacketUtil.createPacket(0x38, new TypeHolder[] {
+                    return PacketUtil.createPacket(0x38, new TypeHolder[]{
                             set(Type.TAB_LIST_ENTRY, tabRemoveListEntry)
                     });
                 }
@@ -543,7 +551,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                     return cancel();
                 }
 
-                return PacketUtil.createPacket(0x02, new TypeHolder[] {
+                return PacketUtil.createPacket(0x02, new TypeHolder[]{
                         set(Type.INT, data.read(Type.VAR_INT, 0)),
                         set(Type.BYTE, (byte) action)
                 });
@@ -634,7 +642,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x0A, new TypeHolder[] {
+                return PacketUtil.createPacket(0x0A, new TypeHolder[]{
                         set(Type.INT, 0),
                         set(Type.BYTE, (byte) 1)
                 });
