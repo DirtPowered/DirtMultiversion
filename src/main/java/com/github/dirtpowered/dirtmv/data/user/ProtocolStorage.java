@@ -27,14 +27,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProtocolStorage {
-    private Map<Class, Object> savedObjects = new HashMap<>();
+    private final Map<Class, Object> savedObjects = new HashMap<>();
 
     public boolean hasObject(Class key) {
         return savedObjects.containsKey(key);
     }
 
     @Nullable
-    public <T> T get(Class key) {
+    public <T> T get(Class<T> key) {
         if (!hasObject(key)) {
             String prefix = getClass().getSimpleName();
             throw new IllegalArgumentException("[" + prefix + "] key '" + key.getSimpleName() + "' doesn't exist");

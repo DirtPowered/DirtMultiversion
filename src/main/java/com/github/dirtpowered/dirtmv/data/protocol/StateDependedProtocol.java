@@ -24,15 +24,15 @@ package com.github.dirtpowered.dirtmv.data.protocol;
 
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
+import com.github.dirtpowered.dirtmv.data.utils.CommonUtils;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.Getter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class StateDependedProtocol {
 
     @Getter
-    private Map<PacketRegObj, DataType[]> packets = new HashMap<>();
+    private final Long2ObjectMap<DataType[]> packets = new Long2ObjectOpenHashMap<>();
 
     public StateDependedProtocol() {
         registerPackets();
@@ -40,11 +40,13 @@ public abstract class StateDependedProtocol {
 
     public abstract void registerPackets();
 
-    protected void addPacket(int packetId, ProtocolState protocolState, PacketDirection packetDirection, DataType[] instructions) {
-        packets.put(new PacketRegObj(packetId, protocolState, packetDirection), instructions);
+    protected void addPacket(int opCode, ProtocolState protocolState, PacketDirection direction, DataType[] instructions) {
+        long key = CommonUtils.toLongKey(opCode, protocolState.getStateId(), direction.getDirectionId());
+        packets.put(key, instructions);
     }
 
-    public DataType[] getInstruction(int packetId, ProtocolState protocolState, PacketDirection packetDirection) {
-        return packets.get(new PacketRegObj(packetId, protocolState, packetDirection));
+    public DataType[] getInstruction(int opCode, ProtocolState protocolState, PacketDirection direction) {
+        long key = CommonUtils.toLongKey(opCode, protocolState.getStateId(), direction.getDirectionId());
+        return packets.get(key);
     }
 }

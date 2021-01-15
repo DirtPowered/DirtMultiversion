@@ -28,8 +28,8 @@ import lombok.Getter;
 
 @Getter
 public class MultiSession {
-    private ClientSession clientSession;
-    private ServerSession serverSession;
+    private final ClientSession clientSession;
+    private final ServerSession serverSession;
 
     public MultiSession(ClientSession clientSession, ServerSession serverSession) {
         this.clientSession = clientSession;

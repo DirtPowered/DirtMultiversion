@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SoundRemapper {
-
     private static final Map<String, String> SOUND_MAPPINGS = new HashMap<>();
 
     public SoundRemapper(String fileName) {

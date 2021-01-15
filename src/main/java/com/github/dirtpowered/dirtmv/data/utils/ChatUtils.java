@@ -33,7 +33,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import java.util.regex.Pattern;
 
 public class ChatUtils {
-
     public final static String LEGACY_COLOR_CHAR = "§";
 
     /**
@@ -108,6 +107,12 @@ public class ChatUtils {
         return "";
     }
 
+    /**
+     * Converts invalid text message to valid JSON format
+     *
+     * @param message - invalid json message ("<message>")
+     * @return Json object as String
+     */
     public static String createChatComponentFromInvalidJson(String message) {
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = "{\"text\":" + message + "}";

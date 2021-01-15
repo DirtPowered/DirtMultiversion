@@ -42,15 +42,14 @@ import java.util.UUID;
  * Client to Server connection session
  */
 public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
-
-    private ServerSession serverSession;
+    private final ServerSession serverSession;
 
     @Getter
-    private SocketChannel channel;
+    private final SocketChannel channel;
 
-    private UUID key;
+    private final UUID key;
 
-    private Callback callback;
+    private final Callback callback;
     private boolean stateLock;
 
     ClientSession(UUID key, ServerSession serverSession, SocketChannel ch, Callback callback) {

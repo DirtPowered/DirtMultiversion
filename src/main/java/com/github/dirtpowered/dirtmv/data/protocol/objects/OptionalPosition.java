@@ -26,7 +26,7 @@ import lombok.Getter;
 
 @Getter
 public class OptionalPosition {
-    private int action;
+    private final int action;
     private float x;
     private float y;
     private float z;

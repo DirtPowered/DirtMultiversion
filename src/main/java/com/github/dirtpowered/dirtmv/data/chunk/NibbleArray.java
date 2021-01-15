@@ -27,10 +27,10 @@ import lombok.Getter;
 public class NibbleArray {
 
     @Getter
-    private byte[] data;
+    private final byte[] data;
 
     private int depthBits;
-    private boolean oldFormat;
+    private final boolean oldFormat;
 
     public NibbleArray(int initialSize) {
         oldFormat = true;

@@ -34,10 +34,10 @@ import java.io.IOException;
 public class PacketData {
 
     @Getter
-    private int opCode;
+    private final int opCode;
 
     @Getter
-    private TypeHolder[] objects;
+    private final TypeHolder[] objects;
 
     @Getter
     @Setter

@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.data;
 
 import lombok.Getter;
 
+@Getter
 public enum MinecraftVersion {
     B1_3(9, false, "b1.3"),
     B1_4(10, false, "b1.4"),
@@ -46,16 +47,9 @@ public enum MinecraftVersion {
     R1_7_6(90, 5, true, "1.7.6"),
     R1_8(100, 47, true, "1.8.9");
 
-    @Getter
-    private int registryId;
-
-    @Getter
+    private final int registryId;
     private int protocolNettyId;
-
-    @Getter
-    private boolean nettyProtocol;
-
-    @Getter
+    private final boolean nettyProtocol;
     private final String friendlyName;
 
     MinecraftVersion(int registryId, boolean nettyProtocol, String friendlyName) {

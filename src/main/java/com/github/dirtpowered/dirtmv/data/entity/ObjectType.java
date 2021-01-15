@@ -38,6 +38,7 @@ public enum ObjectType implements SpawnableObject {
     SNOWBALL(61),
     EGG(62),
     ENDER_PEARL(65),
+    WITHER_SKULL(66),
     FALLING_OBJECT(70),
     ITEM_FRAME(71),
     ENDER_EYE(72),

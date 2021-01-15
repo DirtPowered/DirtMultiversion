@@ -20,17 +20,16 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.data.protocol;
+package com.github.dirtpowered.dirtmv.data.utils;
 
-import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
-import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+public class CommonUtils {
 
-@AllArgsConstructor
-@EqualsAndHashCode
-public class PacketRegObj {
-    private int packetId;
-    private ProtocolState protocolState;
-    private PacketDirection packetDirection;
+    /**
+     * Packs 3 longs into one
+     *
+     * @return data packed as long
+     */
+    public static long toLongKey(long a, long b, long c) {
+        return (a << 32L) | (b << 16) | c;
+    }
 }

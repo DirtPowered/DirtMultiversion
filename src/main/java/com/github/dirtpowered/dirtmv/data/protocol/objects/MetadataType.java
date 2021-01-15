@@ -35,7 +35,7 @@ public enum MetadataType {
     ROTATION(7); // 1.8
 
     @Getter
-    private int type;
+    private final int type;
 
     MetadataType(int i) {
         this.type = i;

@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeObject;
+import com.github.dirtpowered.dirtmv.data.utils.CommonUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -49,24 +50,20 @@ public abstract class ServerProtocol implements ConnectionHandler {
         registerTranslators();
     }
 
-    private long toLongKey(long a, long b, long c) {
-        return (a << 32L) | (b << 16) | c;
-    }
-
     public abstract void registerTranslators();
 
     protected void addTranslator(int opCode, PacketDirection direction, PacketTranslator packetTranslator) {
-        long key = toLongKey(opCode, ProtocolState.PRE_NETTY.getStateId(), direction.getDirectionId());
+        long key = CommonUtils.toLongKey(opCode, ProtocolState.PRE_NETTY.getStateId(), direction.getDirectionId());
         registeredTranslators.put(key, packetTranslator);
     }
 
     protected void addTranslator(int opCode, ProtocolState state, PacketDirection direction, PacketTranslator packetTranslator) {
-        long key = toLongKey(opCode, state.getStateId(), direction.getDirectionId());
+        long key = CommonUtils.toLongKey(opCode, state.getStateId(), direction.getDirectionId());
         registeredTranslators.put(key, packetTranslator);
     }
 
     protected void addTranslator(int opCode, int opCodeTo, ProtocolState state, PacketDirection direction) {
-        long key = toLongKey(opCode, state.getStateId(), direction.getDirectionId());
+        long key = CommonUtils.toLongKey(opCode, state.getStateId(), direction.getDirectionId());
 
         registeredTranslators.put(key, new PacketTranslator() {
 
@@ -78,7 +75,7 @@ public abstract class ServerProtocol implements ConnectionHandler {
     }
 
     public PacketTranslator getTranslatorFor(int opCode, ProtocolState state, PacketDirection direction) {
-        long key = toLongKey(opCode, state.getStateId(), direction.getDirectionId());
+        long key = CommonUtils.toLongKey(opCode, state.getStateId(), direction.getDirectionId());
 
         return registeredTranslators.get(key);
     }

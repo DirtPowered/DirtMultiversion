@@ -31,9 +31,9 @@ import java.io.IOException;
 public abstract class DataType<T> {
 
     @Getter
-    private TypeObject type;
+    private final TypeObject<T> type;
 
-    protected DataType(TypeObject type) {
+    protected DataType(TypeObject<T> type) {
         this.type = type;
     }
 

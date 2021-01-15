@@ -25,22 +25,17 @@ package com.github.dirtpowered.dirtmv.network.server.codec;
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
-import com.github.dirtpowered.dirtmv.network.server.codec.netty.DetectionHandler;
-import com.github.dirtpowered.dirtmv.network.server.codec.netty.NettyPacketDecoder;
-import com.github.dirtpowered.dirtmv.network.server.codec.netty.NettyPacketEncoder;
-import com.github.dirtpowered.dirtmv.network.server.codec.netty.VarIntFrameDecoder;
-import com.github.dirtpowered.dirtmv.network.server.codec.netty.VarIntFrameEncoder;
+import com.github.dirtpowered.dirtmv.network.server.codec.netty.*;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 
-public class PipelineFactory extends ChannelInitializer {
+public class PipelineFactory extends ChannelInitializer<Channel> {
+    private static final int TIMEOUT = 15;
 
-    private static final int TIMEOUT = 30;
-
-    private DirtMultiVersion main;
-    private PacketDirection packetDirection;
-    private UserData userData;
+    private final DirtMultiVersion main;
+    private final PacketDirection packetDirection;
+    private final UserData userData;
 
     public PipelineFactory(DirtMultiVersion main, UserData userData, PacketDirection packetDirection) {
         this.main = main;
@@ -51,24 +46,39 @@ public class PipelineFactory extends ChannelInitializer {
     @Override
     protected void initChannel(Channel channel) {
         if (packetDirection == PacketDirection.TO_SERVER) {
-            channel.pipeline()
-                    .addFirst(ChannelConstants.DETECTION_HANDLER, new DetectionHandler(main, userData));
+            channel.pipeline().addFirst(
+                    ChannelConstants.DETECTION_HANDLER,
+                    new DetectionHandler(main, userData)
+            );
         } else {
             if (main.getConfiguration().getServerVersion().isNettyProtocol()) {
-                channel.pipeline()
-                        .addLast(ChannelConstants.NETTY_LENGTH_DECODER, new VarIntFrameDecoder())
-                        .addLast(ChannelConstants.NETTY_LENGTH_ENCODER, new VarIntFrameEncoder())
-
-                        .addLast(ChannelConstants.NETTY_PACKET_DECODER, new NettyPacketDecoder(main, userData, packetDirection))
-                        .addLast(ChannelConstants.NETTY_PACKET_ENCODER, new NettyPacketEncoder());
+                channel.pipeline().addLast(
+                        ChannelConstants.NETTY_LENGTH_DECODER,
+                        new VarIntFrameDecoder()
+                ).addLast(
+                        ChannelConstants.NETTY_LENGTH_ENCODER,
+                        new VarIntFrameEncoder()
+                ).addLast(
+                        ChannelConstants.NETTY_PACKET_DECODER,
+                        new NettyPacketDecoder(main, userData, packetDirection)
+                ).addLast(
+                        ChannelConstants.NETTY_PACKET_ENCODER,
+                        new NettyPacketEncoder()
+                );
             } else {
-                channel.pipeline()
-                        .addLast(ChannelConstants.LEGACY_DECODER, new PacketDecoder(main, packetDirection, userData))
-                        .addLast(ChannelConstants.LEGACY_ENCODER, new PacketEncoder());
+                channel.pipeline().addLast(
+                        ChannelConstants.LEGACY_DECODER,
+                        new PacketDecoder(main, packetDirection, userData)
+                ).addLast(
+                        ChannelConstants.LEGACY_ENCODER,
+                        new PacketEncoder()
+                );
             }
         }
 
-        channel.pipeline()
-                .addLast(ChannelConstants.TIMEOUT_HANDLER, new ReadTimeoutHandler(TIMEOUT));
+        channel.pipeline().addLast(
+                ChannelConstants.TIMEOUT_HANDLER,
+                new ReadTimeoutHandler(TIMEOUT)
+        );
     }
 }

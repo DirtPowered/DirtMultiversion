@@ -334,6 +334,11 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
                 V1_7_2RProtocol.METADATA // metadata
         });
 
+        // tab autocomplete
+        addPacket(0x3A, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[] {
+                V1_7_2RProtocol.STRING_ARRAY
+        });
+
         // set experience
         addPacket(0x1F, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
                 BaseProtocol.FLOAT,

@@ -41,8 +41,7 @@ import java.net.InetSocketAddress;
 import java.util.UUID;
 
 public class Client {
-
-    private ServerSession serverSession;
+    private final ServerSession serverSession;
 
     public Client(ServerSession serverSession) {
         this.serverSession = serverSession;
@@ -65,10 +64,14 @@ public class Client {
 
             @Override
             protected void initChannel(SocketChannel ch) {
-                ch.pipeline()
-                        .addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(serverSession.getMain(),
-                                serverSession.getUserData(), PacketDirection.TO_CLIENT))
-                        .addLast(ChannelConstants.CLIENT_HANDLER, new ClientSession(key, serverSession, ch, callback));
+                ch.pipeline().addLast(
+                        ChannelConstants.DEFAULT_PIPELINE,
+                        new PipelineFactory(serverSession.getMain(), serverSession.getUserData(), PacketDirection.TO_CLIENT)
+                );
+                ch.pipeline().addLast(
+                        ChannelConstants.CLIENT_HANDLER,
+                        new ClientSession(key, serverSession, ch, callback)
+                );
             }
         });
 

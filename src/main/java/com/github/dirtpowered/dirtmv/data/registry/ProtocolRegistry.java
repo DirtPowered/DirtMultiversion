@@ -29,8 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProtocolRegistry {
-
-    private static Map<MinecraftVersion, BaseProtocol> protocols = new HashMap<>();
+    private static final Map<MinecraftVersion, BaseProtocol> protocols = new HashMap<>();
 
     public static void registerProtocol(MinecraftVersion version, BaseProtocol protocol) {
         protocols.put(version, protocol);

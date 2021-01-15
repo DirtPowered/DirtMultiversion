@@ -26,8 +26,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import io.netty.buffer.ByteBuf;
 
 public class NettyInputWrapper implements PacketInput {
-
-    private ByteBuf buf;
+    private final ByteBuf buf;
 
     public NettyInputWrapper(ByteBuf buf) {
         this.buf = buf;

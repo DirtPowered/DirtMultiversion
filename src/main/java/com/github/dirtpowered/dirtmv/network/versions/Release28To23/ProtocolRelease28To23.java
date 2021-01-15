@@ -49,7 +49,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ProtocolRelease28To23 extends ServerProtocol {
-
     private static final ItemBlockDataTransformer blockDataTransformer;
 
     static {

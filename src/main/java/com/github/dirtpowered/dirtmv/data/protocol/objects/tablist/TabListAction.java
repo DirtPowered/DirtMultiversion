@@ -32,7 +32,7 @@ public enum TabListAction {
     REMOVE_PLAYER(4);
 
     @Getter
-    private int action;
+    private final int action;
 
     TabListAction(int action) {
         this.action = action;

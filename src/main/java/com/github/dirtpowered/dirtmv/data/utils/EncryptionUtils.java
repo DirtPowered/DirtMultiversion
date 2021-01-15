@@ -31,24 +31,17 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
 import com.github.dirtpowered.dirtmv.network.server.codec.encryption.PacketDecryptionCodec;
 import com.github.dirtpowered.dirtmv.network.server.codec.encryption.PacketEncryptionCodec;
-import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.Channel;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.*;
 import java.util.Arrays;
 
 public class EncryptionUtils {
-
-    private static KeyPair keyPair;
+    private static final KeyPair keyPair;
 
     static {
         // generate key pair
@@ -87,10 +80,10 @@ public class EncryptionUtils {
     /**
      * Sends empty encryption response
      *
-     * @param session       Server session
-     * @param from Version to start from
+     * @param session - Server session
+     * @param from    - Version to start from
      */
-    public static void sendEmptyEncryptionResponse(ServerSession session, MinecraftVersion from) throws IOException {
+    public static void sendEmptyEncryptionResponse(ServerSession session, MinecraftVersion from) {
         PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
                 new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0]),
                 new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0])
@@ -102,10 +95,10 @@ public class EncryptionUtils {
     /**
      * Enables proxy-side connection encryption
      *
-     * @param channel {@link io.netty.channel.socket.SocketChannel channel} netty channel
-     * @param sharedKey {@link javax.crypto.SecretKey key} shared secret key
+     * @param channel   -  {@link io.netty.channel.Channel channel} netty channel
+     * @param sharedKey - {@link javax.crypto.SecretKey key} shared secret key
      */
-    public static void setEncryption(SocketChannel channel, SecretKey sharedKey) {
+    public static void setEncryption(Channel channel, SecretKey sharedKey) {
         channel.pipeline().addBefore(
                 ChannelConstants.LEGACY_DECODER, ChannelConstants.PACKET_DECRYPTION,
                 new PacketDecryptionCodec(getCipher(false, sharedKey))

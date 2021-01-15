@@ -30,7 +30,7 @@ public enum ProtocolState {
     STATUS(1), HANDSHAKE(-1), LOGIN(2), PLAY(0), PRE_NETTY(999);
 
     @Getter
-    private int stateId;
+    private final int stateId;
 
     public static ProtocolState fromId(int stateId) {
         for (ProtocolState protocolState : ProtocolState.values()) {

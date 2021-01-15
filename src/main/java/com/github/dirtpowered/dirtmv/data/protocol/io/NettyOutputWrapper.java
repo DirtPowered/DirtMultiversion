@@ -26,8 +26,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import io.netty.buffer.ByteBuf;
 
 public class NettyOutputWrapper implements PacketOutput {
-
-    private ByteBuf buf;
+    private final ByteBuf buf;
 
     public NettyOutputWrapper(ByteBuf buf) {
         this.buf = buf;

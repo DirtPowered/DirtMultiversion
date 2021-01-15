@@ -28,21 +28,21 @@ import lombok.Getter;
 public class ExtendedBlockStorage {
 
     @Getter
-    private byte[] blockLSBArray;
+    private final byte[] blockLSBArray;
 
     @Getter
     private NibbleArray blockMSBArray;
 
     @Getter
-    private NibbleArray blockMetadataArray;
+    private final NibbleArray blockMetadataArray;
 
     @Getter
-    private NibbleArray blockLightArray;
+    private final NibbleArray blockLightArray;
 
     @Getter
     private NibbleArray skylightArray;
 
-    private boolean old;
+    private final boolean old;
 
     public ExtendedBlockStorage(boolean skylight, boolean old) {
         this.old = old;
