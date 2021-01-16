@@ -22,6 +22,8 @@
 
 package com.github.dirtpowered.dirtmv.data.user;
 
+import lombok.NonNull;
+
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +35,8 @@ public class ProtocolStorage {
         return savedObjects.containsKey(key);
     }
 
-    @Nullable
+    // it can't be null, because it will throw exception first
+    @NonNull
     public <T> T get(Class<T> key) {
         if (!hasObject(key)) {
             String prefix = getClass().getSimpleName();

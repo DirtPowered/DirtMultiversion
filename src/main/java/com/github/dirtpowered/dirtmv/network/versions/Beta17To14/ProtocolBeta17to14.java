@@ -65,7 +65,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
     @Override
     public void onConnect(ServerSession session) {
-        ProtocolStorage storage = session.getUserData().getProtocolStorage();
+        ProtocolStorage storage = session.getStorage();
 
         storage.set(BlockStorage.class, new BlockStorage());
         storage.set(PlayerTabListCache.class, new PlayerTabListCache());

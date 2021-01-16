@@ -61,7 +61,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
     @Override
     public void onConnect(ServerSession session) {
-        ProtocolStorage storage = session.getUserData().getProtocolStorage();
+        ProtocolStorage storage = session.getStorage();
         storage.set(LoadedChunkTracker.class, new LoadedChunkTracker());
     }
 
@@ -92,7 +92,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 storage.set(DimensionTracker.class, new DimensionTracker());
 
                 // biome data only for < b1.7 for now
@@ -105,8 +105,6 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
                 int dimension = data.read(Type.BYTE, 5).intValue();
                 DimensionTracker dimensionTracker = storage.get(DimensionTracker.class);
-                assert dimensionTracker != null;
-
                 dimensionTracker.setDimension(dimension);
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
@@ -132,8 +130,6 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                 int chunkZ = data.read(Type.INT, 1);
 
                 byte mode = data.read(Type.BYTE, 2);
-
-                assert chunkTracker != null;
 
                 if (mode == 0) {
                     chunkTracker.removeChunk(chunkX, chunkZ);
@@ -185,7 +181,6 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                     e.printStackTrace();
                 }
 
-                assert chunkTracker != null;
                 if (!chunkTracker.isChunkLoaded(chunkX, chunkZ)) {
                     return cancel();
                 }
@@ -212,7 +207,6 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
                 Block replacement = blockDataTransformer.replaceBlock(blockId, blockData);
 
-                assert chunkTracker != null;
                 if (!chunkTracker.isChunkLoaded(chunkX, chunkZ)) {
                     return cancel();
                 }
@@ -269,11 +263,10 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 int dimension = data.read(Type.BYTE, 0).intValue();
 
                 DimensionTracker dimensionTracker = storage.get(DimensionTracker.class);
-                assert dimensionTracker != null;
                 dimensionTracker.setDimension(dimension);
 
                 return PacketUtil.createPacket(0x09, new TypeHolder[]{

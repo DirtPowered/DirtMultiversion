@@ -385,7 +385,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 VehicleTracker vehicleTracker = session.getUserData().getProtocolStorage().get(VehicleTracker.class);
-                assert vehicleTracker != null;
                 int vehicleId = data.read(Type.INT, 1);
 
                 if (vehicleId != -1) {
@@ -427,7 +426,6 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 VehicleTracker vehicleTracker = session.getUserData().getProtocolStorage().get(VehicleTracker.class);
-                assert vehicleTracker != null;
                 boolean dismount = data.read(Type.BOOLEAN, 3);
 
                 if (dismount && vehicleTracker.getVehicleId() != -999) {

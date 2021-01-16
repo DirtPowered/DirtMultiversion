@@ -44,7 +44,7 @@ public class MovementTranslator {
     }
 
     public static void updateBoundingBox(ServerSession session, Location position) {
-        ProtocolStorage storage = session.getUserData().getProtocolStorage();
+        ProtocolStorage storage = session.getStorage();
         if (!storage.hasObject(BoundingBox.class)) {
             BoundingBox b = new BoundingBox(
                     position.getX(), position.getY(), position.getZ(),
@@ -68,13 +68,9 @@ public class MovementTranslator {
     }
 
     private static ArrayList<BlockCollision> getPossibleCollisions(Location position, ServerSession session) {
-        ProtocolStorage protocolStorage = session.getUserData().getProtocolStorage();
+        ProtocolStorage protocolStorage = session.getStorage();
         BoundingBox boundingBox = protocolStorage.get(BoundingBox.class);
         BlockStorage storage = protocolStorage.get(BlockStorage.class);
-
-        // it's always not-null
-        assert storage != null;
-        assert boundingBox != null;
 
         ArrayList<BlockCollision> possibleCollisions = new ArrayList<>();
 
@@ -111,7 +107,7 @@ public class MovementTranslator {
     }
 
     public static Location correctPosition(ServerSession session, double x, double y, double z) {
-        ProtocolStorage protocolStorage = session.getUserData().getProtocolStorage();
+        ProtocolStorage protocolStorage = session.getStorage();
         BoundingBox b = protocolStorage.get(BoundingBox.class);
 
         Location loc = new Location(x, y, z);
@@ -122,8 +118,6 @@ public class MovementTranslator {
                 blockCollision.correctPosition(b, blockCollision instanceof ChestCollision);
             }
         }
-
-        assert b != null;
         return new Location(b.getMiddleX(), b.getMiddleY() - 0.9, b.getMiddleZ());
     }
 

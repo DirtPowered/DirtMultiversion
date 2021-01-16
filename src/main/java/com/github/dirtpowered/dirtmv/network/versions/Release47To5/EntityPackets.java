@@ -104,14 +104,12 @@ public class EntityPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 EntityType entityType = EntityType.fromEntityTypeId(data.read(Type.BYTE, 1));
 
                 if (storage.hasObject(V1_7EntityTracker.class)) {
                     V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
                     int entityId = data.read(Type.VAR_INT, 0);
-
-                    assert tracker != null;
                     tracker.addEntity(entityId, entityType);
                 }
 
@@ -140,20 +138,16 @@ public class EntityPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
 
                 SpawnableObject entityObject = null;
                 int entityId = data.read(Type.INT, 0);
 
                 if (storage.hasObject(EntityTracker.class)) {
                     EntityTracker tracker = storage.get(EntityTracker.class);
-
-                    assert tracker != null;
                     entityObject = tracker.getEntityById(entityId);
                 } else if (storage.hasObject(V1_7EntityTracker.class)) {
                     V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
-
-                    assert tracker != null;
                     entityObject = tracker.getEntityById(entityId);
                 }
 
@@ -203,14 +197,12 @@ public class EntityPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 int[] entities = data.read(Type.BYTE_INT_ARRAY, 0);
 
                 if (storage.hasObject(V1_7EntityTracker.class)) {
                     for (int entityId : entities) {
                         V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
-
-                        assert tracker != null;
                         tracker.removeEntity(entityId);
                     }
                 }
@@ -225,15 +217,13 @@ public class EntityPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 UUID uniqueId = UUID.fromString(data.read(Type.V1_7_STRING, 1));
                 String username = data.read(Type.V1_7_STRING, 2);
 
                 if (storage.hasObject(V1_7EntityTracker.class)) {
                     V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
                     int entityId = data.read(Type.VAR_INT, 0);
-
-                    assert tracker != null;
                     tracker.addEntity(entityId, EntityType.HUMAN);
                 }
 
@@ -378,7 +368,7 @@ public class EntityPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 int x = data.read(Type.INT, 2);
                 int y = data.read(Type.INT, 3);
                 int z = data.read(Type.INT, 4);
@@ -430,8 +420,6 @@ public class EntityPackets extends ServerProtocol {
                 if (storage.hasObject(V1_7EntityTracker.class)) {
                     V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
                     int entityId = data.read(Type.VAR_INT, 0);
-
-                    assert tracker != null;
                     tracker.addEntity(entityId, objectType);
                 }
                 return PacketUtil.createPacket(0x0E, new TypeHolder[]{

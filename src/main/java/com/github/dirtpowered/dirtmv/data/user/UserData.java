@@ -38,13 +38,11 @@ public class UserData {
     private SecretKey secretKey;
     private String username;
     private PreNettyProtocolState preNettyProtocolState;
-    private int dimension;
     private int entityId;
     private ProtocolState protocolState;
     private String address;
     private int port;
     private ProtocolStorage protocolStorage;
-    private String spoofedAddress;
 
     public UserData() {
         this.protocolStorage = new ProtocolStorage();

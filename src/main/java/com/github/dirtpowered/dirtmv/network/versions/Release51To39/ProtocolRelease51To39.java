@@ -40,8 +40,10 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.DimensionTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release51To39.item.CreativeItemList;
 import io.netty.buffer.Unpooled;
 import lombok.SneakyThrows;
@@ -101,8 +103,13 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getStorage();
+                if (!storage.hasObject(DimensionTracker.class)) {
+                    storage.set(DimensionTracker.class, new DimensionTracker());
+                }
 
-                session.getUserData().setDimension(data.read(Type.BYTE, 3));
+                DimensionTracker dimensionTracker = session.getStorage().get(DimensionTracker.class);
+                dimensionTracker.setDimension(data.read(Type.BYTE, 3));
                 return data;
             }
         });
@@ -112,8 +119,8 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-
-                session.getUserData().setDimension(data.read(Type.INT, 0));
+                DimensionTracker dimensionTracker = session.getStorage().get(DimensionTracker.class);
+                dimensionTracker.setDimension(data.read(Type.INT, 0));
                 return data;
             }
         });
@@ -401,7 +408,8 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 V1_3_4ChunkBulk oldChunk = data.read(Type.V1_3CHUNK_BULK, 0);
 
-                oldChunk.setSkylight(session.getUserData().getDimension() == 0);
+                DimensionTracker tracker = session.getStorage().get(DimensionTracker.class);
+                oldChunk.setSkylight(tracker.getDimension() == 0);
 
                 return PacketUtil.createPacket(0x38, new TypeHolder[]{
                         set(Type.V1_4CHUNK_BULK, oldChunk)

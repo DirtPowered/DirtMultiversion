@@ -51,6 +51,7 @@ import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
+import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.DimensionTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.DataFixers;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
@@ -85,7 +86,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
     @Override
     public void onConnect(ServerSession session) {
-        ProtocolStorage storage = session.getUserData().getProtocolStorage();
+        ProtocolStorage storage = session.getStorage();
         storage.set(OnGroundTracker.class, new OnGroundTracker());
         storage.set(WindowTypeTracker.class, new WindowTypeTracker());
         storage.set(QuickBarTracker.class, new QuickBarTracker());
@@ -233,7 +234,14 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                     // use existing chunk storage (pre 1.2 servers)
                     chunkTransformer = new V1_3ToV1_8ChunkTranslator(chunk.getStorage(), groundUp, bitmap);
                 } else {
-                    chunkTransformer = new V1_3ToV1_8ChunkTranslator(chunk.getUncompressedData(), bitmap, true, groundUp);
+                    ProtocolStorage storage = session.getStorage();
+
+                    boolean skyLight = true;
+                    if (storage.hasObject(DimensionTracker.class)) {
+                        DimensionTracker tracker = storage.get(DimensionTracker.class);
+                        skyLight = tracker.getDimension() == 0;
+                    }
+                    chunkTransformer = new V1_3ToV1_8ChunkTranslator(chunk.getUncompressedData(), bitmap, skyLight, groundUp);
                 }
 
                 V1_8Chunk newChunk = new V1_8Chunk(chunkX, chunkZ, groundUp, bitmap, chunkTransformer.getChunkData());
@@ -568,13 +576,10 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 BlockLocation l = fromBlockPosition(encodedPosition);
 
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 if (storage.hasObject(BlockMiningTimeFixer.class) && storage.hasObject(BlockStorage.class)) {
                     BlockMiningTimeFixer blockMiningTimeFixer = storage.get(BlockMiningTimeFixer.class);
                     BlockStorage blockStorage = storage.get(BlockStorage.class);
-
-                    assert blockMiningTimeFixer != null;
-                    assert blockStorage != null;
 
                     switch (action) {
                         case 0: // start digging

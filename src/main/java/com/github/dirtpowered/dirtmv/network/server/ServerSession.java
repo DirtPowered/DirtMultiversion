@@ -32,6 +32,7 @@ import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
@@ -335,6 +336,10 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     public int getConnectionCount() {
         return main.getSessionRegistry().getSessions().size();
+    }
+
+    public ProtocolStorage getStorage() {
+        return userData.getProtocolStorage();
     }
 
     @Data

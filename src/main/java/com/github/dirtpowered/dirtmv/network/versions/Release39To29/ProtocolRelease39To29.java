@@ -185,7 +185,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
 
                 storage.set(EntityTracker.class, new EntityTracker());
                 storage.set(UpdateTask.class, new UpdateTask(session));
@@ -874,7 +874,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 byte type = data.read(Type.BYTE, 3);
                 byte pitch = data.read(Type.BYTE, 4);
 
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
 
                 short blockId;
 
@@ -883,8 +883,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 } else {
                     BlockStorage blockStorage = storage.get(BlockStorage.class);
                     // TODO: use local block storage
-                    assert blockStorage != null;
-
                     blockId = (short) blockStorage.getBlockAt(x, y, z);
                 }
 

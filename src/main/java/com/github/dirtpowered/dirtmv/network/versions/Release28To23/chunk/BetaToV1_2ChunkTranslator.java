@@ -64,12 +64,11 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
     @Override
     public PacketData translate(ServerSession session, PacketData data) {
-        ProtocolStorage storage = session.getUserData().getProtocolStorage();
+        ProtocolStorage storage = session.getStorage();
 
         LoadedChunkTracker chunkTracker = storage.get(LoadedChunkTracker.class);
         DimensionTracker dimensionTracker = storage.get(DimensionTracker.class);
 
-        assert dimensionTracker != null;
         boolean hasSkylight = dimensionTracker.getDimension() == 0;
 
         V1_3BChunk oldChunk = (V1_3BChunk) data.read(0).getObject();
@@ -119,8 +118,6 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
             if (storage.hasObject(OldChunkData.class)) {
                 OldChunkData biomeData = storage.get(OldChunkData.class);
-                assert biomeData != null;
-
                 biomes = biomeData.getBiomeDataAt(chunkX, chunkZ, !hasSkylight);
             } else {
                 Arrays.fill(biomes, (byte) 0x04); // forest
@@ -144,12 +141,9 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                     ))
             }), PacketDirection.TO_CLIENT, MinecraftVersion.R1_2_1);
 
-            assert chunkTracker != null;
             chunkTracker.setChunkLoaded(chunkX, chunkZ);
-
             return ServerProtocol.cancel();
         } else {
-            assert chunkTracker != null;
             if (!chunkTracker.isChunkLoaded(chunkX, chunkZ)) {
                 return ServerProtocol.cancel();
             }

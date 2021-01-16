@@ -40,11 +40,10 @@ public class UpdateTask implements Tickable {
 
     @Override
     public void tick() {
-        ProtocolStorage storage = serverSession.getUserData().getProtocolStorage();
+        ProtocolStorage storage = serverSession.getStorage();
         if (storage.hasObject(EntityTracker.class)) {
             EntityTracker tracker = storage.get(EntityTracker.class);
 
-            assert tracker != null;
             Random shared = serverSession.getMain().getSharedRandom();
 
             for (Integer eId : tracker.getTrackedEntities().keySet()) {

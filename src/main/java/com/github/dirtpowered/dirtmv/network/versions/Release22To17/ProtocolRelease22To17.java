@@ -182,7 +182,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 if (!storage.hasObject(BlockStorage.class)) {
                     return data;
                 }
@@ -212,7 +212,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 if (!storage.hasObject(BlockStorage.class)) {
                     return data;
                 }

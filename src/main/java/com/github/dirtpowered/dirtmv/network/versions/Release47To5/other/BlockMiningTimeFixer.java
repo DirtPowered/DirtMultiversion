@@ -46,15 +46,13 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
 
     public BlockMiningTimeFixer(ServerSession session) {
         this.session = session;
-        this.storage = session.getUserData().getProtocolStorage();
+        this.storage = session.getStorage();
         this.currentMiningTicks = 0;
     }
 
     private int getItemInHand() {
         if (storage.hasObject(QuickBarTracker.class)) {
             QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
-            assert quickBarTracker != null;
-
             return quickBarTracker.getItemInHand();
         }
         return 0;
@@ -139,8 +137,6 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
         }
 
         BlockStorage blockStorage = storage.get(BlockStorage.class);
-        assert blockStorage != null;
-
         int typeId = blockStorage.getBlockAt(position.getX(), position.getY(), position.getZ());
 
         if (HardnessTable.exist(typeId)) {

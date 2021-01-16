@@ -131,11 +131,9 @@ public class MovementPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 OnGroundTracker groundTracker = storage.get(OnGroundTracker.class);
                 int entityId = data.read(Type.INT, 0);
-
-                assert groundTracker != null;
                 boolean onGround = groundTracker.isOnGround(entityId);
 
                 return PacketUtil.createPacket(0x18, new TypeHolder[]{

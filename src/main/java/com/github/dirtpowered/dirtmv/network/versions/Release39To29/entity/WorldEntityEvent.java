@@ -58,14 +58,13 @@ public class WorldEntityEvent {
     }
 
     private static void playSound(ServerSession session, int entityId, SoundType type) {
-        ProtocolStorage storage = session.getUserData().getProtocolStorage();
+        ProtocolStorage storage = session.getStorage();
         if (!storage.hasObject(EntityTracker.class)) {
             return;
         }
 
         EntityTracker tracker = storage.get(EntityTracker.class);
 
-        assert tracker != null;
         if (tracker.isEntityTracked(entityId)) {
             AbstractEntity e = tracker.getEntity(entityId);
 
