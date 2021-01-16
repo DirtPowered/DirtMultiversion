@@ -37,14 +37,16 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
-import org.apache.commons.codec.binary.Base64OutputStream;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.pmw.tinylog.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 
 public class Server {
@@ -106,11 +108,10 @@ public class Server {
                     return;
                 }
 
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                Base64OutputStream base64Stream = new Base64OutputStream(outputStream);
-                ImageIO.write(image, "png", base64Stream);
+                byte[] bytes = IOUtils.toByteArray(new FileInputStream(file));
+                String encodedString = new String(Base64.encodeBase64(bytes), StandardCharsets.UTF_8);
 
-                this.serverIcon = MessageFormat.format("data:image/png;base64,{0}", outputStream.toString("UTF-8"));
+                this.serverIcon = MessageFormat.format("data:image/png;base64,{0}", encodedString);
             } catch (IOException e) {
                 Logger.warn("couldn't read {}", file.getName());
             }
