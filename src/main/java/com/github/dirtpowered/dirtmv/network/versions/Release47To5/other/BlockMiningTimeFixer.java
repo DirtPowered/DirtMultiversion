@@ -53,7 +53,7 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
     private int getItemInHand() {
         if (storage.hasObject(QuickBarTracker.class)) {
             QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
-            return quickBarTracker.getItemInHand();
+            return quickBarTracker.getItemInHand().getItemId();
         }
         return 0;
     }

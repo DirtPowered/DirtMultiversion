@@ -23,6 +23,7 @@
 package com.github.dirtpowered.dirtmv.viaversion.providers;
 
 import com.github.dirtpowered.dirtmv.api.DirtServer;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
@@ -50,8 +51,8 @@ public class ViaHandItemProvider extends HandItemProvider {
             if (storage.hasObject(QuickBarTracker.class)) {
                 QuickBarTracker cache = storage.get(QuickBarTracker.class);
 
-                int itemId = cache.getItemInHand();
-                return new Item(itemId, (byte) 0, (short) 0, null);
+                ItemStack item = cache.getItemInHand();
+                return new Item(item.getItemId(), (byte) item.getAmount(), (short) item.getData(), null);
             }
         }
         return super.getHandItem(userConnection);

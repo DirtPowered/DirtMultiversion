@@ -65,11 +65,11 @@ public class QuickBarTracker {
         return quickBarItems.getOrDefault(slot, null);
     }
 
-    public int getItemInHand() {
+    public ItemStack getItemInHand() {
         if (quickBarItems.get(currentSlot) == null) {
-            return 0;
+            return new ItemStack(0, 0, 0, null);
         }
-        return quickBarItems.get(currentSlot).getItemId();
+        return quickBarItems.get(currentSlot);
     }
 
     public void setCurrentHotBarSlot(int currentSlot) {
