@@ -22,7 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.client;
 
-import com.github.dirtpowered.dirtmv.config.Configuration;
+import com.github.dirtpowered.dirtmv.api.Configuration;
 import com.github.dirtpowered.dirtmv.data.interfaces.Callback;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;

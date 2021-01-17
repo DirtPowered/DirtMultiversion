@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.config;
+package com.github.dirtpowered.dirtmv.api;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 
@@ -85,4 +85,9 @@ public interface Configuration {
      * Replace chests to ender chests to prevent rendering glitches (r1.3+)
      */
     boolean replaceChests();
+
+    /**
+     * Enable ViaVersion support
+     */
+    boolean enableViaVersion();
 }

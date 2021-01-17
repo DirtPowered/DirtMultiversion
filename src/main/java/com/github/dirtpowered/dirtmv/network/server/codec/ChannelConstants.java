@@ -38,4 +38,8 @@ public class ChannelConstants {
     public static final String NETTY_LENGTH_ENCODER = "netty_length_encoder";
     public static final String NETTY_PACKET_DECODER = "netty_packet_decoder";
     public static final String NETTY_PACKET_ENCODER = "netty_packet_encoder";
+
+    // via support
+    public static final String VIA_DECODER = "via_decoder";
+    public static final String VIA_ENCODER = "via_encoder";
 }

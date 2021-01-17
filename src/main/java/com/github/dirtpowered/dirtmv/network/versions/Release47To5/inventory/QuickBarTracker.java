@@ -22,19 +22,54 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.Getter;
+import lombok.Setter;
 
 public class QuickBarTracker {
-    private final Map<Integer, Integer> quickBarItems = new HashMap<>();
+    private final Int2ObjectMap<ItemStack> quickBarItems = new Int2ObjectOpenHashMap<>();
+
+    @Getter
     private int currentSlot;
 
-    public void addItem(int slot, int itemId) {
-        quickBarItems.put(slot, itemId);
+    /*
+     * Stolen from GlowPlayerInventory
+     * https://github.com/GlowstoneMC/Glowstone (28965ce7e1774df7ed7f91ddd5e2d9a885389089)
+     */
+    private final static int[] slotConversion = {
+            36, 37, 38, 39, 40, 41, 42, 43, 44,
+            9, 10, 11, 12, 13, 14, 15, 16, 17,
+            18, 19, 20, 21, 22, 23, 24, 25, 26,
+            27, 28, 29, 30, 31, 32, 33, 34, 35,
+            5, 6, 7, 8, 1, 2, 3, 4, 0
+    };
+
+    @Setter
+    @Getter
+    private ItemStack itemOnCursor;
+
+    public static int networkSlotToInventory(int slot) {
+        for (int i = 0; i < 45; ++i) {
+            if (slot == slotConversion[i]) return i;
+        }
+        return -1;
+    }
+
+    public void setItem(int slot, ItemStack itemStack) {
+        quickBarItems.put(slot, itemStack);
+    }
+
+    public ItemStack getItem(int slot) {
+        return quickBarItems.getOrDefault(slot, null);
     }
 
     public int getItemInHand() {
-        return quickBarItems.getOrDefault(currentSlot, 0);
+        if (quickBarItems.get(currentSlot) == null) {
+            return 0;
+        }
+        return quickBarItems.get(currentSlot).getItemId();
     }
 
     public void setCurrentHotBarSlot(int currentSlot) {

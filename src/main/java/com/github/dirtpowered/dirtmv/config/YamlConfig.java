@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.config;
 
+import com.github.dirtpowered.dirtmv.api.Configuration;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import org.pmw.tinylog.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -114,5 +115,10 @@ public class YamlConfig implements Configuration {
     @Override
     public boolean replaceChests() {
         return (boolean) objects.getOrDefault("replace_chests", true);
+    }
+
+    @Override
+    public boolean enableViaVersion() {
+        return (boolean) objects.getOrDefault("viaversion_support", false);
     }
 }

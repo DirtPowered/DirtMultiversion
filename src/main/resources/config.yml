@@ -30,3 +30,5 @@ prerelease_motd: "A Minecraft Server"
 prerelease_motd_max_online: 20
 # Replace chests to ender chests to prevent rendering glitches (r1.3+)
 replace_chests: true
+# Enable ViaVersion support (experimental)
+viaversion_support: false

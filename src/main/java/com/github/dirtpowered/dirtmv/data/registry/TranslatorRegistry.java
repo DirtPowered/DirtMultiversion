@@ -23,7 +23,7 @@
 package com.github.dirtpowered.dirtmv.data.registry;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
-import com.github.dirtpowered.dirtmv.config.Configuration;
+import com.github.dirtpowered.dirtmv.api.Configuration;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
@@ -50,14 +50,15 @@ public class TranslatorRegistry {
         this.main = main;
     }
 
-    public void registerProtocol(ServerProtocol serverProtocol) {
+    public void registerTranslator(ServerProtocol serverProtocol) {
         int clientProtocol = serverProtocol.getFrom().getRegistryId();
 
         protocols.put(clientProtocol, serverProtocol);
     }
 
     /**
-     * Returns all protocols between client and server version
+     * Returns all protocols translators between client and server version
+     *
      * @param data      User data
      * @param versionTo Server version
      * @return {@link List<ServerProtocol> List} with ordered protocol pipeline classes

@@ -22,7 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk;
 
-import com.github.dirtpowered.dirtmv.config.Configuration;
+import com.github.dirtpowered.dirtmv.api.Configuration;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.chunk.biome.OldChunkData;
 import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_2RChunkStorage;

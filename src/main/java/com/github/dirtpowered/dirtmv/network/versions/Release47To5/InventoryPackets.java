@@ -50,6 +50,38 @@ public class InventoryPackets extends ServerProtocol {
         itemRemapper = new ItemRemapper();
     }
 
+    /*
+     * NOTE: quick bar slots are static, so we don't have to check inventory type
+     */
+    private void updateLocalInventory(QuickBarTracker cache, int slot, boolean shiftClick) {
+        int slotIndex = QuickBarTracker.networkSlotToInventory(slot);
+        ItemStack currentItem = cache.getItem(slotIndex);
+
+        if (shiftClick) {
+            if (slotIndex < 9) {
+                for (int i = 9; i < 36; ++i) {
+                    if (cache.getItem(i) == null) {
+                        cache.setItem(i, currentItem);
+                        cache.setItem(slotIndex, null);
+                        return;
+                    }
+                }
+            } else {
+                for (int i = 0; i < 9; ++i) {
+                    if (cache.getItem(i) == null) {
+                        cache.setItem(i, currentItem);
+                        cache.setItem(slotIndex, null);
+                        return;
+                    }
+                }
+            }
+            return;
+        }
+
+        cache.setItem(slotIndex, cache.getItemOnCursor());
+        cache.setItemOnCursor(currentItem);
+    }
+
     @Override
     public void registerTranslators() {
         // set slot
@@ -57,7 +89,7 @@ public class InventoryPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 short windowId = data.read(Type.UNSIGNED_BYTE, 0);
                 short slot = data.read(Type.SHORT, 1);
 
@@ -65,8 +97,6 @@ public class InventoryPackets extends ServerProtocol {
 
                 if (storage.hasObject(WindowTypeTracker.class)) {
                     WindowTypeTracker windowTracker = storage.get(WindowTypeTracker.class);
-                    assert windowTracker != null;
-
                     windowType = windowTracker.getWindowType(windowId);
                 }
 
@@ -85,14 +115,8 @@ public class InventoryPackets extends ServerProtocol {
 
                 // quick-bar cache
                 if (storage.hasObject(QuickBarTracker.class)) {
-                    if (slot >= 36 && slot <= 44) {
-                        int itemId = (itemStack != null ? itemStack.getItemId() : 0);
-
-                        QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
-                        assert quickBarTracker != null;
-
-                        quickBarTracker.addItem(slot, itemId);
-                    }
+                    QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
+                    quickBarTracker.setItem(slot, itemStack);
                 }
 
                 return PacketUtil.createPacket(0x2F, new TypeHolder[]{
@@ -108,7 +132,7 @@ public class InventoryPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 short windowId = data.read(Type.UNSIGNED_BYTE, 0);
 
                 ItemStack[] itemArray = data.read(Type.V1_3R_ITEM_ARRAY, 1);
@@ -117,8 +141,6 @@ public class InventoryPackets extends ServerProtocol {
 
                 if (storage.hasObject(WindowTypeTracker.class)) {
                     WindowTypeTracker windowTracker = storage.get(WindowTypeTracker.class);
-                    assert windowTracker != null;
-
                     windowType = windowTracker.getWindowType(windowId);
                 }
 
@@ -150,14 +172,8 @@ public class InventoryPackets extends ServerProtocol {
 
                     // quick-bar cache
                     if (storage.hasObject(QuickBarTracker.class)) {
-                        if (i >= 36 && i <= 44) {
-                            int itemId = (item != null ? item.getItemId() : 0);
-
-                            QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
-                            assert quickBarTracker != null;
-
-                            quickBarTracker.addItem(i, itemId);
-                        }
+                        QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
+                        quickBarTracker.setItem(i, item);
                     }
                 }
 
@@ -173,7 +189,7 @@ public class InventoryPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 short windowId = data.read(Type.UNSIGNED_BYTE, 0);
                 short type = data.read(Type.UNSIGNED_BYTE, 1);
                 String title = data.read(Type.V1_7_STRING, 2);
@@ -185,8 +201,6 @@ public class InventoryPackets extends ServerProtocol {
                 // cache window type (for enchanting tables)
                 if (storage.hasObject(WindowTypeTracker.class)) {
                     WindowTypeTracker windowTracker = storage.get(WindowTypeTracker.class);
-                    assert windowTracker != null;
-
                     windowTracker.setWindowTypeFor(windowId, type);
                 }
                 return PacketUtil.createPacket(0x2D, new TypeHolder[]{
@@ -203,7 +217,7 @@ public class InventoryPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
                 byte windowId = data.read(Type.BYTE, 0);
                 short slot = data.read(Type.SHORT, 1);
 
@@ -211,8 +225,6 @@ public class InventoryPackets extends ServerProtocol {
 
                 if (storage.hasObject(WindowTypeTracker.class)) {
                     WindowTypeTracker windowTracker = storage.get(WindowTypeTracker.class);
-                    assert windowTracker != null;
-
                     windowType = windowTracker.getWindowType(windowId);
                 }
 
@@ -221,6 +233,13 @@ public class InventoryPackets extends ServerProtocol {
                         slot--;
                     }
                 }
+
+                if (storage.hasObject(QuickBarTracker.class)) {
+                    QuickBarTracker cache = storage.get(QuickBarTracker.class);
+                    boolean shiftClick = data.read(Type.BYTE, 4) == 1;
+
+                    updateLocalInventory(cache, slot, shiftClick);
+                }
                 return PacketUtil.createPacket(0x0E, new TypeHolder[]{
                         data.read(0),
                         set(Type.SHORT, slot),
@@ -228,7 +247,6 @@ public class InventoryPackets extends ServerProtocol {
                         data.read(3),
                         data.read(4),
                         set(Type.V1_3R_ITEM, data.read(Type.V1_8R_ITEM, 5))
-
                 });
             }
         });
@@ -260,15 +278,28 @@ public class InventoryPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getUserData().getProtocolStorage();
+                ProtocolStorage storage = session.getStorage();
 
                 if (storage.hasObject(QuickBarTracker.class)) {
                     QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
-                    assert quickBarTracker != null;
-
                     quickBarTracker.setCurrentHotBarSlot(data.read(Type.SHORT, 0));
                 }
 
+                return data;
+            }
+        });
+
+        // change held slot (server-side)
+        addTranslator(0x09, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getStorage();
+
+                if (storage.hasObject(QuickBarTracker.class)) {
+                    QuickBarTracker quickBarTracker = storage.get(QuickBarTracker.class);
+                    quickBarTracker.setCurrentHotBarSlot(data.read(Type.BYTE, 0));
+                }
                 return data;
             }
         });

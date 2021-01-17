@@ -22,7 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release51To39;
 
-import com.github.dirtpowered.dirtmv.config.Configuration;
+import com.github.dirtpowered.dirtmv.api.Configuration;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;

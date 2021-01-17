@@ -23,11 +23,14 @@
 package com.github.dirtpowered.dirtmv.network.server;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
-import com.github.dirtpowered.dirtmv.config.Configuration;
+import com.github.dirtpowered.dirtmv.api.Configuration;
+import com.github.dirtpowered.dirtmv.api.DirtServer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
+import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
 import com.github.dirtpowered.dirtmv.network.server.codec.ConnectionLimiterHandler;
 import com.github.dirtpowered.dirtmv.network.server.codec.PipelineFactory;
+import com.github.dirtpowered.dirtmv.session.MultiSession;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -49,10 +52,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 
-public class Server {
+public class Server implements DirtServer {
     private final EventLoopGroup bossGroup = new NioEventLoopGroup();
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
+
+    @Getter
     private final DirtMultiVersion main;
+
     private final Server instance;
 
     @Getter
@@ -73,10 +79,19 @@ public class Server {
                     @Override
                     public void initChannel(SocketChannel channel) {
                         ServerSession serverSession = new ServerSession(channel, main, instance);
-                        channel.pipeline().addFirst(ChannelConstants.CONNECTION_THROTTLE, new ConnectionLimiterHandler(main.getConfiguration()));
-                        channel.pipeline().addLast(ChannelConstants.DEFAULT_PIPELINE, new PipelineFactory(
-                                main, serverSession.getUserData(), PacketDirection.TO_SERVER))
-                                .addLast(ChannelConstants.SERVER_HANDLER, serverSession);
+
+                        channel.pipeline().addFirst(
+                                ChannelConstants.CONNECTION_THROTTLE,
+                                new ConnectionLimiterHandler(main.getConfiguration())
+                        );
+                        channel.pipeline().addLast(
+                                ChannelConstants.DEFAULT_PIPELINE,
+                                new PipelineFactory(main, serverSession.getUserData(), PacketDirection.TO_SERVER)
+                        );
+                        channel.pipeline().addLast(
+                                ChannelConstants.SERVER_HANDLER,
+                                serverSession
+                        );
                     }
                 })
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
@@ -116,6 +131,35 @@ public class Server {
                 Logger.warn("couldn't read {}", file.getName());
             }
         }
+    }
+
+    @Override
+    public String getName() {
+        return "DirtMultiVersion";
+    }
+
+    @Override
+    public String getVersion() {
+        String impl = getClass().getPackage().getImplementationVersion();
+        return impl == null ? "unknown" : impl;
+    }
+
+    @Override
+    public UserData getUserDataFromUsername(String username) {
+        UserData userData = null;
+
+        for (MultiSession entry : main.getSessionRegistry().getSessions().values()) {
+            if (entry != null) {
+                ServerSession session = entry.getServerSession();
+                if (session != null) {
+                    if (session.getUserData().getUsername().equals(username)) {
+                        userData = session.getUserData();
+                    }
+                }
+            }
+        }
+
+        return userData;
     }
 
     public void stop() {

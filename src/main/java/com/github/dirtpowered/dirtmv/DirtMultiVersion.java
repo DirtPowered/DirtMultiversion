@@ -22,7 +22,7 @@
 
 package com.github.dirtpowered.dirtmv;
 
-import com.github.dirtpowered.dirtmv.config.Configuration;
+import com.github.dirtpowered.dirtmv.api.Configuration;
 import com.github.dirtpowered.dirtmv.config.YamlConfig;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.B1_3.V1_3BProtocol;
@@ -66,6 +66,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Release74To73.ProtocolRele
 import com.github.dirtpowered.dirtmv.network.versions.Release78To74.ProtocolRelease78To74;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
+import com.github.dirtpowered.dirtmv.viaversion.ViaPlugin;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.Getter;
@@ -86,11 +87,18 @@ public class DirtMultiVersion implements Runnable {
     private final Configuration configuration;
     private final EventLoopGroup loopGroup;
     private final Server server;
+    private ViaPlugin viaPlugin;
 
     private DirtMultiVersion() {
+        sharedRandom = new Random();
+        loopGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
+        executorService = Executors.newCachedThreadPool();
         configuration = new YamlConfig();
         translatorRegistry = new TranslatorRegistry(this);
+        server = new Server(this);
+        sessionRegistry = new SessionRegistry();
 
+        // register supported protocols
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_3, new V1_3BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_4, new V1_4BProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.B1_5, new V1_5BProtocol());
@@ -112,33 +120,33 @@ public class DirtMultiVersion implements Runnable {
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_7_6, new V1_7_6RProtocol());
         ProtocolRegistry.registerProtocol(MinecraftVersion.R1_8, new V1_8RProtocol());
 
-        translatorRegistry.registerProtocol(new ProtocolRelease47To5());
-        translatorRegistry.registerProtocol(new ProtocolRelease5To4());
-        translatorRegistry.registerProtocol(new ProtocolRelease4To78());
-        translatorRegistry.registerProtocol(new ProtocolRelease78To74());
-        translatorRegistry.registerProtocol(new ProtocolRelease74To73());
-        translatorRegistry.registerProtocol(new ProtocolRelease73To61());
-        translatorRegistry.registerProtocol(new ProtocolRelease60To51());
-        translatorRegistry.registerProtocol(new ProtocolRelease51To39());
-        translatorRegistry.registerProtocol(new ProtocolRelease39To29());
-        translatorRegistry.registerProtocol(new ProtocolRelease29To28());
-        translatorRegistry.registerProtocol(new ProtocolRelease28To23());
-        translatorRegistry.registerProtocol(new ProtocolRelease22To17());
-        translatorRegistry.registerProtocol(new ProtocolRelease23To22());
-        translatorRegistry.registerProtocol(new ProtocolBeta17to14());
-        translatorRegistry.registerProtocol(new ProtocolBeta14To13());
-        translatorRegistry.registerProtocol(new ProtocolBeta13To11());
-        translatorRegistry.registerProtocol(new ProtocolBeta11To10());
-        translatorRegistry.registerProtocol(new ProtocolBeta10To9());
+        // register protocol translators
+        translatorRegistry.registerTranslator(new ProtocolRelease47To5());
+        translatorRegistry.registerTranslator(new ProtocolRelease5To4());
+        translatorRegistry.registerTranslator(new ProtocolRelease4To78());
+        translatorRegistry.registerTranslator(new ProtocolRelease78To74());
+        translatorRegistry.registerTranslator(new ProtocolRelease74To73());
+        translatorRegistry.registerTranslator(new ProtocolRelease73To61());
+        translatorRegistry.registerTranslator(new ProtocolRelease60To51());
+        translatorRegistry.registerTranslator(new ProtocolRelease51To39());
+        translatorRegistry.registerTranslator(new ProtocolRelease39To29());
+        translatorRegistry.registerTranslator(new ProtocolRelease29To28());
+        translatorRegistry.registerTranslator(new ProtocolRelease28To23());
+        translatorRegistry.registerTranslator(new ProtocolRelease22To17());
+        translatorRegistry.registerTranslator(new ProtocolRelease23To22());
+        translatorRegistry.registerTranslator(new ProtocolBeta17to14());
+        translatorRegistry.registerTranslator(new ProtocolBeta14To13());
+        translatorRegistry.registerTranslator(new ProtocolBeta13To11());
+        translatorRegistry.registerTranslator(new ProtocolBeta11To10());
+        translatorRegistry.registerTranslator(new ProtocolBeta10To9());
 
-        sessionRegistry = new SessionRegistry();
-        executorService = Executors.newCachedThreadPool();
-
-        sharedRandom = new Random();
-        loopGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
-        server = new Server(this);
-
+        // start tick-loop
         setupGlobalTask();
+
+        if (configuration.enableViaVersion()) {
+            Logger.info("Loading ViaVersion ...");
+            this.viaPlugin = new ViaPlugin(server);
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             // disconnect all players
@@ -170,8 +178,15 @@ public class DirtMultiVersion implements Runnable {
 
     @Override
     public void run() {
-        for (MultiSession val : sessionRegistry.getSessions().values()) {
-            val.getServerSession().tick();
+        try {
+            if (this.viaPlugin != null) {
+                this.viaPlugin.tick();
+            }
+            for (MultiSession val : sessionRegistry.getSessions().values()) {
+                val.getServerSession().tick();
+            }
+        } catch (Exception e) {
+            Logger.error("Exception in tick loop: {}", e.getMessage());
         }
     }
 }

@@ -65,7 +65,6 @@ public class GameProfileFetcher {
             .create();
 
     private static final AsyncLoadingCache<String, GameProfile> skinCache = Caffeine.newBuilder()
-            .maximumSize(255)
             .expireAfterWrite(12, TimeUnit.HOURS)
             .buildAsync(GameProfileFetcher::fetchBlocking);
 
@@ -108,7 +107,7 @@ public class GameProfileFetcher {
             bufferedReader.close();
             return builder.toString();
         } catch (IOException e) {
-            Logger.warn("Error while fething data from Mojang API: {}", e.getMessage());
+            Logger.warn("Error while fetching data from Mojang API: {}", e.getMessage());
         } finally {
             if (urlConnection != null) {
                 try {

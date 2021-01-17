@@ -5,15 +5,15 @@
 Proxy that allows connecting older servers using newer client. Work in progress
 
 ### Supported versions
-- all between beta 1.3 - release 1.8.x
-
-Example: You can connect to beta 1.7.3 server using every version up to release 1.8
+All versions between beta 1.3 - release 1.16.4 (with <a href="https://github.com/ViaVersion/ViaVersion">ViaVersion</a> support enabled in config)
+Example: You can connect to beta 1.7.3 server using every version up to release 1.16.4
 
 ### Bugs
 - [x] All listed above protocols are unfinished, but almost ready for normal usage
 - [X] Fence bounding boxes (beta 1.3-1.8 server)
 - [X] Problems with joining to beta 1.3-1.4 servers using beta 1.3-1.4 client
-- [X] Nether portal rotation (r1.8 client)  
+- [X] Nether portal rotation (r1.8 client)
+- [X] Online mode is not supported yet  
 - [x] and few others
 
 ### Compiling from source
@@ -33,4 +33,4 @@ mvn clean package
 ```
 
 ### Screenshots
-![ss](https://i.imgur.com/YbFP7G2.png)
+![ss](https://i.imgur.com/QpPWgoO.png)
