@@ -229,7 +229,6 @@ public class EntityPackets extends ServerProtocol {
 
                 WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 10);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
-                System.out.println("item: " + data.read(Type.SHORT, 9));
 
                 PacketData playerSpawn = PacketUtil.createPacket(0x0C, new TypeHolder[]{
                         data.read(0),

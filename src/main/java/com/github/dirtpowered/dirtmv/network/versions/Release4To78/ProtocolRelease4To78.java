@@ -231,6 +231,24 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             }
         });
 
+        // 0x05 SC 0x04 (entity equipment)
+        addTranslator(0x05, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack originalItem = data.read(Type.V1_3R_ITEM, 2);
+
+                if (originalItem != null) {
+                    originalItem = itemRemapper.replaceItem(originalItem);
+                }
+                return PacketUtil.createPacket(0x04, new TypeHolder[] {
+                        data.read(0),
+                        data.read(1),
+                        set(Type.V1_3R_ITEM, originalItem)
+                });
+            }
+        });
+
         // 0xFF SC 0x40 (kick disconnect)
         addTranslator(0xFF, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
@@ -904,9 +922,6 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
         // 0x1E SC 0x14 (entity ground state)
         addTranslator(0x1E, 0x14, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
-
-        // 0x05 SC 0x04 (entity equipment)
-        addTranslator(0x05, 0x04, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // 0x08 SC 0x06 (health update)
         addTranslator(0x08, 0x06, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
