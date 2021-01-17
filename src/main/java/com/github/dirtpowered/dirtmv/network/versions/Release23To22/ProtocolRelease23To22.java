@@ -72,7 +72,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
                         data.read(0),
                         data.read(1),
                         data.read(2),
-                        set(Type.STRING, "NORMAL"), // world type
+                        set(Type.STRING, "default"), // world type
                         data.read(3),
                         data.read(4),
                         data.read(5),
@@ -110,7 +110,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
                         data.read(2),
                         data.read(3),
                         data.read(4),
-                        set(Type.STRING, "NORMAL"), // world type
+                        set(Type.STRING, "default"), // world type
                 });
             }
         });

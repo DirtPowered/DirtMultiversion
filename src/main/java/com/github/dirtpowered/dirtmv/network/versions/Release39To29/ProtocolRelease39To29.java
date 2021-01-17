@@ -160,7 +160,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                     return PacketUtil.createPacket(0x01, new TypeHolder[]{
                             set(Type.INT, 29), // protocol version
                             set(Type.STRING, username),
-                            set(Type.STRING, "NORMAL"),
+                            set(Type.STRING, "default"),
                             set(Type.INT, 0),
                             set(Type.INT, 0),
                             set(Type.BYTE, 0),
@@ -174,7 +174,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                             set(Type.BYTE, 0),
                             set(Type.BYTE, 0),
                             set(Type.SHORT, 0),
-                            set(Type.STRING, "NORMAL"),
+                            set(Type.STRING, "default"),
                     });
                 }
             }
