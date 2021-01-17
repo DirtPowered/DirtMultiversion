@@ -145,6 +145,11 @@ public class Server implements DirtServer {
     }
 
     @Override
+    public Configuration getConfiguration() {
+        return main.getConfiguration();
+    }
+
+    @Override
     public UserData getUserDataFromUsername(String username) {
         UserData userData = null;
 
@@ -152,7 +157,9 @@ public class Server implements DirtServer {
             if (entry != null) {
                 ServerSession session = entry.getServerSession();
                 if (session != null) {
-                    if (session.getUserData().getUsername().equals(username)) {
+                    UserData data = session.getUserData();
+
+                    if (data.getUsername() != null && data.getUsername().equals(username)) {
                         userData = session.getUserData();
                     }
                 }

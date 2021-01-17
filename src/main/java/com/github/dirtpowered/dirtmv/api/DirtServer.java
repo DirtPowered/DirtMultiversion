@@ -44,6 +44,13 @@ public interface DirtServer {
     String getVersion();
 
     /**
+     *  Gets the proxy configuration
+     *
+     *  @return {@link Configuration config} object
+     */
+    Configuration getConfiguration();
+
+    /**
      * Searches for userdata in session registry from provided username
      *
      * @param username - player username

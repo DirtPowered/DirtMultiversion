@@ -24,6 +24,8 @@ package com.github.dirtpowered.dirtmv.viaversion;
 
 import com.github.dirtpowered.dirtmv.api.DirtServer;
 import com.github.dirtpowered.dirtmv.data.interfaces.Tickable;
+import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
+import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.viaversion.config.ViaConfig;
 import com.github.dirtpowered.dirtmv.viaversion.platform.DummyInjector;
 import com.github.dirtpowered.dirtmv.viaversion.providers.IdleMovementProvider;
@@ -97,7 +99,14 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
                 if (nextIdleUpdate <= System.currentTimeMillis()) {
                     MovementTransmitterProvider idle = Via.getManager().getProviders().get(MovementTransmitterProvider.class);
                     if (idle != null) {
-                        idle.sendPlayer(info);
+                        UserData data = api.getUserDataFromUsername(protocolInfo.getUsername());
+                        if (data != null) {
+                            boolean isNetty = api.getConfiguration().getServerVersion().isNettyProtocol();
+
+                            if (isNetty || data.getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME) {
+                                idle.sendPlayer(info);
+                            }
+                        }
                     }
                 }
             }
