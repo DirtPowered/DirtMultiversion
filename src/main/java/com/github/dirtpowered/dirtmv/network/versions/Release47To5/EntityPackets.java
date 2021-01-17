@@ -229,6 +229,7 @@ public class EntityPackets extends ServerProtocol {
 
                 WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 10);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
+                System.out.println("item: " + data.read(Type.SHORT, 9));
 
                 PacketData playerSpawn = PacketUtil.createPacket(0x0C, new TypeHolder[]{
                         data.read(0),
@@ -273,11 +274,15 @@ public class EntityPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ItemStack originalItem = data.read(Type.V1_3R_ITEM, 2);
 
+                if (originalItem != null) {
+                    originalItem = InventoryPackets.itemRemapper.replaceItem(originalItem);
+                }
                 return PacketUtil.createPacket(0x04, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         data.read(1),
-                        set(Type.V1_8R_ITEM, data.read(Type.V1_3R_ITEM, 2)),
+                        set(Type.V1_8R_ITEM, originalItem),
                 });
             }
         });
