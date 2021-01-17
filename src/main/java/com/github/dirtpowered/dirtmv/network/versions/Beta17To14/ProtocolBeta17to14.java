@@ -41,7 +41,6 @@ import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.SolidBloc
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.other.KeepAliveTask;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.HardnessTable;
-import com.github.dirtpowered.dirtmv.session.MultiSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +54,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
     }
 
     private boolean isConnectedThroughProxy(DirtMultiVersion main, String username) {
-        boolean isLocal = false;
-
-        for (MultiSession value : main.getSessionRegistry().getSessions().values()) {
-            isLocal = value.getServerSession().getUserData().getUsername().equals(username);
-        }
-        return isLocal;
+        return main.getServer().getUserDataFromUsername(username) != null;
     }
 
     @Override
@@ -258,7 +252,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 String username = data.read(Type.STRING, 1);
 
                 if (!isConnectedThroughProxy(session.getMain(), username)) {
-                    PlayerTabListCache cache = session.getUserData().getProtocolStorage().get(PlayerTabListCache.class);
+                    PlayerTabListCache cache = session.getStorage().get(PlayerTabListCache.class);
                     if (cache != null) {
                         session.sendPacket(createTabEntryPacket(username, true), PacketDirection.TO_CLIENT, getFrom());
                         cache.getTabPlayers().put(entityId, username);
@@ -274,8 +268,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = data.read(Type.INT, 0);
-
-                PlayerTabListCache cache = session.getUserData().getProtocolStorage().get(PlayerTabListCache.class);
+                PlayerTabListCache cache = session.getStorage().get(PlayerTabListCache.class);
 
                 if (cache != null && cache.getTabPlayers().containsKey(entityId)) {
                     String username = cache.getTabPlayers().get(entityId);
@@ -298,7 +291,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                 byte blockId = data.read(Type.BYTE, 3);
                 byte blockData = data.read(Type.BYTE, 4);
 
-                BlockStorage blockStorage = session.getUserData().getProtocolStorage().get(BlockStorage.class);
+                BlockStorage blockStorage = session.getStorage().get(BlockStorage.class);
 
                 if (blockStorage != null) {
                     blockStorage.setBlockAt(x >> 4, z >> 4, x, y, z, blockId);
@@ -323,7 +316,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                BlockStorage blockStorage = session.getUserData().getProtocolStorage().get(BlockStorage.class);
+                BlockStorage blockStorage = session.getStorage().get(BlockStorage.class);
                 if (blockStorage != null) {
                     byte mode = data.read(Type.BYTE, 2);
 
@@ -353,7 +346,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                     return data;
                 }
 
-                BlockStorage blockStorage = session.getUserData().getProtocolStorage().get(BlockStorage.class);
+                BlockStorage blockStorage = session.getStorage().get(BlockStorage.class);
                 boolean reduceBlockStorageMemory = session.getMain().getConfiguration().reduceBlockStorageMemory();
 
                 if (blockStorage != null) {
