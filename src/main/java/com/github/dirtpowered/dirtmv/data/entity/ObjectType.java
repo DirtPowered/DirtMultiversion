@@ -24,7 +24,6 @@ package com.github.dirtpowered.dirtmv.data.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.pmw.tinylog.Logger;
 
 @AllArgsConstructor
 public enum ObjectType implements SpawnableObject {
@@ -57,8 +56,7 @@ public enum ObjectType implements SpawnableObject {
             }
         }
 
-        Logger.warn("missing mapping for object type: {}", objectTypeId);
-        return null;
+        throw new IllegalArgumentException("missing mapping for object type: " + objectTypeId);
     }
 
     @Override

@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.network.versions.Beta17To14;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
@@ -41,6 +42,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.SolidBloc
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.other.KeepAliveTask;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.HardnessTable;
+import io.netty.util.internal.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -275,6 +277,34 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
                     session.sendPacket(createTabEntryPacket(username, false), PacketDirection.TO_CLIENT, getFrom());
                     cache.getTabPlayers().remove(entityId);
+                }
+                return data;
+            }
+        });
+
+        // mob spawn
+        addTranslator(0x18, PacketDirection.TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                byte entityType = data.read(Type.BYTE, 1);
+
+                if (entityType == EntityType.HUMAN_MOB.getEntityTypeId()) {
+                    PlayerTabListCache cache = session.getStorage().get(PlayerTabListCache.class);
+
+                    // cache empty name, so the tab entry will be removed after killing human mob
+                    cache.getTabPlayers().put(data.read(Type.INT, 0), StringUtil.EMPTY_STRING);
+
+                    return PacketUtil.createPacket(0x14, new TypeHolder[] {
+                            data.read(0),
+                            set(Type.STRING, StringUtil.EMPTY_STRING),
+                            data.read(2),
+                            data.read(3),
+                            data.read(4),
+                            data.read(5),
+                            data.read(6),
+                            set(Type.SHORT, (short) 0)
+                    });
                 }
                 return data;
             }

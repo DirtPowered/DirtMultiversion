@@ -24,7 +24,6 @@ package com.github.dirtpowered.dirtmv.data.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.pmw.tinylog.Logger;
 
 @AllArgsConstructor
 public enum EntityType implements SpawnableObject {
@@ -53,6 +52,7 @@ public enum EntityType implements SpawnableObject {
     HOOPER_MINECART(46, false),
     SPAWNER_MINECART(47, false),
     HUMAN(48, true),
+    HUMAN_MOB(49, true),
     COMMANDBLOCK_MINECART(40, false),
     CREEPER(50, true),
     SKELETON(51, true),
@@ -97,7 +97,6 @@ public enum EntityType implements SpawnableObject {
             }
         }
 
-        Logger.warn("missing mapping for entity type: {}", entityTypeId);
-        return null;
+        throw new IllegalArgumentException("missing mapping for entity type: " + entityTypeId);
     }
 }
