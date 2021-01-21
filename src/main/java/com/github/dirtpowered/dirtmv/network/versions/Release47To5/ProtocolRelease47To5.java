@@ -335,14 +335,14 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 short y = data.read(Type.UNSIGNED_BYTE, 1);
                 int z = data.read(Type.INT, 2);
 
-                int blockId = data.read(Type.VAR_INT, 3) << 4;
-                int blockData = data.read(Type.UNSIGNED_BYTE, 4) & 15;
+                int blockId = data.read(Type.VAR_INT, 3);
+                int blockData = data.read(Type.UNSIGNED_BYTE, 4);
 
                 blockData = DataFixers.getCorrectedDataFor(blockId, blockData);
 
                 return PacketUtil.createPacket(0x23, new TypeHolder[]{
                         set(Type.LONG, toBlockPosition(x, y, z)),
-                        set(Type.VAR_INT, blockId | blockData)
+                        set(Type.VAR_INT, blockId << 4| blockData & 15)
                 });
             }
         });
