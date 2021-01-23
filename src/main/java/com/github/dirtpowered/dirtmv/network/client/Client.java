@@ -70,7 +70,7 @@ public class Client {
                 );
                 ch.pipeline().addLast(
                         ChannelConstants.CLIENT_HANDLER,
-                        new ClientSession(key, serverSession, ch, callback)
+                        new ClientSession(serverSession.getMain(), key, serverSession, ch, callback)
                 );
             }
         });

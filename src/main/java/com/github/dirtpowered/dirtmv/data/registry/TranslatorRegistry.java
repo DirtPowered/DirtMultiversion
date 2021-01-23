@@ -119,4 +119,30 @@ public class TranslatorRegistry {
 
         return serverProtocols;
     }
+
+    /**
+     * Gets all protocols between given versions
+     *
+     * @param server - server version
+     * @param client - client version
+     *
+     * @return List of {@link ServerProtocol protocol translators}
+     */
+    public List<ServerProtocol> getAllProtocolsBetween(MinecraftVersion server, MinecraftVersion client) {
+        int serverProtocol = server.getRegistryId();
+        int clientProtocol = client.getRegistryId();
+
+        List<ServerProtocol> serverProtocols = new LinkedList<>();
+
+        for (int i = serverProtocol; i <= clientProtocol; i++) {
+            if (MinecraftVersion.fromRegistryId(i) != null) {
+                ServerProtocol target = protocols.get(i);
+
+                if (target != null && !(i <= serverProtocol)) {
+                    serverProtocols.add(target);
+                }
+            }
+        }
+        return serverProtocols;
+    }
 }

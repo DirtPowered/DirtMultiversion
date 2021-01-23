@@ -22,12 +22,13 @@
 
 package com.github.dirtpowered.dirtmv.network.client;
 
+import com.github.dirtpowered.dirtmv.DirtMultiVersion;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.interfaces.Callback;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
-import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
 import io.netty.channel.ChannelHandlerContext;
@@ -50,9 +51,12 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
     private final UUID key;
 
     private final Callback callback;
+    private final DirtMultiVersion main;
+
     private boolean stateLock;
 
-    ClientSession(UUID key, ServerSession serverSession, SocketChannel ch, Callback callback) {
+    ClientSession(DirtMultiVersion main, UUID key, ServerSession serverSession, SocketChannel ch, Callback callback) {
+        this.main = main;
         this.serverSession = serverSession;
         this.channel = ch;
         this.key = key;
@@ -71,13 +75,11 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
             boolean preNettyFlag = serverSession.getUserData().getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME;
 
             if (preNettyFlag || postNettyFlag) {
-                for (ServerProtocol t : serverSession.getMain().getTranslatorRegistry().getProtocols().values()) {
+                MinecraftVersion server = main.getConfiguration().getServerVersion();
+                MinecraftVersion client = serverSession.getUserData().getClientVersion();
 
-                    if (serverSession.getUserData().getClientVersion().getRegistryId() >= t.getFrom().getRegistryId()) {
-                        t.onConnect(serverSession);
-                    }
-                }
-
+                // call #onConnect only in user protocols
+                main.getTranslatorRegistry().getAllProtocolsBetween(server, client).forEach(t -> t.onConnect(serverSession));
                 stateLock = true;
             }
         }

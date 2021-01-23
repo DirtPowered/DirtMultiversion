@@ -229,12 +229,11 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         disconnect();
 
         // notify other sessions
-        for (ServerProtocol t : main.getTranslatorRegistry().getProtocols().values()) {
+        MinecraftVersion server = main.getConfiguration().getServerVersion();
+        MinecraftVersion client = userData.getClientVersion();
 
-            if (userData.getClientVersion().getRegistryId() >= t.getFrom().getRegistryId()) {
-                t.onDisconnect(this);
-            }
-        }
+        // call #onDisconnect only in user protocols
+        main.getTranslatorRegistry().getAllProtocolsBetween(server, client).forEach(t -> t.onDisconnect(this));
 
         ClientSession clientSession = getClientSession();
         if (clientSession != null) {
