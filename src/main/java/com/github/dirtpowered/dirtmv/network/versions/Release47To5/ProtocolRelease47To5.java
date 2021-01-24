@@ -533,6 +533,19 @@ public class ProtocolRelease47To5 extends ServerProtocol {
             }
         });
 
+        // entity attributes
+        addTranslator(0x20, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+
+                return PacketUtil.createPacket(0x20, new TypeHolder[]{
+                        set(Type.VAR_INT, data.read(Type.INT, 0)),
+                        set(Type.V1_8_ENTITY_ATTRIBUTES, data.read(Type.V1_7_ENTITY_ATTRIBUTES, 1))
+                });
+            }
+        });
+
         // client packets
 
         // keep alive
@@ -768,9 +781,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 });
             }
         });
-
-        // entity attributes
-        addTranslator(0x20, -1, ProtocolState.PLAY, PacketDirection.TO_CLIENT);
 
         // map data
         addTranslator(0x34, -1, ProtocolState.PLAY, PacketDirection.TO_CLIENT);

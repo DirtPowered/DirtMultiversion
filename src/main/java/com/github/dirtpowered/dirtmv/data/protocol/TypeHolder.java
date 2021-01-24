@@ -25,11 +25,11 @@ package com.github.dirtpowered.dirtmv.data.protocol;
 import lombok.Data;
 
 @Data
-public class TypeHolder {
-    private TypeObject type;
-    private Object object;
+public class TypeHolder<T> {
+    private TypeObject<T> type;
+    private T object;
 
-    public TypeHolder(TypeObject type, Object object) {
+    public TypeHolder(TypeObject<T> type, T object) {
         this.type = type;
         this.object = object;
     }

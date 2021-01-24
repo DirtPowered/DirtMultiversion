@@ -50,16 +50,17 @@ public class ProtocolRelease74To73 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                V1_6_1EntityAttributes attrObj = data.read(Type.V1_6_1_ENTITY_ATTRIBUTES, 0);
+                V1_6_1EntityAttributes attrObj = data.read(Type.V1_6_1_ENTITY_ATTRIBUTES, 1);
                 List<EntityAttribute> entityAttributes = new ArrayList<>();
 
                 for (Map.Entry<String, Double> entry : attrObj.getAttributes().entrySet()) {
                     entityAttributes.add(new EntityAttribute(entry.getKey(), entry.getValue()));
                 }
 
-                V1_6_2EntityAttributes attrObjModern = new V1_6_2EntityAttributes(attrObj.getEntityId(), entityAttributes);
+                V1_6_2EntityAttributes attrObjModern = new V1_6_2EntityAttributes(entityAttributes);
 
                 return PacketUtil.createPacket(0x2C, new TypeHolder[]{
+                        data.read(0),
                         set(Type.V1_6_2_ENTITY_ATTRIBUTES, attrObjModern)
                 });
             }

@@ -42,7 +42,6 @@ public class V1_6_1REntityAttributesDataType extends DataType<V1_6_1EntityAttrib
 
     @Override
     public V1_6_1EntityAttributes read(PacketInput packetInput) throws IOException {
-        int entityId = packetInput.readInt();
         int attrCount = packetInput.readInt();
 
         Map<String, Double> attributes = new HashMap<>();
@@ -51,14 +50,12 @@ public class V1_6_1REntityAttributesDataType extends DataType<V1_6_1EntityAttrib
             attributes.put(BaseProtocol.STRING.read(packetInput), packetInput.readDouble());
         }
 
-        return new V1_6_1EntityAttributes(entityId, attributes);
+        return new V1_6_1EntityAttributes(attributes);
     }
 
     @Override
     public void write(TypeHolder typeHolder, PacketOutput packetOutput) throws IOException {
         V1_6_1EntityAttributes attributes = (V1_6_1EntityAttributes) typeHolder.getObject();
-
-        packetOutput.writeInt(attributes.getEntityId());
         packetOutput.writeInt(attributes.getAttributes().size());
 
         for (String key : attributes.getAttributes().keySet()) {

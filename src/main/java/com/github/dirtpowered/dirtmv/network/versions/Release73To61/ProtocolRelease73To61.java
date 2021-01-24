@@ -63,11 +63,12 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
     private PacketData getDefaultAttributes(int entityId) {
         Map<String, Double> map = new HashMap<>();
-        map.put("generic.movementSpeed", 0.1D);
+        map.put("generic.movementSpeed", 0.10000000149011612D);
 
-        V1_6_1EntityAttributes attrObj = new V1_6_1EntityAttributes(entityId, map);
+        V1_6_1EntityAttributes attrObj = new V1_6_1EntityAttributes(map);
 
-        return PacketUtil.createPacket(0x2C, new TypeHolder[] {
+        return PacketUtil.createPacket(0x2C, new TypeHolder[]{
+                set(Type.INT, entityId),
                 set(Type.V1_6_1_ENTITY_ATTRIBUTES, attrObj)
         });
     }

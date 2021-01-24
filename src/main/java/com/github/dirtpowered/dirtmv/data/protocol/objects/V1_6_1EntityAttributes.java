@@ -30,6 +30,5 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 public class V1_6_1EntityAttributes {
-    private int entityId;
     private Map<String, Double> attributes;
 }

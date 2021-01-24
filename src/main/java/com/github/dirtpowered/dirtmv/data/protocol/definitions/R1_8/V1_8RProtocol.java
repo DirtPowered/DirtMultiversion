@@ -29,6 +29,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockChangeRecord;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.OptionalPosition;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_2EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8Chunk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_8ChunkBulk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
@@ -37,6 +38,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.types.CompressedCompoundTagDa
 import com.github.dirtpowered.dirtmv.data.protocol.types.ItemArrayDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.MetadataDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.entity.UseEntityDataType;
+import com.github.dirtpowered.dirtmv.data.protocol.types.entity.V1_6_2EntityAttributesDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.item.V1_8RItemDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.ReadableBytesDataType;
 import com.github.dirtpowered.dirtmv.data.protocol.types.netty.TabListEntryDataType;
@@ -60,6 +62,7 @@ public class V1_8RProtocol extends BaseProtocol {
     public final static DataType<TabListEntry> TAB_LIST_ENTRY;
     public final static DataType<CompoundBinaryTag> COMPRESSED_TAG;
     public final static DataType<byte[]> READABLE_BYTES;
+    public final static DataType<V1_6_2EntityAttributes> ENTITY_ATTRIBUTES;
 
     private static final StateDependedProtocol STATE_DEPENDED_PROTOCOL;
 
@@ -76,6 +79,7 @@ public class V1_8RProtocol extends BaseProtocol {
         TAB_LIST_ENTRY = new TabListEntryDataType();
         COMPRESSED_TAG = new CompressedCompoundTagDataType();
         READABLE_BYTES = new ReadableBytesDataType();
+        ENTITY_ATTRIBUTES = new V1_6_2EntityAttributesDataType(Type.V1_8_ENTITY_ATTRIBUTES);
 
         STATE_DEPENDED_PROTOCOL = new V1_8ProtocolDefinitions();
     }

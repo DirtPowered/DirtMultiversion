@@ -448,4 +448,11 @@ public class Type {
             V1_7_2RProtocol.STRING_ARRAY.write(holder, packetOutput);
         }
     });
+
+    public static final TypeObject<V1_6_2EntityAttributes> V1_8_ENTITY_ATTRIBUTES = new TypeObject<>(V1_6_2EntityAttributes.class, new TypeHandler() {
+        @Override
+        public void handle(TypeHolder holder, PacketOutput packetOutput) throws IOException {
+            V1_8RProtocol.ENTITY_ATTRIBUTES.write(holder, packetOutput);
+        }
+    });
 }

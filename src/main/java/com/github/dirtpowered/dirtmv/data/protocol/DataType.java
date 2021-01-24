@@ -39,5 +39,5 @@ public abstract class DataType<T> {
 
     public abstract T read(PacketInput packetInput) throws IOException;
 
-    public abstract void write(TypeHolder typeHolder, PacketOutput packetOutput) throws IOException;
+    public abstract void write(TypeHolder<T> typeHolder, PacketOutput packetOutput) throws IOException;
 }

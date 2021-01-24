@@ -28,6 +28,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeObject;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.AttributeModifier;
@@ -41,13 +42,12 @@ import java.util.UUID;
 
 public class V1_6_2EntityAttributesDataType extends DataType<V1_6_2EntityAttributes> {
 
-    public V1_6_2EntityAttributesDataType(TypeObject type) {
+    public V1_6_2EntityAttributesDataType(TypeObject<V1_6_2EntityAttributes> type) {
         super(type);
     }
 
     @Override
     public V1_6_2EntityAttributes read(PacketInput packetInput) throws IOException {
-        int entityId = packetInput.readInt();
         int attrCount = packetInput.readInt();
 
         List<EntityAttribute> entityAttributes = new ArrayList<>();
@@ -55,7 +55,7 @@ public class V1_6_2EntityAttributesDataType extends DataType<V1_6_2EntityAttribu
         for (int i = 0; i < attrCount; i++) {
             String name;
 
-            if (getType() == Type.V1_7_ENTITY_ATTRIBUTES) {
+            if (getType() == Type.V1_7_ENTITY_ATTRIBUTES || getType() == Type.V1_8_ENTITY_ATTRIBUTES) {
                 name = V1_7_2RProtocol.STRING.read(packetInput);
             } else {
                 name = BaseProtocol.STRING.read(packetInput);
@@ -64,9 +64,14 @@ public class V1_6_2EntityAttributesDataType extends DataType<V1_6_2EntityAttribu
 
             EntityAttribute entityAttribute = new EntityAttribute(name, value);
 
-            int additionalData = packetInput.readShort();
+            int additionalData;
+            if (getType() == Type.V1_8_ENTITY_ATTRIBUTES) {
+                additionalData = packetInput.readVarInt();
+            } else {
+                additionalData = packetInput.readShort();
+            }
             for (int j = 0; j < additionalData; j++) {
-                UUID uuid = new UUID(packetInput.readLong(), packetInput.readLong());
+                UUID uuid = V1_8RProtocol.UUID.read(packetInput);
 
                 double amount = packetInput.readDouble();
                 int operation = packetInput.readByte();
@@ -77,29 +82,30 @@ public class V1_6_2EntityAttributesDataType extends DataType<V1_6_2EntityAttribu
             entityAttributes.add(entityAttribute);
         }
 
-        return new V1_6_2EntityAttributes(entityId, entityAttributes);
+        return new V1_6_2EntityAttributes(entityAttributes);
     }
 
     @Override
     public void write(TypeHolder typeHolder, PacketOutput packetOutput) throws IOException {
         V1_6_2EntityAttributes entityAttributes = (V1_6_2EntityAttributes) typeHolder.getObject();
-
-        packetOutput.writeInt(entityAttributes.getEntityId());
         packetOutput.writeInt(entityAttributes.getEntityAttributes().size());
 
         for (EntityAttribute key : entityAttributes.getEntityAttributes()) {
-            if (getType() == Type.V1_7_ENTITY_ATTRIBUTES) {
+            if (getType() == Type.V1_7_ENTITY_ATTRIBUTES || getType() == Type.V1_8_ENTITY_ATTRIBUTES) {
                 V1_7_2RProtocol.STRING.write(new TypeHolder(Type.V1_7_STRING, key.getName()), packetOutput);
             } else {
                 BaseProtocol.STRING.write(new TypeHolder(Type.STRING, key.getName()), packetOutput);
             }
             packetOutput.writeDouble(key.getValue());
 
-            packetOutput.writeShort(key.getAttributeModifiers().size());
+            if (getType() == Type.V1_8_ENTITY_ATTRIBUTES) {
+                packetOutput.writeVarInt(key.getAttributeModifiers().size());
+            } else {
+                packetOutput.writeShort(key.getAttributeModifiers().size());
+            }
 
             for (AttributeModifier attributeModifier : key.getAttributeModifiers()) {
-                packetOutput.writeLong(attributeModifier.getUuid().getMostSignificantBits());
-                packetOutput.writeLong(attributeModifier.getUuid().getLeastSignificantBits());
+                V1_8RProtocol.UUID.write(new TypeHolder(Type.UUID, attributeModifier.getUuid()), packetOutput);
 
                 packetOutput.writeDouble(attributeModifier.getAmount());
                 packetOutput.writeByte(attributeModifier.getOperation());
