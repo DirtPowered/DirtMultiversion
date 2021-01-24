@@ -260,7 +260,7 @@ public class EntityPackets extends ServerProtocol {
                 session.sendPacket(playerSpawn, PacketDirection.TO_CLIENT, getFrom());
 
                 // apply skin
-                GameProfileFetcher.getSkinFor(username).whenComplete((gameProfile, throwable) -> {
+                GameProfileFetcher.getProfile(username).whenComplete((gameProfile, throwable) -> {
                     refreshPlayerProfile(session, gameProfile, data, playerSpawn);
                 });
 
@@ -382,9 +382,6 @@ public class EntityPackets extends ServerProtocol {
 
                 Motion motionData = data.read(Type.MOTION, 7);
                 ObjectType objectType = ObjectType.fromObjectTypeId(type);
-
-                if (objectType == null)
-                    return cancel();
 
                 switch (objectType) {
                     case ITEM:

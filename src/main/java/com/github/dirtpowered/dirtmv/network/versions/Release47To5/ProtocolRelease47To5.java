@@ -59,6 +59,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.V1_7En
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.WindowTypeTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.BlockMiningTimeFixer;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.GameProfileFetcher;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.HardnessTable;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
@@ -67,6 +68,7 @@ import com.google.gson.Gson;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.netty.buffer.Unpooled;
+import lombok.SneakyThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
@@ -162,6 +164,27 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         data.read(4),
                         data.read(5),
                         set(Type.BOOLEAN, false)
+                });
+            }
+        });
+
+        // login success
+        addTranslator(0x02, ProtocolState.LOGIN, PacketDirection.TO_CLIENT, new PacketTranslator() {
+
+            @SneakyThrows
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                String username = data.read(Type.STRING, 1);
+
+                // block connection thread until profile is fetched
+                UUID uuid = GameProfileFetcher.getProfile(username).get().getId();
+                String uniqueId = uuid.toString();
+
+                session.getUserData().setUniqueId(uuid);
+
+                return PacketUtil.createPacket(0x02, new TypeHolder[]{
+                        set(Type.V1_7_STRING, uniqueId),
+                        set(Type.V1_7_STRING, username)
                 });
             }
         });
@@ -450,10 +473,13 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 }
 
                 String username = ChatUtils.stripColor(u);
-
                 boolean online = data.read(Type.BOOLEAN, 1);
 
                 UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));
+
+                if (username.equals(session.getUserData().getUsername())) {
+                    uuid = session.getUserData().getUniqueId();
+                }
 
                 if (online) {
                     TabListEntry tabAddListEntry = new TabListEntry(TabListAction.ADD_PLAYER, new PlayerListEntry[]{

@@ -26,125 +26,59 @@ import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.google.common.base.Charsets;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
-import com.mojang.util.UUIDTypeAdapter;
+import com.mojang.authlib.GameProfileRepository;
+import com.mojang.authlib.HttpAuthenticationService;
+import com.mojang.authlib.ProfileLookupCallback;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import org.pmw.tinylog.Logger;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.net.URL;
-import java.util.Map.Entry;
+import java.net.Proxy;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class GameProfileFetcher {
-    private static final String SKIN_API_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";
-    private static final String UUID_API_URL = "https://api.mojang.com/users/profiles/minecraft/%s";
-
-    private static final Gson gson = new GsonBuilder()
-            .disableHtmlEscaping()
-            .registerTypeAdapter(UUID.class, new UUIDTypeAdapter())
-            .registerTypeAdapter(GameProfile.class, new GameProfileSerializer())
-            .registerTypeAdapter(PropertyMap.class, new PropertyMap.Serializer())
-            .create();
-
     private static final AsyncLoadingCache<String, GameProfile> skinCache = Caffeine.newBuilder()
             .expireAfterWrite(12, TimeUnit.HOURS)
             .buildAsync(GameProfileFetcher::fetchBlocking);
 
-    public static CompletableFuture<GameProfile> getSkinFor(String username) {
+    public static CompletableFuture<GameProfile> getProfile(String username) {
         return skinCache.get(ChatUtils.stripColor(username));
     }
 
-    private static GameProfile fetchBlocking(String username) {
-        String uuidData = fetchDataFrom(String.format(UUID_API_URL, username));
-        if (uuidData != null) {
-            try {
-                JsonObject jsonObject = JsonParser.parseString(uuidData).getAsJsonObject();
-                String skinData = fetchDataFrom(String.format(SKIN_API_URL, jsonObject.get("id").getAsString()));
+    private static GameProfile fetchBlocking(String username) throws ExecutionException, InterruptedException {
+        HttpAuthenticationService authenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY);
 
-                if (skinData != null) {
-                    return gson.fromJson(skinData, GameProfile.class);
-                }
-            } catch (IllegalStateException e) {
-                Logger.warn("unable to fetch skin for {}", username);
+        MinecraftSessionService sessionService = authenticationService.createMinecraftSessionService();
+        GameProfileRepository service = authenticationService.createProfileRepository();
+
+        CompletableFuture<GameProfile> completableFuture = new CompletableFuture<>();
+
+        service.findProfilesByNames(new String[]{username}, Agent.MINECRAFT, new ProfileLookupCallback() {
+
+            @Override
+            public void onProfileLookupSucceeded(GameProfile gameProfile) {
+                sessionService.fillProfileProperties(gameProfile, true);
+                completableFuture.complete(gameProfile);
             }
-        }
 
+            @Override
+            public void onProfileLookupFailed(GameProfile gameProfile, Exception e) {
+                Logger.warn("unable to fetch profile for {}, e: {}", username, e.getMessage());
+                GameProfile offlineProfile = createOfflineProfile(username);
+
+                completableFuture.complete(offlineProfile);
+            }
+        });
+
+        return completableFuture.get();
+    }
+
+    private static GameProfile createOfflineProfile(String username) {
         return new GameProfile(UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8)), username);
-    }
-
-    private static String fetchDataFrom(String serviceUrl) {
-        HttpsURLConnection urlConnection = null;
-        try {
-            URL url = new URL(serviceUrl);
-            urlConnection = (HttpsURLConnection) url.openConnection();
-            urlConnection.connect();
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
-
-            bufferedReader.close();
-            return builder.toString();
-        } catch (IOException e) {
-            Logger.warn("Error while fetching data from Mojang API: {}", e.getMessage());
-        } finally {
-            if (urlConnection != null) {
-                try {
-                    urlConnection.disconnect();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return null;
-    }
-
-    private static class GameProfileSerializer implements JsonSerializer<GameProfile>, JsonDeserializer<GameProfile> {
-
-        public GameProfile deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
-            JsonObject object = (JsonObject) json;
-            UUID id = object.has("id") ? (UUID) context.deserialize(object.get("id"), UUID.class) : null;
-            String name = object.has("name") ? object.getAsJsonPrimitive("name").getAsString() : null;
-            GameProfile profile = new GameProfile(id, name);
-
-            if (object.has("properties")) {
-                for (Entry<String, Property> prop : ((PropertyMap) context.deserialize(object.get("properties"), PropertyMap.class)).entries()) {
-                    profile.getProperties().put(prop.getKey(), prop.getValue());
-                }
-            }
-            return profile;
-        }
-
-        public JsonElement serialize(GameProfile profile, Type type, JsonSerializationContext context) {
-            JsonObject result = new JsonObject();
-            if (profile.getId() != null)
-                result.add("id", context.serialize(profile.getId()));
-            if (profile.getName() != null)
-                result.addProperty("name", profile.getName());
-            if (!profile.getProperties().isEmpty())
-                result.add("properties", context.serialize(profile.getProperties()));
-            return result;
-        }
     }
 }

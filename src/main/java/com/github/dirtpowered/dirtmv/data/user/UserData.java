@@ -29,6 +29,7 @@ import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import lombok.Data;
 
 import javax.crypto.SecretKey;
+import java.util.UUID;
 
 @Data
 public class UserData {
@@ -43,6 +44,7 @@ public class UserData {
     private String address;
     private int port;
     private ProtocolStorage protocolStorage;
+    private UUID uniqueId;
 
     public UserData() {
         this.protocolStorage = new ProtocolStorage();
