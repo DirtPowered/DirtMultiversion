@@ -31,7 +31,7 @@ import java.util.Random;
 
 public class UpdateTask implements Tickable {
 
-    private ServerSession serverSession;
+    private final ServerSession serverSession;
     private int soundTime;
 
     public UpdateTask(ServerSession session) {

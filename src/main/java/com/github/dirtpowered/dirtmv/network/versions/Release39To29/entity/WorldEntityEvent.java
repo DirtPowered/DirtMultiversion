@@ -32,6 +32,7 @@ import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model.AbstractEntity;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.Sound;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.SoundEmulation;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.SoundType;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
@@ -68,19 +69,19 @@ public class WorldEntityEvent {
         if (tracker.isEntityTracked(entityId)) {
             AbstractEntity e = tracker.getEntity(entityId);
 
-            String sound = SoundEmulation.getEntitySound(type, e.getEntityType());
-            if (sound.isEmpty())
+            Sound sound = SoundEmulation.getEntitySound(type, e.getEntityType());
+            if (sound.getSoundName().isEmpty())
                 return;
 
             Location loc = e.getLocation();
             Random shared = session.getMain().getSharedRandom();
 
-            float pitch = (shared.nextFloat() - shared.nextFloat()) * 0.2F + 1.0F;
+            sound.setPitch((shared.nextFloat() - shared.nextFloat()) * 0.2F + 1.0F);
 
             if (tracker.isEntityTracked(-999)) {
                 Location l = tracker.getEntity(-999).getLocation();
 
-                playSoundAt(session, loc, l, sound, 0.75F, pitch);
+                playSoundAt(session, loc, l, sound);
             }
         }
     }
@@ -91,7 +92,7 @@ public class WorldEntityEvent {
         if (tracker.isEntityTracked(-999)) {
             Location l = tracker.getEntity(-999).getLocation();
 
-            playSoundAt(session, loc, l, sound.getSoundName(), 0.75F, 1.0F);
+            playSoundAt(session, loc, l, new Sound(sound.getSoundName(), 0.75F, 1.0F));
         }
     }
 
@@ -101,12 +102,14 @@ public class WorldEntityEvent {
         if (tracker.isEntityTracked(-999)) {
             Location l = tracker.getEntity(-999).getLocation();
 
-            playSoundAt(session, loc, l, sound.getSoundName(), vol, pitch);
+            playSoundAt(session, loc, l, new Sound(sound.getSoundName(), vol, pitch));
         }
     }
 
-    private static void playSoundAt(ServerSession session, Location loc, Location target, String sound, float vol, float pitch) {
-        short correctedPitch = Shorts.constrainToRange((short) (pitch * 63.0F), (short) 0, (short) 255);
+    private static void playSoundAt(ServerSession session, Location loc, Location target, Sound sound) {
+        short correctedPitch = Shorts.constrainToRange((short) (sound.getPitch() * 63.0F), (short) 0, (short) 255);
+
+        float vol = sound.getVolume();
         float range = 16F;
 
         if (vol > 1.0F) {
@@ -119,7 +122,7 @@ public class WorldEntityEvent {
         }
 
         PacketData namedSound = PacketUtil.createPacket(0x3E, new TypeHolder[]{
-                new TypeHolder<>(Type.STRING, sound),
+                new TypeHolder<>(Type.STRING, sound.getSoundName()),
                 new TypeHolder<>(Type.INT, ((int) loc.getX()) * 8),
                 new TypeHolder<>(Type.INT, ((int) loc.getY()) * 8),
                 new TypeHolder<>(Type.INT, ((int) loc.getZ()) * 8),

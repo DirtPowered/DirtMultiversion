@@ -26,6 +26,7 @@ import com.github.dirtpowered.dirtmv.data.entity.EntityType;
 
 public class SoundEmulation {
     private final static WorldSound[][] ENTITY_SOUNDS = new WorldSound[256][];
+    private final static float[] VOL_ADJUST = new float[256];
 
     static {
         // pig sounds
@@ -203,31 +204,46 @@ public class SoundEmulation {
                 WorldSound.NO_SOUND,
                 WorldSound.NO_SOUND
         };
+
+        // volume adjustments
+        VOL_ADJUST[92] = 0.4F;
+        VOL_ADJUST[96] = 0.4F;
+        VOL_ADJUST[56] = 10.0F;
+        VOL_ADJUST[98] = 0.4F;
+        VOL_ADJUST[55] = 0.4F;
+        VOL_ADJUST[95] = 0.4F;
     }
 
-    public static String getEntitySound(SoundType soundType, EntityType entityType) {
-        String soundName = "";
+    public static Sound getEntitySound(SoundType soundType, EntityType entityType) {
+        Sound sound = new Sound("", 0.0F, 1.0F);
+        int entityTypeId = entityType.getEntityTypeId();
 
-        WorldSound[] entitySounds = ENTITY_SOUNDS[entityType.getEntityTypeId()];
+        WorldSound[] entitySounds = ENTITY_SOUNDS[entityTypeId];
         if (entitySounds == null) {
-            return soundName;
+            return sound;
         }
 
         switch (soundType) {
             case IDLE:
-                soundName = entitySounds[0].getSoundName();
+                sound = new Sound(entitySounds[0].getSoundName(), 1.0F, 1.0F);
                 break;
             case HURT:
-                soundName = entitySounds[1].getSoundName();
+                sound = new Sound(entitySounds[1].getSoundName(), 1.0F, 1.0F);
                 break;
             case DEATH:
-                soundName = entitySounds[2].getSoundName();
+                sound = new Sound(entitySounds[2].getSoundName(), 1.0F, 1.0F);
                 break;
             case CUSTOM:
-                soundName = entitySounds[3].getSoundName();
+                sound = new Sound(entitySounds[3].getSoundName(), 1.0F, 1.0F);
                 break;
         }
 
-        return soundName;
+        float correctedVolume = VOL_ADJUST[entityTypeId];
+
+        if (correctedVolume != .0f) {
+            sound.setVolume(correctedVolume);
+        }
+
+        return sound;
     }
 }

@@ -944,7 +944,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         } else if (blockId == 33 || blockId == 29) {
                             worldSound = WorldSound.PISTON_IN;
                         } else {
-                            worldSound = WorldSound.NOTE_BASS_ATTACK;
+                            worldSound = WorldSound.NOTE_CLICK;
                         }
                         break;
                     case 2:
@@ -954,7 +954,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         worldSound = WorldSound.NOTE_HAT;
                         break;
                     case 4:
-                        worldSound = WorldSound.NOTE_CLICK;
+                        worldSound = WorldSound.NOTE_BASS_ATTACK;
                         break;
                     default:
                         worldSound = WorldSound.NOTE_HARP;
@@ -962,7 +962,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 }
 
                 float correctedPitch = (float) (0.5f * (Math.pow(2, pitch / 12.0f)));
-                WorldEntityEvent.playSoundAt(session, new Location(x, y, z), worldSound, 1.33f, correctedPitch);
+                WorldEntityEvent.playSoundAt(session, new Location(x, y, z), worldSound, 3.0f, correctedPitch);
 
                 return PacketUtil.createPacket(0x36, new TypeHolder[]{
                         data.read(0),
