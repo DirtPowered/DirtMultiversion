@@ -31,8 +31,8 @@ public class ItemRemapper extends ItemBlockDataTransformer {
     public void registerReplacements() {
         addItemReplacement(8, 0, new Block(326, 0, "Water"));
         addItemReplacement(9, 0, new Block(326, 0, "Stationary Water"));
-        addItemReplacement(10, 0, new Block(326, 0, "Lava"));
-        addItemReplacement(11, 0, new Block(326, 0, "Stationary lava"));
+        addItemReplacement(10, 0, new Block(327, 0, "Lava"));
+        addItemReplacement(11, 0, new Block(327, 0, "Stationary lava"));
         addItemReplacement(43, 0, new Block(44, 0, "Double step"));
         addItemReplacement(44, 2, new Block(126, 0, "Wooden slab"));
         addItemReplacement(51, 0, new Block(385, 0, "Fire"));
