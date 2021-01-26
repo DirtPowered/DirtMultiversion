@@ -64,6 +64,14 @@ public class ProtocolRelease39To29 extends ServerProtocol {
         super(MinecraftVersion.R1_3_1, MinecraftVersion.R1_2_4);
     }
 
+    @Override
+    public void onConnect(ServerSession session) {
+        ProtocolStorage storage = session.getStorage();
+
+        storage.set(EntityTracker.class, new EntityTracker());
+        storage.set(UpdateTask.class, new UpdateTask(session));
+    }
+
     private AbstractEntity getNearestEntity(EntityTracker tracker, Location location, double range) {
         AbstractEntity nearbyEntity = new Entity(-1, new Location(0, 0, 0), EntityType.PIG);
 
@@ -77,7 +85,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
     }
 
     private void updateEntityLocation(ServerSession session, int entityId, int x, int y, int z, boolean relative) {
-        EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+        EntityTracker tracker = session.getStorage().get(EntityTracker.class);
         if (tracker != null) {
             AbstractEntity e = tracker.getEntity(entityId);
             if (e != null) {
@@ -185,11 +193,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage storage = session.getStorage();
-
-                storage.set(EntityTracker.class, new EntityTracker());
-                storage.set(UpdateTask.class, new UpdateTask(session));
-
                 session.getUserData().setEntityId(data.read(Type.INT, 0));
 
                 return PacketUtil.createPacket(0x01, new TypeHolder[]{
@@ -221,6 +224,23 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 return cancel();
+            }
+        });
+
+        // spawn position
+        addTranslator(0x06, PacketDirection.TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                EntityTracker tracker = session.getStorage().get(EntityTracker.class);
+
+                int x = data.read(Type.INT, 0);
+                int y = data.read(Type.INT, 1);
+                int z = data.read(Type.INT, 2);
+
+                Location loc = new Location(x, y, z);
+                tracker.addEntity(-999, new HumanEntity(-999, loc));
+                return data;
             }
         });
 
@@ -339,7 +359,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = data.read(Type.INT, 0);
 
-                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                EntityTracker tracker = session.getStorage().get(EntityTracker.class);
                 if (tracker != null) {
                     tracker.removeEntity(entityId);
                 }
@@ -365,7 +385,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 Location location = new Location(x, y, z);
                 Entity entity = new Entity(entityId, location, entityType);
 
-                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                EntityTracker tracker = session.getStorage().get(EntityTracker.class);
                 if (tracker != null) {
                     tracker.addEntity(entityId, entity);
                 }
@@ -463,7 +483,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 byte type = data.read(Type.BYTE, 1);
 
                 // sound emulation, entity mount fixes
-                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                EntityTracker tracker = session.getStorage().get(EntityTracker.class);
                 if (tracker != null) {
                     int entityId = data.read(Type.INT, 0);
                     double x = data.read(Type.INT, 2) / 32.0D;
@@ -591,7 +611,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                EntityTracker tracker = session.getStorage().get(EntityTracker.class);
                 if (tracker != null) {
                     int entityId = data.read(Type.INT, 0);
                     double x = data.read(Type.INT, 2) / 32.0D;
@@ -634,7 +654,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 int entityId = data.read(Type.INT, 0);
 
                 WatchableObject[] watchableObjects = data.read(Type.V1_3B_METADATA, 1);
-                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                EntityTracker tracker = session.getStorage().get(EntityTracker.class);
 
                 if (tracker != null) {
                     for (WatchableObject watchableObject : watchableObjects) {
@@ -715,7 +735,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                EntityTracker tracker = session.getStorage().get(EntityTracker.class);
                 if (tracker != null) {
                     int entityId = data.read(Type.INT, 0);
 
@@ -738,7 +758,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
+                EntityTracker tracker = session.getStorage().get(EntityTracker.class);
                 if (tracker != null) {
                     int entityId = data.read(Type.INT, 0);
                     double x = data.read(Type.INT, 4) / 32.0D;
@@ -804,6 +824,24 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         set(Type.BYTE, (byte) (0.05f * 255)),
                         set(Type.BYTE, (byte) (0.1f * 255)),
                 });
+            }
+        });
+
+        // player look move
+        addTranslator(0x0D, PacketDirection.TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                double x = data.read(Type.DOUBLE, 0);
+                double y = data.read(Type.DOUBLE, 1);
+                double z = data.read(Type.DOUBLE, 3);
+                EntityTracker tracker = session.getStorage().get(EntityTracker.class);
+
+                AbstractEntity e = tracker.getEntity(-999);
+                if (e != null) {
+                    e.setLocation(new Location(x, y, z));
+                }
+                return data;
             }
         });
 

@@ -72,33 +72,59 @@ public class WorldEntityEvent {
             if (sound.isEmpty())
                 return;
 
-
             Location loc = e.getLocation();
             Random shared = session.getMain().getSharedRandom();
 
             float pitch = (shared.nextFloat() - shared.nextFloat()) * 0.2F + 1.0F;
-            playSoundAt(session, loc, sound, 0.75F, pitch);
+
+            if (tracker.isEntityTracked(-999)) {
+                Location l = tracker.getEntity(-999).getLocation();
+
+                playSoundAt(session, loc, l, sound, 0.75F, pitch);
+            }
         }
     }
 
     public static void playSoundAt(ServerSession session, Location loc, WorldSound sound) {
-        playSoundAt(session, loc, sound.getSoundName(), 0.75F, 1.0F);
+        EntityTracker tracker = session.getStorage().get(EntityTracker.class);
+
+        if (tracker.isEntityTracked(-999)) {
+            Location l = tracker.getEntity(-999).getLocation();
+
+            playSoundAt(session, loc, l, sound.getSoundName(), 0.75F, 1.0F);
+        }
     }
 
     public static void playSoundAt(ServerSession session, Location loc, WorldSound sound, float vol, float pitch) {
-        playSoundAt(session, loc, sound.getSoundName(), vol, pitch);
+        EntityTracker tracker = session.getStorage().get(EntityTracker.class);
+
+        if (tracker.isEntityTracked(-999)) {
+            Location l = tracker.getEntity(-999).getLocation();
+
+            playSoundAt(session, loc, l, sound.getSoundName(), vol, pitch);
+        }
     }
 
-    private static void playSoundAt(ServerSession session, Location loc, String sound, float vol, float pitch) {
+    private static void playSoundAt(ServerSession session, Location loc, Location target, String sound, float vol, float pitch) {
         short correctedPitch = Shorts.constrainToRange((short) (pitch * 63.0F), (short) 0, (short) 255);
+        float range = 16F;
+
+        if (vol > 1.0F) {
+            range *= vol;
+        }
+
+        // cancel if outside allowed range
+        if (target.distanceTo(loc) > range) {
+            return;
+        }
 
         PacketData namedSound = PacketUtil.createPacket(0x3E, new TypeHolder[]{
-                new TypeHolder(Type.STRING, sound),
-                new TypeHolder(Type.INT, ((int) loc.getX()) * 8),
-                new TypeHolder(Type.INT, ((int) loc.getY()) * 8),
-                new TypeHolder(Type.INT, ((int) loc.getZ()) * 8),
-                new TypeHolder(Type.FLOAT, vol),
-                new TypeHolder(Type.UNSIGNED_BYTE, correctedPitch),
+                new TypeHolder<>(Type.STRING, sound),
+                new TypeHolder<>(Type.INT, ((int) loc.getX()) * 8),
+                new TypeHolder<>(Type.INT, ((int) loc.getY()) * 8),
+                new TypeHolder<>(Type.INT, ((int) loc.getZ()) * 8),
+                new TypeHolder<>(Type.FLOAT, vol),
+                new TypeHolder<>(Type.UNSIGNED_BYTE, correctedPitch),
         });
 
         session.sendPacket(namedSound, PacketDirection.TO_CLIENT, MinecraftVersion.R1_3_1);
