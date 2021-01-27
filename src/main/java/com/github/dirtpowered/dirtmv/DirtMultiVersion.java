@@ -167,13 +167,13 @@ public class DirtMultiVersion implements Runnable {
         server.bind();
     }
 
+    public static void main(String... args) {
+        new DirtMultiVersion();
+    }
+
     private void setupGlobalTask() {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "Main Thread"));
         executor.scheduleAtFixedRate(this, 0L, 50L, TimeUnit.MILLISECONDS);
-    }
-
-    public static void main(String... args) {
-        new DirtMultiVersion();
     }
 
     @Override

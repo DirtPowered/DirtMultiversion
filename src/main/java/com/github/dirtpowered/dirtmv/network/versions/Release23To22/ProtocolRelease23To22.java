@@ -132,7 +132,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
 
                 String filteredMessage = ChatFilter.filterChat(data.read(Type.STRING, 0));
 
-                return PacketUtil.createPacket(0x03, new TypeHolder[] {
+                return PacketUtil.createPacket(0x03, new TypeHolder[]{
                         set(Type.STRING, filteredMessage)
                 });
             }

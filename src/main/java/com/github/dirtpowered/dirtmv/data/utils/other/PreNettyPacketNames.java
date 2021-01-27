@@ -108,7 +108,7 @@ public enum PreNettyPacketNames {
     PING_REQUEST(254),
     KICK_DISCONNECT(255);
 
-    private int packetId;
+    private final int packetId;
 
     PreNettyPacketNames(int i) {
         this.packetId = i;

@@ -83,7 +83,7 @@ public class TabListEntryDataType extends DataType<TabListEntry> {
                     listEntry = new PlayerListEntry(profile, properties, gameMode, ping, displayName);
                     break;
                 case UPDATE_GAMEMODE:
-                    listEntry = new PlayerListEntry(profile,  packetInput.readVarInt());
+                    listEntry = new PlayerListEntry(profile, packetInput.readVarInt());
                     break;
                 case UPDATE_LATENCY:
                     listEntry = new PlayerListEntry(profile, packetInput.readVarInt(), true);
@@ -117,21 +117,21 @@ public class TabListEntryDataType extends DataType<TabListEntry> {
 
         packetOutput.writeVarInt(entries.length);
 
-        for(PlayerListEntry entry : entries) {
+        for (PlayerListEntry entry : entries) {
             V1_8RProtocol.UUID.write(new TypeHolder(Type.UUID, entry.getProfile().getId()), packetOutput);
 
-            switch(action) {
+            switch (action) {
                 case ADD_PLAYER:
                     V1_7_2RProtocol.STRING.write(new TypeHolder(Type.V1_7_STRING, entry.getProfile().getName()), packetOutput);
                     packetOutput.writeVarInt(entry.getProperties().length);
 
-                    for(Property property : entry.getProperties()) {
+                    for (Property property : entry.getProperties()) {
                         V1_7_2RProtocol.STRING.write(new TypeHolder(Type.V1_7_STRING, property.getName()), packetOutput);
                         V1_7_2RProtocol.STRING.write(new TypeHolder(Type.V1_7_STRING, property.getValue()), packetOutput);
 
                         packetOutput.writeBoolean(property.hasSignature());
 
-                        if(property.hasSignature()) {
+                        if (property.hasSignature()) {
                             V1_7_2RProtocol.STRING.write(new TypeHolder(Type.V1_7_STRING, property.getSignature()), packetOutput);
                         }
                     }
@@ -140,7 +140,7 @@ public class TabListEntryDataType extends DataType<TabListEntry> {
                     packetOutput.writeVarInt(entry.getPing());
                     packetOutput.writeBoolean(entry.getDisplayName() != null);
 
-                    if(entry.getDisplayName() != null) {
+                    if (entry.getDisplayName() != null) {
                         V1_7_2RProtocol.STRING.write(new TypeHolder(Type.V1_7_STRING, entry.getDisplayName()), packetOutput);
                     }
                     break;
@@ -153,7 +153,7 @@ public class TabListEntryDataType extends DataType<TabListEntry> {
                 case UPDATE_DISPLAY_NAME:
                     packetOutput.writeBoolean(entry.getDisplayName() != null);
 
-                    if(entry.getDisplayName() != null) {
+                    if (entry.getDisplayName() != null) {
                         V1_7_2RProtocol.STRING.write(new TypeHolder(Type.V1_7_STRING, entry.getDisplayName()), packetOutput);
                     }
                     break;

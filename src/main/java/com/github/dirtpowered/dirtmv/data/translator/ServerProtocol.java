@@ -50,6 +50,10 @@ public abstract class ServerProtocol implements ConnectionHandler {
         registerTranslators();
     }
 
+    public static PacketData cancel() {
+        return new PacketData(-1);
+    }
+
     public abstract void registerTranslators();
 
     protected void addTranslator(int opCode, PacketDirection direction, PacketTranslator packetTranslator) {
@@ -96,9 +100,5 @@ public abstract class ServerProtocol implements ConnectionHandler {
     @Override
     public void onDisconnect(ServerSession session) {
         // it will be overridden when needed
-    }
-
-    public static PacketData cancel() {
-        return new PacketData(-1);
     }
 }

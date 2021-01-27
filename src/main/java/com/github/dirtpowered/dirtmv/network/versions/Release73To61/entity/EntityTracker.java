@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EntityTracker {
-    private Map<Integer, EntityType> entities = new ConcurrentHashMap<>();
+    private final Map<Integer, EntityType> entities = new ConcurrentHashMap<>();
 
     public void addEntity(int entityId, EntityType entity) {
         entities.putIfAbsent(entityId, entity);

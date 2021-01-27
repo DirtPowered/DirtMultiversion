@@ -1,10 +1,11 @@
 package com.github.dirtpowered.dirtmv.data.chunk.biome.noise;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class NoiseOctaves2D {
-    private NoiseGenerator2D[] generators;
-    private int size;
+    private final NoiseGenerator2D[] generators;
+    private final int size;
 
     public NoiseOctaves2D(Random seededRandom, int size) {
         this.size = size;
@@ -20,9 +21,7 @@ public class NoiseOctaves2D {
         gridZ /= 1.5D;
 
         if (array != null && array.length >= xSize * zSize) {
-            for (int i = 0; i < array.length; ++i) {
-                array[i] = 0.0D;
-            }
+            Arrays.fill(array, 0.0D);
         } else {
             array = new double[xSize * zSize];
         }

@@ -29,7 +29,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketInput;
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import com.google.common.base.Preconditions;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class UTF8StringDataType extends DataType<String> {
 
@@ -44,14 +44,14 @@ public class UTF8StringDataType extends DataType<String> {
 
         byte[] bytes = packetInput.readBytes(stringLength);
 
-        return new String(bytes, Charset.forName("UTF-8"));
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     @Override
     public void write(TypeHolder typeHolder, PacketOutput packetOutput) {
         String string = (String) typeHolder.getObject();
 
-        byte[] message = string.getBytes(Charset.forName("UTF-8"));
+        byte[] message = string.getBytes(StandardCharsets.UTF_8);
         packetOutput.writeShort(message.length);
         packetOutput.writeBytes(message);
     }

@@ -35,7 +35,7 @@ import java.io.IOException;
 public class ItemArrayDataType extends DataType<ItemStack[]> {
 
     @Getter
-    private DataType childInstruction;
+    private final DataType childInstruction;
 
     public ItemArrayDataType(TypeObject type, DataType child) {
         super(type);

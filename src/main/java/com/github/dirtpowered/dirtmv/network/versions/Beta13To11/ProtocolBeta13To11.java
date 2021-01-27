@@ -97,7 +97,7 @@ public class ProtocolBeta13To11 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x17, new TypeHolder[] {
+                return PacketUtil.createPacket(0x17, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),

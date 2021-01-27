@@ -63,7 +63,7 @@ public class V1_5RTo1_6RMetadataTransformer implements MetadataTransformer {
 
                 } else if (entityType == EntityType.WITHER | entityType == EntityType.ENDER_DRAGON) {
                     if (index == 16) {
-                        newMetaData.add(new WatchableObject(MetadataType.FLOAT, 6, ((Integer)value).floatValue()));
+                        newMetaData.add(new WatchableObject(MetadataType.FLOAT, 6, ((Integer) value).floatValue()));
                     } else {
                         newMetaData.add(watchableObject);
                     }

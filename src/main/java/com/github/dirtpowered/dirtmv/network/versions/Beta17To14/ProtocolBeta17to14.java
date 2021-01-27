@@ -295,7 +295,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                     // cache empty name, so the tab entry will be removed after killing human mob
                     cache.getTabPlayers().put(data.read(Type.INT, 0), StringUtil.EMPTY_STRING);
 
-                    return PacketUtil.createPacket(0x14, new TypeHolder[] {
+                    return PacketUtil.createPacket(0x14, new TypeHolder[]{
                             data.read(0),
                             set(Type.STRING, StringUtil.EMPTY_STRING),
                             data.read(2),

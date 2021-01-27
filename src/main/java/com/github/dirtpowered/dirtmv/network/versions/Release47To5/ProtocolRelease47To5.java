@@ -50,6 +50,9 @@ import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
+import com.github.dirtpowered.dirtmv.network.server.codec.netty.PacketCompressor;
+import com.github.dirtpowered.dirtmv.network.server.codec.netty.PacketDecompressor;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.DimensionTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.DataFixers;
@@ -69,6 +72,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.netty.buffer.Unpooled;
 import lombok.SneakyThrows;
+import org.pmw.tinylog.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
@@ -84,6 +88,10 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         addGroup(new MovementPackets());
         addGroup(new InventoryPackets());
         addGroup(new EntityPackets());
+    }
+
+    public static long toBlockPosition(int x, int y, int z) {
+        return (((long) x & 0x3FFFFFF) << 38) | ((((long) y) & 0xFFF) << 26) | (((long) z) & 0x3FFFFFF);
     }
 
     @Override
@@ -104,8 +112,28 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         }
     }
 
-    public static long toBlockPosition(int x, int y, int z) {
-        return (((long) x & 0x3FFFFFF) << 38) | ((((long) y) & 0xFFF) << 26) | (((long) z) & 0x3FFFFFF);
+    private void enableCompression(ServerSession session) {
+        int threshold = session.getMain().getConfiguration().getCompressionThreshold();
+
+        if (threshold < 0) {
+            Logger.info("packet compression is disabled");
+            return;
+        }
+
+        PacketData compressionPacket = PacketUtil.createPacket(0x03, new TypeHolder[]{
+                set(Type.VAR_INT, threshold)
+        });
+
+        session.sendPacket(compressionPacket, PacketDirection.TO_CLIENT, getFrom());
+
+        // add compression handlers to pipeline
+        session.getChannel().pipeline().addAfter(
+                ChannelConstants.NETTY_LENGTH_ENCODER, ChannelConstants.PACKET_COMPRESSION,
+                new PacketCompressor(threshold)
+        ).addAfter(
+                ChannelConstants.NETTY_LENGTH_DECODER, ChannelConstants.PACKET_DECOMPRESSION,
+                new PacketDecompressor()
+        );
     }
 
     private BlockLocation fromBlockPosition(long encodedPosition) {
@@ -181,6 +209,8 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 String uniqueId = uuid.toString();
 
                 session.getUserData().setUniqueId(uuid);
+                // set compression
+                enableCompression(session);
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
                         set(Type.V1_7_STRING, uniqueId),
@@ -365,7 +395,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x23, new TypeHolder[]{
                         set(Type.LONG, toBlockPosition(x, y, z)),
-                        set(Type.VAR_INT, blockId << 4| blockData & 15)
+                        set(Type.VAR_INT, blockId << 4 | blockData & 15)
                 });
             }
         });

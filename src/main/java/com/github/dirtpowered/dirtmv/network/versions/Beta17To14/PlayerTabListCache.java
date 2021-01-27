@@ -30,7 +30,7 @@ import java.util.Map;
 class PlayerTabListCache {
 
     @Getter
-    private Map<Integer, String> tabPlayers;
+    private final Map<Integer, String> tabPlayers;
 
     PlayerTabListCache() {
         this.tabPlayers = new HashMap<>();

@@ -260,7 +260,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 V1_2Chunk chunk = new V1_2Chunk(chunkX, chunkZ, true, (short) 0, (short) 0, 0, new byte[0], new byte[0], null);
 
-                return PacketUtil.createPacket(0x33, new TypeHolder[] {
+                return PacketUtil.createPacket(0x33, new TypeHolder[]{
                         set(Type.V1_3_CHUNK, chunk)
                 });
             }
@@ -627,10 +627,10 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 /* default 1.3.x metadata */
                 List<WatchableObject> watchableObjects = Arrays.asList(
                         new WatchableObject(MetadataType.BYTE, 0, 0),
-                        new WatchableObject(MetadataType.BYTE,16, 0),
+                        new WatchableObject(MetadataType.BYTE, 16, 0),
                         new WatchableObject(MetadataType.SHORT, 1, 300),
-                        new WatchableObject(MetadataType.BYTE,17, 0),
-                        new WatchableObject(MetadataType.INT,8, 0)
+                        new WatchableObject(MetadataType.BYTE, 17, 0),
+                        new WatchableObject(MetadataType.INT, 8, 0)
                 );
 
                 return PacketUtil.createPacket(0x14, new TypeHolder[]{
@@ -667,7 +667,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                                 if (tracker.getEntity(entityId).getEntityType() == EntityType.HUMAN) {
                                     HumanEntity humanEntity = (HumanEntity) tracker.getEntity(entityId);
 
-                                    AbstractEntity nearbyEntity = getNearestEntity(tracker, humanEntity.getLocation(),1.5D);
+                                    AbstractEntity nearbyEntity = getNearestEntity(tracker, humanEntity.getLocation(), 1.5D);
                                     EntityType eType = nearbyEntity.getEntityType();
 
                                     if (nearbyEntity.getEntityId() != -1) {
@@ -866,7 +866,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 CompoundBinaryTag tileTag = builder.build();
 
-                return PacketUtil.createPacket(0x84, new TypeHolder[] {
+                return PacketUtil.createPacket(0x84, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -892,7 +892,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                     itemStack = new ItemStack(itemId, 0, itemData, null);
                 }
 
-                return PacketUtil.createPacket(0x05, new TypeHolder[] {
+                return PacketUtil.createPacket(0x05, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.V1_3R_ITEM, itemStack)

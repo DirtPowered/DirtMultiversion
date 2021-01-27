@@ -29,7 +29,7 @@ import javax.crypto.Cipher;
 import javax.crypto.ShortBufferException;
 
 class EncryptionHandler {
-    private Cipher cipher;
+    private final Cipher cipher;
 
     EncryptionHandler(Cipher cipher) {
         this.cipher = cipher;

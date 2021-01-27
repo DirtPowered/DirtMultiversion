@@ -170,7 +170,7 @@ public class EntityPackets extends ServerProtocol {
                     }
                 }
 
-                return PacketUtil.createPacket(0x1C, new TypeHolder[] {
+                return PacketUtil.createPacket(0x1C, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         set(Type.V1_8R_METADATA, watchableObjects)
                 });

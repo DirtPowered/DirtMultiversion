@@ -32,7 +32,7 @@ import java.util.List;
 
 public class PacketDecryptionCodec extends MessageToMessageDecoder<ByteBuf> {
 
-    private EncryptionHandler encryptionHandler;
+    private final EncryptionHandler encryptionHandler;
 
     public PacketDecryptionCodec(Cipher cipher) {
         this.encryptionHandler = new EncryptionHandler(cipher);

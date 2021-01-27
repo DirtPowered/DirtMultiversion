@@ -44,9 +44,9 @@ public interface DirtServer {
     String getVersion();
 
     /**
-     *  Gets the proxy configuration
+     * Gets the proxy configuration
      *
-     *  @return {@link Configuration config} object
+     * @return {@link Configuration config} object
      */
     Configuration getConfiguration();
 

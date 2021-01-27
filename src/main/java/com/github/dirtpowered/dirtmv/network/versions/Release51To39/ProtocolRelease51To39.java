@@ -149,7 +149,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 Configuration configuration = session.getMain().getConfiguration();
 
                 // old to new format
-                return PacketUtil.createPacket(0xFF, new TypeHolder[] {
+                return PacketUtil.createPacket(0xFF, new TypeHolder[]{
                         set(Type.STRING, transformMotd(reason, configuration))
                 });
             }
@@ -161,7 +161,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x02, new TypeHolder[] {
+                return PacketUtil.createPacket(0x02, new TypeHolder[]{
                         set(Type.BYTE, 39),
                         data.read(1),
                         data.read(2),
@@ -176,7 +176,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0xCC, new TypeHolder[] {
+                return PacketUtil.createPacket(0xCC, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -205,7 +205,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                     }
                 }
 
-                return PacketUtil.createPacket(0x83, new TypeHolder[] {
+                return PacketUtil.createPacket(0x83, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.UNSIGNED_SHORT_BYTE_ARRAY, mapData)
@@ -219,7 +219,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x04, new TypeHolder[] {
+                return PacketUtil.createPacket(0x04, new TypeHolder[]{
                         data.read(0),
                         data.read(0)
                 });
@@ -232,7 +232,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x17, new TypeHolder[] {
+                return PacketUtil.createPacket(0x17, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -274,7 +274,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         itemStack
                 ));
 
-                PacketData itemMetadata = PacketUtil.createPacket(0x28, new TypeHolder[] {
+                PacketData itemMetadata = PacketUtil.createPacket(0x28, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_4R_METADATA, metadata.toArray(new WatchableObject[0]))
                 });
@@ -428,7 +428,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 int itemId = item.getItemId();
 
                 if (itemId >= 298 && itemId <= 317) {
-                    return PacketUtil.createPacket(0x66, new TypeHolder[] {
+                    return PacketUtil.createPacket(0x66, new TypeHolder[]{
                             set(Type.BYTE, (byte) 0),
                             set(Type.SHORT, 0),
                             set(Type.BYTE, (byte) 0),
@@ -488,7 +488,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         break;
                 }
 
-                return PacketUtil.createPacket(0x19, new TypeHolder[] {
+                return PacketUtil.createPacket(0x19, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),

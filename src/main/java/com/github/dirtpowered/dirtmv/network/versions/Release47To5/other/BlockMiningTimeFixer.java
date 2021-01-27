@@ -36,11 +36,11 @@ import com.github.dirtpowered.dirtmv.network.versions.Release47To5.ProtocolRelea
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
 
 public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
+    private final ServerSession session;
+    private final ProtocolStorage storage;
     private int currentMiningTicks;
     private BlockLocation pos;
     private int blockId;
-    private final ServerSession session;
-    private final ProtocolStorage storage;
     private int lastBreakingStage;
     private int randomEid;
 

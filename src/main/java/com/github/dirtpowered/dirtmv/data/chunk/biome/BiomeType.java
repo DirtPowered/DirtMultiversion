@@ -38,7 +38,7 @@ enum BiomeType {
     NETHER(8 /* nether */);
 
     @Getter
-    private int biomeId;
+    private final int biomeId;
 
     BiomeType(int biomeId) {
         this.biomeId = biomeId;

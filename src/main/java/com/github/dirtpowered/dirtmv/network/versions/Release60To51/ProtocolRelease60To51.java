@@ -114,7 +114,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                 int mouseClick = leftClick ? 0 : 1;
 
                 if (droppingUsingQ) {
-                    PacketData closeWindow = PacketUtil.createPacket(0x65, new TypeHolder[] {
+                    PacketData closeWindow = PacketUtil.createPacket(0x65, new TypeHolder[]{
                             set(Type.BYTE, (byte) 0)
                     });
 
@@ -130,7 +130,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                 if (itemStack == null && !clickingOutside)
                     return cancel();
 
-                return PacketUtil.createPacket(0x66, new TypeHolder[] {
+                return PacketUtil.createPacket(0x66, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.BYTE, (byte) mouseClick),

@@ -41,9 +41,9 @@ import static com.github.dirtpowered.dirtmv.data.utils.PacketUtil.readModernPack
 
 public class NettyPacketDecoder extends ByteToMessageDecoder {
 
-    private PacketDirection packetDirection;
-    private UserData userData;
-    private DirtMultiVersion main;
+    private final PacketDirection packetDirection;
+    private final UserData userData;
+    private final DirtMultiVersion main;
 
     public NettyPacketDecoder(DirtMultiVersion main, UserData userData, PacketDirection direction) {
         this.main = main;

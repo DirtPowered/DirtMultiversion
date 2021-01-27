@@ -34,7 +34,7 @@ import java.util.Random;
 public class LegacyPingVersionHandler extends ChannelInboundHandlerAdapter {
 
     private final static String CHANNEL_NAME = "MC|PingHost";
-    private UserData userData;
+    private final UserData userData;
 
     public LegacyPingVersionHandler(UserData data) {
         this.userData = data;
@@ -79,7 +79,7 @@ public class LegacyPingVersionHandler extends ChannelInboundHandlerAdapter {
                             userData.setClientVersion(MinecraftVersion.fromRegistryId(protocolVersion));
                         } else {
                             // temp workaround
-                            int[] versions = new int[] {73, 74, 78};
+                            int[] versions = new int[]{73, 74, 78};
                             int index = new Random().nextInt(versions.length);
 
                             protocolVersion = versions[index];

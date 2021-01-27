@@ -75,7 +75,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 String address = "localhost";
                 int port = 25565;
 
-                return PacketUtil.createPacket(0xFE, new TypeHolder[] {
+                return PacketUtil.createPacket(0xFE, new TypeHolder[]{
                         set(Type.UNSIGNED_BYTE, 1),
                         set(Type.UNSIGNED_BYTE, 0xFA),
                         set(Type.STRING, "MC|PingHost"),
@@ -194,7 +194,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 String message = data.read(Type.STRING, 0);
 
-                return PacketUtil.createPacket(0x00, new TypeHolder[] {
+                return PacketUtil.createPacket(0x00, new TypeHolder[]{
                         set(Type.V1_7_STRING, ChatUtils.legacyToJsonString(message))
                 });
             }
@@ -241,7 +241,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 if (originalItem != null) {
                     originalItem = itemRemapper.replaceItem(originalItem);
                 }
-                return PacketUtil.createPacket(0x04, new TypeHolder[] {
+                return PacketUtil.createPacket(0x04, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.V1_3R_ITEM, originalItem)
@@ -269,7 +269,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x23, new TypeHolder[] {
+                return PacketUtil.createPacket(0x23, new TypeHolder[]{
                         data.read(0), // x
                         set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 1).shortValue()), // y
                         data.read(2), // z
@@ -419,7 +419,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                     }
                 }
 
-                return PacketUtil.createPacket(0x1C, new TypeHolder[] {
+                return PacketUtil.createPacket(0x1C, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_7R_METADATA, metadataArray)
                 });
@@ -439,7 +439,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                     reason = 1;
                 }
 
-                return PacketUtil.createPacket(0x2B, new TypeHolder[] {
+                return PacketUtil.createPacket(0x2B, new TypeHolder[]{
                         set(Type.UNSIGNED_BYTE, reason),
                         set(Type.FLOAT, data.read(Type.BYTE, 1).floatValue())
                 });
@@ -452,7 +452,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x2D, new TypeHolder[] {
+                return PacketUtil.createPacket(0x2D, new TypeHolder[]{
                         set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 0).shortValue()),
                         set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 1).shortValue()),
                         set(Type.V1_7_STRING, data.read(Type.STRING, 2)),
@@ -468,7 +468,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x27, new TypeHolder[] {
+                return PacketUtil.createPacket(0x27, new TypeHolder[]{
                         set(Type.FLOAT, data.read(Type.DOUBLE, 0).floatValue()),
                         set(Type.FLOAT, data.read(Type.DOUBLE, 1).floatValue()),
                         set(Type.FLOAT, data.read(Type.DOUBLE, 2).floatValue()),
@@ -492,7 +492,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 if (newSoundName.isEmpty())
                     return cancel();
 
-                return PacketUtil.createPacket(0x29, new TypeHolder[] {
+                return PacketUtil.createPacket(0x29, new TypeHolder[]{
                         set(Type.V1_7_STRING, soundName),
                         data.read(1),
                         data.read(2),
@@ -510,7 +510,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 String username = data.read(Type.STRING, 1);
 
-                return PacketUtil.createPacket(0x0C, new TypeHolder[] {
+                return PacketUtil.createPacket(0x0C, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)), // entity id
                         set(Type.V1_7_STRING, getOfflineUuid(username)), // player UUID,
                         set(Type.V1_7_STRING, username), // player name
@@ -531,7 +531,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x33, new TypeHolder[] {
+                return PacketUtil.createPacket(0x33, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -549,7 +549,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x11, new TypeHolder[] {
+                return PacketUtil.createPacket(0x11, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         data.read(1),
                         data.read(2),
@@ -565,7 +565,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x10, new TypeHolder[] {
+                return PacketUtil.createPacket(0x10, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         set(Type.V1_7_STRING, data.read(Type.STRING, 1)),
                         data.read(2),
@@ -582,7 +582,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x09, new TypeHolder[] {
+                return PacketUtil.createPacket(0x09, new TypeHolder[]{
                         set(Type.BYTE, data.read(Type.SHORT, 0).byteValue())
                 });
             }
@@ -624,7 +624,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x3B, new TypeHolder[] {
+                return PacketUtil.createPacket(0x3B, new TypeHolder[]{
                         set(Type.V1_7_STRING, data.read(Type.STRING, 0)),
                         set(Type.V1_7_STRING, data.read(Type.STRING, 1)),
                         data.read(2)
@@ -660,7 +660,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x3D, new TypeHolder[] {
+                return PacketUtil.createPacket(0x3D, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_7_STRING, data.read(Type.STRING, 1))
                 });
@@ -673,7 +673,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x2A, new TypeHolder[] {
+                return PacketUtil.createPacket(0x2A, new TypeHolder[]{
                         set(Type.V1_7_STRING, data.read(Type.STRING, 0)),
                         data.read(1),
                         data.read(2),
@@ -693,7 +693,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x36, new TypeHolder[] {
+                return PacketUtil.createPacket(0x36, new TypeHolder[]{
                         data.read(1),
                         data.read(2),
                         data.read(3)
@@ -707,7 +707,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x0A, new TypeHolder[] {
+                return PacketUtil.createPacket(0x0A, new TypeHolder[]{
                         data.read(0),
                         data.read(2),
                         data.read(3),
@@ -744,7 +744,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                         break;
                 }
 
-                return PacketUtil.createPacket(0x0B, new TypeHolder[] {
+                return PacketUtil.createPacket(0x0B, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         set(Type.UNSIGNED_BYTE, animationType)
                 });
@@ -757,7 +757,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x3F, new TypeHolder[] {
+                return PacketUtil.createPacket(0x3F, new TypeHolder[]{
                         set(Type.V1_7_STRING, data.read(Type.STRING, 0)),
                         data.read(1)
                 });
@@ -770,7 +770,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x34, new TypeHolder[] {
+                return PacketUtil.createPacket(0x34, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.SHORT, 1).intValue()),
                         data.read(2)
                 });
@@ -968,7 +968,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                     return cancel();
                 }
 
-                return PacketUtil.createPacket(0xFA, new TypeHolder[] {
+                return PacketUtil.createPacket(0xFA, new TypeHolder[]{
                         set(Type.STRING, channel),
                         data.read(1)
                 });
@@ -981,7 +981,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x03, new TypeHolder[] {
+                return PacketUtil.createPacket(0x03, new TypeHolder[]{
                         set(Type.STRING, data.read(Type.V1_7_STRING, 0))
                 });
             }
@@ -1010,7 +1010,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0x07, new TypeHolder[] {
+                return PacketUtil.createPacket(0x07, new TypeHolder[]{
                         set(Type.INT, 0),
                         data.read(0),
                         data.read(1)
@@ -1024,7 +1024,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0xCB, new TypeHolder[] {
+                return PacketUtil.createPacket(0xCB, new TypeHolder[]{
                         set(Type.STRING, data.read(Type.V1_7_STRING, 0))
                 });
             }
@@ -1036,7 +1036,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0xCC, new TypeHolder[] {
+                return PacketUtil.createPacket(0xCC, new TypeHolder[]{
                         set(Type.STRING, data.read(Type.V1_7_STRING, 0)),
                         data.read(1),
                         data.read(2),

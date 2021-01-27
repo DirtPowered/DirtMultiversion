@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OnGroundTracker {
-    private Map<Integer, Boolean> entities = new HashMap<>();
+    private final Map<Integer, Boolean> entities = new HashMap<>();
 
     public void setGroundStateFor(int entityId, boolean onGround) {
         entities.put(entityId, onGround);

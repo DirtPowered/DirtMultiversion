@@ -326,7 +326,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                     effectData = blockId + (blockData << 12);
                 }
 
-                return PacketUtil.createPacket(0x3D, new TypeHolder[] {
+                return PacketUtil.createPacket(0x3D, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),

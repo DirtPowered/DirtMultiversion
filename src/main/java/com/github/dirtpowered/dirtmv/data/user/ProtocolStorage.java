@@ -24,7 +24,6 @@ package com.github.dirtpowered.dirtmv.data.user;
 
 import lombok.NonNull;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 

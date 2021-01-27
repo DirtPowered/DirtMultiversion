@@ -329,7 +329,7 @@ public class InventoryPackets extends ServerProtocol {
                         break;
                 }
 
-                return PacketUtil.createPacket(0x31, new TypeHolder[] {
+                return PacketUtil.createPacket(0x31, new TypeHolder[]{
                         data.read(0),
                         set(Type.SHORT, property),
                         data.read(2)

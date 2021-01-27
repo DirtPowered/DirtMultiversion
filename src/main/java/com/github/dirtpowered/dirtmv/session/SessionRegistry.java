@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class SessionRegistry {
-    private Map<UUID, MultiSession> sessions = new ConcurrentHashMap<>();
+    private final Map<UUID, MultiSession> sessions = new ConcurrentHashMap<>();
 
     public void addSession(UUID clientId, MultiSession multiSession) {
         sessions.put(clientId, multiSession);

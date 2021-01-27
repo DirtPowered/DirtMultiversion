@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WindowTypeTracker {
-    private Map<Integer, Integer> windowTypes = new HashMap<>();
+    private final Map<Integer, Integer> windowTypes = new HashMap<>();
 
     public void setWindowTypeFor(int windowId, int windowType) {
         windowTypes.put(windowId, windowType);

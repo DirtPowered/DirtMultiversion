@@ -297,7 +297,7 @@ public class LegacyItemList {
     }
 
     public static boolean isEnchantable(int itemId) {
-        return ITEM_LIST.get(itemId) == null ? false : ITEM_LIST.get(itemId);
+        return ITEM_LIST.get(itemId) != null && ITEM_LIST.get(itemId);
     }
 
     public static boolean exists(int itemId) {

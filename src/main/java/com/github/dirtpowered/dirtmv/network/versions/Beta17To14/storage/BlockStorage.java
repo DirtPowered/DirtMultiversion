@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.Map;
 
 public class BlockStorage {
-    private Map<Long, ChunkPart> blockStorage = new Long2ObjectOpenHashMap<>();
+    private final Map<Long, ChunkPart> blockStorage = new Long2ObjectOpenHashMap<>();
 
     private long getKey(int chunkX, int chunkZ) {
         return (long) chunkX & 0xffffffffL | ((long) chunkZ & 0xffffffffL) << 32;
@@ -61,7 +61,7 @@ public class BlockStorage {
         private static final int SIZE_Y = 128;
         private static final int SIZE_Z = 16;
 
-        private byte[] blocks = new byte[SIZE_X * SIZE_Y * SIZE_Z];
+        private final byte[] blocks = new byte[SIZE_X * SIZE_Y * SIZE_Z];
 
         int getBlock(int posX, int posY, int posZ) {
             if (posX >= 0 && posY >= 0 && posZ >= 0 && posX < SIZE_X && posY < SIZE_Y && posZ < SIZE_Z) {

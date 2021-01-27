@@ -48,9 +48,9 @@ public enum MinecraftVersion {
     R1_8(100, 47, true, "1.8.9");
 
     private final int registryId;
-    private int protocolNettyId;
     private final boolean nettyProtocol;
     private final String friendlyName;
+    private int protocolNettyId;
 
     MinecraftVersion(int registryId, boolean nettyProtocol, String friendlyName) {
         this.registryId = registryId;

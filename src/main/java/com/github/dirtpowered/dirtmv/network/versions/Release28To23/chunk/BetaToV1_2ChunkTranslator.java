@@ -54,9 +54,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
-    private final ItemBlockDataTransformer blockDataTransformer;
     private static final int BLOCK_CHANGE_CHUNK_SIZE = 128;
     private static final int MAX_SINGLE_BLOCK_UPDATE_PACKETS = 8;
+    private final ItemBlockDataTransformer blockDataTransformer;
 
     public BetaToV1_2ChunkTranslator(ItemBlockDataTransformer blockDataTransformer) {
         this.blockDataTransformer = blockDataTransformer;

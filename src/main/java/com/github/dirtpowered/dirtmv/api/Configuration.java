@@ -90,4 +90,9 @@ public interface Configuration {
      * Enable ViaVersion support
      */
     boolean enableViaVersion();
+
+    /**
+     * Packet compression threshold (r1.8+)
+     */
+    int getCompressionThreshold();
 }

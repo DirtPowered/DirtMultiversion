@@ -23,5 +23,5 @@
 package com.github.dirtpowered.dirtmv.data.interfaces;
 
 public interface Tickable {
-     void tick();
+    void tick();
 }

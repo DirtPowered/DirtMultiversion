@@ -195,7 +195,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 MovementTranslator.updateBoundingBox(session, new Location(x, y, z));
                 Location loc = MovementTranslator.correctPosition(session, x, y, z);
 
-                return PacketUtil.createPacket(0x0D, new TypeHolder[] {
+                return PacketUtil.createPacket(0x0D, new TypeHolder[]{
                         set(Type.DOUBLE, loc.getX()),
                         set(Type.DOUBLE, loc.getY()),
                         set(Type.DOUBLE, loc.getY() + (originalStance - y)), // stance
@@ -224,7 +224,7 @@ public class ProtocolRelease22To17 extends ServerProtocol {
                 MovementTranslator.updateBoundingBox(session, new Location(x, y, z));
                 Location loc = MovementTranslator.correctPosition(session, x, y, z);
 
-                return PacketUtil.createPacket(0x0B, new TypeHolder[] {
+                return PacketUtil.createPacket(0x0B, new TypeHolder[]{
                         set(Type.DOUBLE, loc.getX()),
                         set(Type.DOUBLE, loc.getY()),
                         set(Type.DOUBLE, loc.getY() + 1.6200000047683716D),

@@ -42,4 +42,8 @@ public class ChannelConstants {
     // via support
     public static final String VIA_DECODER = "via_decoder";
     public static final String VIA_ENCODER = "via_encoder";
+
+    // compression
+    public static final String PACKET_COMPRESSION = "packet_compression";
+    public static final String PACKET_DECOMPRESSION = "packet_decompression";
 }

@@ -28,9 +28,8 @@ public class NibbleArray {
 
     @Getter
     private final byte[] data;
-
-    private int depthBits;
     private final boolean oldFormat;
+    private int depthBits;
 
     public NibbleArray(int initialSize) {
         oldFormat = true;

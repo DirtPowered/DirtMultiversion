@@ -85,7 +85,7 @@ public class ProtocolRelease29To28 extends ServerProtocol {
                     item.setItemId(999); // sending invalid item will cancel any inventory interaction
                 }
 
-                return PacketUtil.createPacket(0x66, new TypeHolder[] {
+                return PacketUtil.createPacket(0x66, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),

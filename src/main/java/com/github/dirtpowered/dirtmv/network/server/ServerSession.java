@@ -79,11 +79,9 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     private final Queue<PacketData> initialPacketQueue = new LinkedBlockingQueue<>();
     private final Queue<QueuedPacket> packetQueue = new LinkedBlockingQueue<>();
     private final AtomicInteger packetCounter = new AtomicInteger();
-
-    private int currentTick = 0;
-
     @Getter
     private final Server server;
+    private int currentTick = 0;
 
     ServerSession(SocketChannel channel, DirtMultiVersion instance, Server server) {
         this.key = UUID.randomUUID();

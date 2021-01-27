@@ -125,7 +125,6 @@ public class TranslatorRegistry {
      *
      * @param server - server version
      * @param client - client version
-     *
      * @return List of {@link ServerProtocol protocol translators}
      */
     public List<ServerProtocol> getAllProtocolsBetween(MinecraftVersion server, MinecraftVersion client) {

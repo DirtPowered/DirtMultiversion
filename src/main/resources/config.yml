@@ -20,6 +20,9 @@ remote_port: 25567
 # change that value when normal players
 # are getting disconnected by doing completely normal things
 max_packets_per_second: 150
+# Compression threshold
+# -1 to disable, 0 to compress all packets
+compression_threshold: 256
 # Caches blocks only above Y 20 (for b1.7 servers)
 reduce_blockstorage_memory: true
 # Max connections to proxy (not server)

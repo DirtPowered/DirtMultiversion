@@ -5,11 +5,11 @@ import java.util.Random;
 public class NoiseGenerator2D {
     private static final double f = 0.5D * (Math.sqrt(3.0D) - 1.0D);
     private static final double g = (3.0D - Math.sqrt(3.0D)) / 6.0D;
-    private static int[][] d = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}};
+    private static final int[][] d = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}};
     public double a;
     public double b;
     public double c;
-    private int[] premutationTable;
+    private final int[] premutationTable;
 
     NoiseGenerator2D(Random seededRandom) {
         this.premutationTable = new int[512];

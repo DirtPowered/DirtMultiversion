@@ -138,7 +138,7 @@ public class ProtocolRelease74To73 extends ServerProtocol {
                 }
 
                 if (itemId == 323 && data.read(Type.SHORT, 5) > 0) {
-                    PacketData signEditor = PacketUtil.createPacket(0x85, new TypeHolder[] {
+                    PacketData signEditor = PacketUtil.createPacket(0x85, new TypeHolder[]{
                             set(Type.BYTE, (byte) 0), // ignored
                             set(Type.INT, x), // x
                             set(Type.INT, y), // y

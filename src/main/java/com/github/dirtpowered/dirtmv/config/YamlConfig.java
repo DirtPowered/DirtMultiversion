@@ -121,4 +121,9 @@ public class YamlConfig implements Configuration {
     public boolean enableViaVersion() {
         return (boolean) objects.getOrDefault("viaversion_support", false);
     }
+
+    @Override
+    public int getCompressionThreshold() {
+        return (int) objects.getOrDefault("compression_threshold", 256);
+    }
 }

@@ -144,7 +144,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 pingMessage.setVersionName("1.6.1");
                 pingMessage.setProtocol(session.getUserData().getClientVersion().getRegistryId());
 
-                return PacketUtil.createPacket(0xFF, new TypeHolder[] {
+                return PacketUtil.createPacket(0xFF, new TypeHolder[]{
                         set(Type.STRING, ServerMotd.serialize(pingMessage))
                 });
             }
@@ -193,7 +193,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 11);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(entityType, oldMeta);
 
-                return PacketUtil.createPacket(0x18, new TypeHolder[] {
+                return PacketUtil.createPacket(0x18, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
@@ -249,7 +249,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 1);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(entityType, oldMeta);
 
-                return PacketUtil.createPacket(0x28, new TypeHolder[] {
+                return PacketUtil.createPacket(0x28, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_4R_METADATA, newMeta)
                 });
@@ -309,7 +309,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
 
-                return PacketUtil.createPacket(0xC8, new TypeHolder[] {
+                return PacketUtil.createPacket(0xC8, new TypeHolder[]{
                         data.read(0),
                         set(Type.INT, data.read(Type.BYTE, 1).intValue())
                 });
@@ -373,7 +373,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 // client -> server
-                return PacketUtil.createPacket(0x13, new TypeHolder[] {
+                return PacketUtil.createPacket(0x13, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                 });
@@ -391,7 +391,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 if (vehicleId != -1) {
                     vehicleTracker.setVehicleId(vehicleId);
                 }
-                return PacketUtil.createPacket(0x27, new TypeHolder[] {
+                return PacketUtil.createPacket(0x27, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.BOOLEAN, false) // leash
@@ -433,10 +433,10 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                     int cachedId = vehicleTracker.getVehicleId();
                     vehicleTracker.setVehicleId(-999);
 
-                    return PacketUtil.createPacket(0x07, new TypeHolder[] {
-                        set(Type.INT, session.getUserData().getEntityId()),
-                        set(Type.INT, cachedId),
-                        set(Type.BYTE, (byte) 0),
+                    return PacketUtil.createPacket(0x07, new TypeHolder[]{
+                            set(Type.INT, session.getUserData().getEntityId()),
+                            set(Type.INT, cachedId),
+                            set(Type.BYTE, (byte) 0),
                     });
                 }
 
