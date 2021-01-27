@@ -28,12 +28,12 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class V1_3_4ChunkBulk {
-    public byte[] compressedSize;
-    public byte[][] chunks;
-    public int length;
     private int[] columnX;
     private int[] columnZ;
     private boolean skylight;
     private int[] primaryBitmaps;
     private int[] additionalBitmaps;
+    public byte[] compressedSize;
+    public byte[][] chunks;
+    public int length;
 }
