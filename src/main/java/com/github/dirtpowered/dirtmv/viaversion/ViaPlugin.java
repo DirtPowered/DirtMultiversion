@@ -45,6 +45,7 @@ import us.myles.ViaVersion.api.platform.ViaConnectionManager;
 import us.myles.ViaVersion.api.platform.ViaPlatform;
 import us.myles.ViaVersion.api.protocol.ProtocolVersion;
 import us.myles.ViaVersion.api.type.Type;
+import us.myles.ViaVersion.packets.State;
 import us.myles.ViaVersion.protocols.base.ProtocolInfo;
 import us.myles.ViaVersion.protocols.base.VersionProvider;
 import us.myles.ViaVersion.protocols.protocol1_9to1_8.Protocol1_9To1_8;
@@ -101,7 +102,7 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
                 if (protocolInfo == null)
                     return;
 
-                if (protocolInfo.getPipeline().contains(Protocol1_9To1_8.class)) {
+                if (protocolInfo.getPipeline().contains(Protocol1_9To1_8.class) && protocolInfo.getState() == State.PLAY) {
                     PacketWrapper wrapper = new PacketWrapper(0x03, null, userConnection);
                     wrapper.write(Type.BOOLEAN, true);
 

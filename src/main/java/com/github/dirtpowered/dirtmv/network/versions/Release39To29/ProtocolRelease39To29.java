@@ -31,7 +31,6 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
-import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
@@ -48,6 +47,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.Human
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.WorldEntityEvent;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model.AbstractEntity;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.item.CreativeItemList;
+import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.OpenChestTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.UpdateTask;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
 import lombok.SneakyThrows;
@@ -62,6 +62,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
     public ProtocolRelease39To29() {
         super(MinecraftVersion.R1_3_1, MinecraftVersion.R1_2_4);
+        addGroup(new WorldPackets());
     }
 
     @Override
@@ -70,6 +71,11 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
         storage.set(EntityTracker.class, new EntityTracker());
         storage.set(UpdateTask.class, new UpdateTask(session));
+        storage.set(OpenChestTracker.class, new OpenChestTracker());
+
+        if (!storage.hasObject(BlockStorage.class)) {
+            storage.set(BlockStorage.class, new BlockStorage(MinecraftVersion.R1_2_4));
+        }
     }
 
     private AbstractEntity getNearestEntity(EntityTracker tracker, Location location, double range) {
@@ -241,57 +247,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 Location loc = new Location(x, y, z);
                 tracker.addEntity(-999, new HumanEntity(-999, loc));
                 return data;
-            }
-        });
-
-        // pre chunk
-        addTranslator(0x32, PacketDirection.TO_CLIENT, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-                byte mode = data.read(Type.BYTE, 2);
-
-                if (mode == 1) {
-                    return cancel();
-                }
-
-                int chunkX = data.read(Type.INT, 0);
-                int chunkZ = data.read(Type.INT, 1);
-
-                V1_2Chunk chunk = new V1_2Chunk(chunkX, chunkZ, true, (short) 0, (short) 0, 0, new byte[0], new byte[0], null);
-
-                return PacketUtil.createPacket(0x33, new TypeHolder[]{
-                        set(Type.V1_3_CHUNK, chunk)
-                });
-            }
-        });
-
-        // chunk data
-        addTranslator(0x33, PacketDirection.TO_CLIENT, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-                V1_2Chunk chunk = data.read(Type.V1_2_CHUNK, 0);
-
-                return PacketUtil.createPacket(0x33, new TypeHolder[]{
-                        set(Type.V1_3_CHUNK, chunk)
-                });
-            }
-        });
-
-        // block change
-        addTranslator(0x35, PacketDirection.TO_CLIENT, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-
-                return PacketUtil.createPacket(0x35, new TypeHolder[]{
-                        data.read(0),
-                        data.read(1),
-                        data.read(2),
-                        set(Type.SHORT, data.read(Type.BYTE, 3).shortValue()),
-                        data.read(4)
-                });
             }
         });
 
@@ -896,81 +851,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         data.read(0),
                         data.read(1),
                         set(Type.V1_3R_ITEM, itemStack)
-                });
-            }
-        });
-
-        // play noteblock
-        addTranslator(0x36, PacketDirection.TO_CLIENT, new PacketTranslator() {
-
-            @Override
-            public PacketData translate(ServerSession session, PacketData data) {
-                int x = data.read(Type.INT, 0);
-                int y = data.read(Type.SHORT, 1);
-                int z = data.read(Type.INT, 2);
-
-                byte type = data.read(Type.BYTE, 3);
-                byte pitch = data.read(Type.BYTE, 4);
-
-                ProtocolStorage storage = session.getStorage();
-
-                short blockId;
-
-                if (!storage.hasObject(BlockStorage.class)) {
-                    blockId = 25;
-                } else {
-                    BlockStorage blockStorage = storage.get(BlockStorage.class);
-                    // TODO: use local block storage
-                    blockId = (short) blockStorage.getBlockAt(x, y, z);
-                }
-
-                WorldSound worldSound;
-
-                switch (type) {
-                    case 0:
-                        if (blockId == 33 || blockId == 29) {
-                            worldSound = WorldSound.PISTON_OUT;
-                        } else {
-                            worldSound = WorldSound.NOTE_HARP;
-                        }
-                        break;
-                    case 1:
-                        if (blockId == 54) {
-                            if (pitch == 1) {
-                                worldSound = WorldSound.CHEST_OPEN;
-                            } else {
-                                worldSound = WorldSound.CHEST_CLOSE;
-                            }
-                        } else if (blockId == 33 || blockId == 29) {
-                            worldSound = WorldSound.PISTON_IN;
-                        } else {
-                            worldSound = WorldSound.NOTE_CLICK;
-                        }
-                        break;
-                    case 2:
-                        worldSound = WorldSound.NOTE_SNARE;
-                        break;
-                    case 3:
-                        worldSound = WorldSound.NOTE_HAT;
-                        break;
-                    case 4:
-                        worldSound = WorldSound.NOTE_BASS_ATTACK;
-                        break;
-                    default:
-                        worldSound = WorldSound.NOTE_HARP;
-                        break;
-                }
-
-                float correctedPitch = (float) (0.5f * (Math.pow(2, pitch / 12.0f)));
-                WorldEntityEvent.playSoundAt(session, new Location(x, y, z), worldSound, 3.0f, correctedPitch);
-
-                return PacketUtil.createPacket(0x36, new TypeHolder[]{
-                        data.read(0),
-                        data.read(1),
-                        data.read(2),
-                        data.read(3),
-                        data.read(4),
-                        set(Type.SHORT, blockId)
                 });
             }
         });
