@@ -63,7 +63,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
     public void onConnect(ServerSession session) {
         ProtocolStorage storage = session.getStorage();
 
-        storage.set(BlockStorage.class, new BlockStorage());
+        storage.set(BlockStorage.class, new BlockStorage(MinecraftVersion.B1_7_3));
         storage.set(PlayerTabListCache.class, new PlayerTabListCache());
         storage.set(KeepAliveTask.class, new KeepAliveTask(session));
 

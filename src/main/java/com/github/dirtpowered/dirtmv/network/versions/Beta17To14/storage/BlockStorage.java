@@ -22,12 +22,21 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage;
 
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import lombok.Getter;
 
 import java.util.Map;
 
 public class BlockStorage {
     private final Map<Long, ChunkPart> blockStorage = new Long2ObjectOpenHashMap<>();
+
+    @Getter
+    private final MinecraftVersion version;
+
+    public BlockStorage(MinecraftVersion version) {
+        this.version = version;
+    }
 
     private long getKey(int chunkX, int chunkZ) {
         return (long) chunkX & 0xffffffffL | ((long) chunkZ & 0xffffffffL) << 32;
