@@ -58,6 +58,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.Dimens
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.DataFixers;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.PlayerMovementTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.V1_7EntityTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.WindowTypeTracker;
@@ -100,6 +101,12 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         storage.set(OnGroundTracker.class, new OnGroundTracker());
         storage.set(WindowTypeTracker.class, new WindowTypeTracker());
         storage.set(QuickBarTracker.class, new QuickBarTracker());
+
+        if (session.getMain().getConfiguration().enableViaVersion()) {
+            // it's not needed for 1.8->1.7, but ViaVersion will need that to fix issues
+            // with eating, entering portals, effects (potions)
+            storage.set(PlayerMovementTracker.class, new PlayerMovementTracker());
+        }
 
         // check if 1.6 entity tracker exists - if not, create one
         if (!storage.hasObject(EntityTracker.class)) {

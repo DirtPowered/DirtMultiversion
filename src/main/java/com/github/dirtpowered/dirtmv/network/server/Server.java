@@ -51,6 +51,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Server implements DirtServer {
     private final EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -167,6 +169,17 @@ public class Server implements DirtServer {
         }
 
         return userData;
+    }
+
+    @Override
+    public List<UserData> getAllConnections() {
+        List<UserData> list = new ArrayList<>();
+
+        for (MultiSession entry : main.getSessionRegistry().getSessions().values()) {
+            UserData userData = entry.getServerSession().getUserData();
+            list.add(userData);
+        }
+        return list;
     }
 
     public void stop() {

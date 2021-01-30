@@ -20,50 +20,11 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.api;
+package com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity;
 
-import com.github.dirtpowered.dirtmv.data.user.UserData;
+import lombok.Data;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-//TODO: API
-public interface DirtServer {
-
-    /**
-     * Gets the full name of project
-     *
-     * @return full name
-     */
-    String getName();
-
-    /**
-     * Gets the proxy version
-     *
-     * @return version string
-     */
-    String getVersion();
-
-    /**
-     * Gets the proxy configuration
-     *
-     * @return {@link Configuration config} object
-     */
-    Configuration getConfiguration();
-
-    /**
-     * Searches for userdata in session registry from provided username
-     *
-     * @param username - player username
-     * @return {@link UserData UserData} object
-     */
-    @Nullable
-    UserData getUserDataFromUsername(String username);
-
-    /**
-     * Gets all fully initialized connections data object
-     *
-     * @return List of {@link UserData UserData}
-     */
-    List<UserData> getAllConnections();
+@Data
+public class PlayerMovementTracker {
+    private long lastLocationUpdate;
 }

@@ -24,15 +24,16 @@ package com.github.dirtpowered.dirtmv.viaversion;
 
 import com.github.dirtpowered.dirtmv.api.DirtServer;
 import com.github.dirtpowered.dirtmv.data.interfaces.Tickable;
-import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.PlayerMovementTracker;
 import com.github.dirtpowered.dirtmv.viaversion.config.ViaConfig;
 import com.github.dirtpowered.dirtmv.viaversion.platform.DummyInjector;
-import com.github.dirtpowered.dirtmv.viaversion.providers.IdleMovementProvider;
 import com.github.dirtpowered.dirtmv.viaversion.providers.ViaHandItemProvider;
 import com.github.dirtpowered.dirtmv.viaversion.util.WrappedLogger;
 import com.google.gson.JsonObject;
 import us.myles.ViaVersion.ViaManager;
+import us.myles.ViaVersion.api.PacketWrapper;
 import us.myles.ViaVersion.api.Via;
 import us.myles.ViaVersion.api.ViaAPI;
 import us.myles.ViaVersion.api.ViaVersionConfig;
@@ -43,12 +44,11 @@ import us.myles.ViaVersion.api.platform.TaskId;
 import us.myles.ViaVersion.api.platform.ViaConnectionManager;
 import us.myles.ViaVersion.api.platform.ViaPlatform;
 import us.myles.ViaVersion.api.protocol.ProtocolVersion;
+import us.myles.ViaVersion.api.type.Type;
 import us.myles.ViaVersion.protocols.base.ProtocolInfo;
 import us.myles.ViaVersion.protocols.base.VersionProvider;
 import us.myles.ViaVersion.protocols.protocol1_9to1_8.Protocol1_9To1_8;
 import us.myles.ViaVersion.protocols.protocol1_9to1_8.providers.HandItemProvider;
-import us.myles.ViaVersion.protocols.protocol1_9to1_8.providers.MovementTransmitterProvider;
-import us.myles.ViaVersion.protocols.protocol1_9to1_8.storage.MovementTracker;
 
 import java.io.File;
 import java.util.UUID;
@@ -80,33 +80,35 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
         });
 
         Via.getManager().getProviders().use(HandItemProvider.class, new ViaHandItemProvider(server));
-        Via.getManager().getProviders().use(MovementTransmitterProvider.class, new IdleMovementProvider());
     }
 
     @Override
     public void tick() {
-        for (UserConnection info : Via.getManager().getConnections()) {
-            ProtocolInfo protocolInfo = info.getProtocolInfo();
-            if (protocolInfo == null || !protocolInfo.getPipeline().contains(Protocol1_9To1_8.class))
-                continue;
+        for (UserData userData : api.getAllConnections()) {
+            ProtocolStorage s = userData.getProtocolStorage();
 
-            MovementTracker movementTracker = info.get(MovementTracker.class);
-            if (movementTracker == null) continue;
+            if (!s.hasObject(PlayerMovementTracker.class))
+                return;
 
-            long nextIdleUpdate = movementTracker.getNextIdlePacket();
+            PlayerMovementTracker movementTracker = s.get(PlayerMovementTracker.class);
 
-            if (info.getChannel() != null && info.getChannel().isOpen()) {
-                if (nextIdleUpdate <= System.currentTimeMillis()) {
-                    MovementTransmitterProvider idle = Via.getManager().getProviders().get(MovementTransmitterProvider.class);
-                    if (idle != null) {
-                        UserData data = api.getUserDataFromUsername(protocolInfo.getUsername());
-                        if (data != null) {
-                            boolean isNetty = api.getConfiguration().getServerVersion().isNettyProtocol();
+            if ((System.currentTimeMillis() - movementTracker.getLastLocationUpdate()) >= 50) {
+                UserConnection userConnection = Via.getManager().getConnection(userData.getUniqueId());
+                if (userConnection == null)
+                    return;
 
-                            if (isNetty || data.getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME) {
-                                idle.sendPlayer(info);
-                            }
-                        }
+                ProtocolInfo protocolInfo = userConnection.getProtocolInfo();
+                if (protocolInfo == null)
+                    return;
+
+                if (protocolInfo.getPipeline().contains(Protocol1_9To1_8.class)) {
+                    PacketWrapper wrapper = new PacketWrapper(0x03, null, userConnection);
+                    wrapper.write(Type.BOOLEAN, true);
+
+                    try {
+                        wrapper.sendToServer(Protocol1_9To1_8.class, true, false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
