@@ -52,18 +52,30 @@ public enum HardnessTable {
     SOUL_SAND(88, 0.5F, false, 277, 256, 284, 273),
     SIGN_POST(63, 1.0F, false, -1),
     WALL_SIGN(68, 1.0F, false, -1),
-    GLOWSTONE(89, 0.3F, true, 278, 257, 274, 270, 285);
+    GLOWSTONE(89, 0.3F, true, 278, 257, 274, 270, 285),
+    PUMPKIN(86, 1.0F, false, true,271, 275, 258, 286, 279),
+    JACK_O_LANTERN(91, 1.0F, false, true,271, 275, 258, 286, 279);
 
     private final int blockId;
     private final float oldHardness;
     private final int[] allowedTools;
     private final boolean respectToolMultipler;
+    private final boolean skipHand;
+
+    HardnessTable(int blockId, float oldHardness, boolean respectToolMultipler, boolean skipHand, int... allowedTools) {
+        this.blockId = blockId;
+        this.oldHardness = oldHardness;
+        this.respectToolMultipler = respectToolMultipler;
+        this.allowedTools = allowedTools;
+        this.skipHand = skipHand;
+    }
 
     HardnessTable(int blockId, float oldHardness, boolean respectToolMultipler, int... allowedTools) {
         this.blockId = blockId;
         this.oldHardness = oldHardness;
         this.respectToolMultipler = respectToolMultipler;
         this.allowedTools = allowedTools;
+        this.skipHand = false;
     }
 
     public static boolean exist(int blockId) {
@@ -76,8 +88,10 @@ public enum HardnessTable {
         HardnessTable block = getBlockById(blockId);
         boolean b = contains(block.allowedTools, toolId);
 
-        if (!b && block.allowedTools[0] != -1) {
-            multipler = 5.0F;
+        if (!block.skipHand) {
+            if (!b && block.allowedTools[0] != -1) {
+                multipler = 5.0F;
+            }
         }
 
         if (block.respectToolMultipler) {
