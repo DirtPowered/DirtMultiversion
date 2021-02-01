@@ -72,7 +72,7 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
         // notify other sessions
         if (!stateLock) {
             boolean postNettyFlag = serverSession.getUserData().getProtocolState() == ProtocolState.PLAY;
-            boolean preNettyFlag = serverSession.getUserData().getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME;
+            boolean preNettyFlag = serverSession.getUserData().getPreNettyProtocolState() == PreNettyProtocolState.LOGIN;
 
             if (preNettyFlag || postNettyFlag) {
                 MinecraftVersion server = main.getConfiguration().getServerVersion();

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.versions.Release22To17.movement;
+package com.github.dirtpowered.dirtmv.network.versions.Release51To39.movement;
 
 import com.github.dirtpowered.dirtmv.data.protocol.objects.BlockLocation;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
@@ -35,12 +35,10 @@ public class MovementTranslator {
     private final static double PLAYER_MODEL_Y = 1.8D;
     private final static double PLAYER_MODEL_Z = 0.6D;
 
-    private final static BlockCollision FENCE_COLLISION;
-    private final static BlockCollision CHEST_COLLISION;
+    private final static BlockCollision FULL_BLOCK_COLLISION;
 
     static {
-        FENCE_COLLISION = new FenceCollision();
-        CHEST_COLLISION = new ChestCollision();
+        FULL_BLOCK_COLLISION = new FullBlockCollision();
     }
 
     public static void updateBoundingBox(ServerSession session, Location position) {
@@ -91,13 +89,8 @@ public class MovementTranslator {
                     int blockId = storage.getBlockAt(loc.getX(), loc.getY(), loc.getZ());
 
                     if (needsCorrection(blockId)) {
-                        if (blockId == 85) {
-                            FENCE_COLLISION.setPosition(loc.getX(), loc.getY(), loc.getZ());
-                            possibleCollisions.add(FENCE_COLLISION);
-                        } else {
-                            CHEST_COLLISION.setPosition(loc.getX(), loc.getY(), loc.getZ());
-                            possibleCollisions.add(CHEST_COLLISION);
-                        }
+                        FULL_BLOCK_COLLISION.setPosition(loc.getX(), loc.getY(), loc.getZ());
+                        possibleCollisions.add(FULL_BLOCK_COLLISION);
                     }
                 }
             }
@@ -115,22 +108,15 @@ public class MovementTranslator {
 
         for (BlockCollision blockCollision : possibleCollisions) {
             if (blockCollision != null) {
-                blockCollision.correctPosition(b, blockCollision instanceof ChestCollision);
+                blockCollision.correctPosition(b);
             }
         }
         return new Location(b.getMiddleX(), b.getMiddleY() - 0.9, b.getMiddleZ());
     }
 
-    private final static class ChestCollision extends BlockCollision {
+    private final static class FullBlockCollision extends BlockCollision {
 
-        ChestCollision() {
-            boundingBox = new BoundingBox(0.5, 0.5, 0.5, 1.0, 1.0, 1.0);
-        }
-    }
-
-    private final static class FenceCollision extends BlockCollision {
-
-        FenceCollision() {
+        FullBlockCollision() {
             boundingBox = new BoundingBox(0.5, 0.5, 0.5, 0, 1.0, 0);
         }
     }

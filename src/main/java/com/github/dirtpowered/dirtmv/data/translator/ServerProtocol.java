@@ -32,15 +32,18 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.Setter;
 
 public abstract class ServerProtocol implements ConnectionHandler {
     private final Long2ObjectMap<PacketTranslator> registeredTranslators;
 
     @Getter
-    private final MinecraftVersion from;
+    @Setter
+    private MinecraftVersion from;
 
     @Getter
-    private final MinecraftVersion to;
+    @Setter
+    private MinecraftVersion to;
 
     public ServerProtocol(MinecraftVersion from, MinecraftVersion to) {
         this.registeredTranslators = new Long2ObjectOpenHashMap<>();

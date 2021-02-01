@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.versions.Release22To17.movement;
+package com.github.dirtpowered.dirtmv.network.versions.Release51To39.movement;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

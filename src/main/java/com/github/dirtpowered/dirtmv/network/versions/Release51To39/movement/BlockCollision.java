@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.versions.Release22To17.movement;
+package com.github.dirtpowered.dirtmv.network.versions.Release51To39.movement;
 
 import lombok.Getter;
 
@@ -40,7 +40,7 @@ public class BlockCollision {
         this.z = z;
     }
 
-    void correctPosition(BoundingBox playerCollision, boolean onlyY) {
+    void correctPosition(BoundingBox playerCollision) {
         double playerMinY = playerCollision.getMiddleY() - (playerCollision.getSizeY() / 2);
         double boxMinY = (boundingBox.getMiddleY() + y) - (boundingBox.getSizeY() / 2);
         double boxMaxY = (boundingBox.getMiddleY() + y) + (boundingBox.getSizeY() / 2);
@@ -48,10 +48,6 @@ public class BlockCollision {
         if (boundingBox.checkIntersection(x, y, z, playerCollision) && (playerMinY + 1) >= boxMinY) {
             if (boxMaxY - playerMinY <= 0.5625) {
                 playerCollision.translate(0, boxMaxY - playerMinY, 0);
-            }
-
-            if (onlyY) {
-                return;
             }
         }
 

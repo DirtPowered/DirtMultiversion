@@ -31,6 +31,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProto
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
+import com.github.dirtpowered.dirtmv.data.protocol.objects.Location;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.Motion;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_3_4ChunkBulk;
@@ -43,8 +44,10 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
+import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.DimensionTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release51To39.item.CreativeItemList;
+import com.github.dirtpowered.dirtmv.network.versions.Release51To39.movement.MovementTranslator;
 import io.netty.buffer.Unpooled;
 import lombok.SneakyThrows;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -60,8 +63,17 @@ public class ProtocolRelease51To39 extends ServerProtocol {
 
     public ProtocolRelease51To39() {
         super(MinecraftVersion.R1_4_6, MinecraftVersion.R1_3_1);
-
+        addGroup(new WorldPackets());
         soundRemapper = new SoundRemapper("1_3To1_4SoundMappings");
+    }
+
+    @Override
+    public void onConnect(ServerSession session) {
+        ProtocolStorage storage = session.getStorage();
+
+        if (!storage.hasObject(BlockStorage.class)) {
+            storage.set(BlockStorage.class, new BlockStorage(MinecraftVersion.R1_3_1));
+        }
     }
 
     private String transformMotd(String oldMessage, Configuration configuration) {
@@ -495,6 +507,63 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                         data.read(3),
                         data.read(4),
                         set(Type.INT, correctedDirection)
+                });
+            }
+        });
+
+        // player look move
+        addTranslator(0x0D, PacketDirection.TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getStorage();
+                if (!storage.hasObject(BlockStorage.class)) {
+                    return data;
+                }
+
+                double x = data.read(Type.DOUBLE, 0);
+                double y = data.read(Type.DOUBLE, 1);
+                double originalStance = data.read(Type.DOUBLE, 2);
+                double z = data.read(Type.DOUBLE, 3);
+
+                MovementTranslator.updateBoundingBox(session, new Location(x, y, z));
+                Location loc = MovementTranslator.correctPosition(session, x, y, z);
+
+                return PacketUtil.createPacket(0x0D, new TypeHolder[]{
+                        set(Type.DOUBLE, loc.getX()),
+                        set(Type.DOUBLE, loc.getY()),
+                        set(Type.DOUBLE, loc.getY() + (originalStance - y)), // stance
+                        set(Type.DOUBLE, loc.getZ()),
+                        data.read(4),
+                        data.read(5),
+                        data.read(6),
+                });
+            }
+        });
+
+        // player position
+        addTranslator(0x0B, PacketDirection.TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getStorage();
+                if (!storage.hasObject(BlockStorage.class)) {
+                    return data;
+                }
+
+                double x = data.read(Type.DOUBLE, 0);
+                double y = data.read(Type.DOUBLE, 1);
+                double z = data.read(Type.DOUBLE, 3);
+
+                MovementTranslator.updateBoundingBox(session, new Location(x, y, z));
+                Location loc = MovementTranslator.correctPosition(session, x, y, z);
+
+                return PacketUtil.createPacket(0x0B, new TypeHolder[]{
+                        set(Type.DOUBLE, loc.getX()),
+                        set(Type.DOUBLE, loc.getY()),
+                        set(Type.DOUBLE, loc.getY() + 1.6200000047683716D),
+                        set(Type.DOUBLE, loc.getZ()),
+                        data.read(4)
                 });
             }
         });
