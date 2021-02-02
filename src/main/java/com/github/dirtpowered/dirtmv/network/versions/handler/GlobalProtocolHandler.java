@@ -90,6 +90,10 @@ public class GlobalProtocolHandler extends ServerProtocol {
     }
 
     private void onChat(ServerSession session, String message) {
+        if (message.startsWith("/") && !session.getMain().getConfiguration().enableCommandLogging())
+            return;
+
         Logger.info("{}: {}", session.getUserData().getUsername(), message);
+
     }
 }

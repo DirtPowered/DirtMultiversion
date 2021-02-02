@@ -126,4 +126,9 @@ public class YamlConfig implements Configuration {
     public int getCompressionThreshold() {
         return (int) objects.getOrDefault("compression_threshold", 256);
     }
+
+    @Override
+    public boolean enableCommandLogging() {
+        return (boolean) objects.getOrDefault("enable_command_logging", false);
+    }
 }

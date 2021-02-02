@@ -95,4 +95,9 @@ public interface Configuration {
      * Packet compression threshold (r1.8+)
      */
     int getCompressionThreshold();
+
+    /**
+     * Enables command logging to console
+     */
+    boolean enableCommandLogging();
 }
