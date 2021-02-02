@@ -22,30 +22,12 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk;
 
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 
-public class DataFixers {
+public class PortalFrameCache extends BlockStorage {
 
-    public static int getCorrectedDataFor(BlockStorage storage, int x, int y, int z, int blockId, int data) {
-        if (blockId == 90) {
-            if (storage.getBlockAt(x - 1, y, z) == 49 || storage.getBlockAt(x + 1, y, z) == 49) {
-                return 1;
-            }
-
-            if (storage.getBlockAt(x, y, z - 1) == 49 || storage.getBlockAt(x, y, z + 1) == 49) {
-                return 2;
-            }
-
-            // default rotation
-            if (data == 0) {
-                return 1;
-            }
-        }
-
-        return data;
-    }
-
-    public static boolean shouldCache(int blockId) {
-        return blockId == 49 || blockId == 90;
+    public PortalFrameCache() {
+        super(MinecraftVersion.R1_8);
     }
 }

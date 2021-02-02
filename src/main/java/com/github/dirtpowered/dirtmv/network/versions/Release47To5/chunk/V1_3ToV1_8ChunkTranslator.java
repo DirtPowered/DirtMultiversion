@@ -25,6 +25,8 @@ package com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk;
 import com.github.dirtpowered.dirtmv.data.chunk.ChunkUtils;
 import com.github.dirtpowered.dirtmv.data.chunk.storage.ExtendedBlockStorage;
 import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_2RChunkStorage;
+import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
+import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +36,9 @@ public class V1_3ToV1_8ChunkTranslator {
     private final int bitmapValue;
     private final boolean groundUp;
     private final boolean oldChunk;
+    private final ServerSession session;
 
-    public V1_3ToV1_8ChunkTranslator(byte[] data, int bitmapValue, boolean skyLight, boolean groundUp) {
+    public V1_3ToV1_8ChunkTranslator(ServerSession session, byte[] data, int bitmapValue, boolean skyLight, boolean groundUp) {
         V1_2RChunkStorage chunkStorage = new V1_2RChunkStorage(skyLight, false, 0, 0);
         this.bitmapValue = bitmapValue;
         this.groundUp = groundUp;
@@ -43,13 +46,15 @@ public class V1_3ToV1_8ChunkTranslator {
 
         chunkStorage.readChunk(groundUp, bitmapValue, data);
         this.chunkStorage = chunkStorage;
+        this.session = session;
     }
 
-    public V1_3ToV1_8ChunkTranslator(V1_2RChunkStorage storage, boolean groundUp, int bitmapValue) {
+    public V1_3ToV1_8ChunkTranslator(ServerSession session, V1_2RChunkStorage storage, boolean groundUp, int bitmapValue) {
         this.chunkStorage = storage;
         this.groundUp = groundUp;
         this.bitmapValue = bitmapValue;
         this.oldChunk = true;
+        this.session = session;
     }
 
     public byte[] getChunkData() {
@@ -75,18 +80,29 @@ public class V1_3ToV1_8ChunkTranslator {
         byte[] data = new byte[ChunkUtils.calculateDataSize(Integer.bitCount(columnBits), skyLight)];
         int totalSize = 0;
 
-        for (ExtendedBlockStorage blockStorage : blockStorages) {
+        for (int i = 0; i < blockStorages.size(); i++) {
+            ExtendedBlockStorage blockStorage = blockStorages.get(i);
             byte[] blockArray = blockStorage.getBlockLSBArray();
 
             for (int j = 0; j < blockArray.length; ++j) {
                 int x = j & 15;
-                int y = j >> 8 & 15;
+                int y = (j >> 8);
                 int z = j >> 4 & 15;
 
                 int blockId = blockArray[j] & 255;
                 int blockData = blockStorage.getBlockMetadataArray().getNibble(x, y, z);
 
-                blockData = DataFixers.getCorrectedDataFor(blockId, blockData);
+                if (DataFixers.shouldCache(blockId)) {
+                    ProtocolStorage storage = session.getStorage();
+                    PortalFrameCache portalFrameCache = storage.get(PortalFrameCache.class);
+
+                    y =+ i * 16 & 255;
+                    int xPos = x + (chunkStorage.getChunkX() << 4);
+                    int zPos = z + (chunkStorage.getChunkZ() << 4);
+
+                    portalFrameCache.setBlockAt(chunkStorage.getChunkX(), chunkStorage.getChunkZ(), xPos, y, zPos, blockId);
+                    blockData = DataFixers.getCorrectedDataFor(portalFrameCache, xPos, y, zPos, blockId, blockData);
+                }
 
                 char c = (char) (blockId << 4 | blockData);
                 data[totalSize++] = (byte) (c & 255);

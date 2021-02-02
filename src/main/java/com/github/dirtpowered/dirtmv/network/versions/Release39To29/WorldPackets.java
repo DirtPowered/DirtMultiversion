@@ -117,12 +117,12 @@ public class WorldPackets extends ServerProtocol {
                             int z = pos >> 8 & 15;
 
                             int xPos = x + (chunkX << 4);
-                            int zPos = z + (chunkX << 4);
+                            int zPos = z + (chunkZ << 4);
 
                             int blockId = dis.readShort() >> 4 & 4095;
 
                             if (shouldCache(blockId)) {
-                                blockStorage.setBlockAt(chunkX, chunkZ, xPos, y, z + zPos, blockId);
+                                blockStorage.setBlockAt(chunkX, chunkZ, xPos, y, zPos, blockId);
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -171,7 +171,7 @@ public class WorldPackets extends ServerProtocol {
 
                         for (int j = 0; j < blockArray.length; ++j) {
                             int x = j & 15;
-                            int y = (j >> 8) + i * 16 & 127;
+                            int y = (j >> 8) + i * 16 & 255;
                             int z = j >> 4 & 15;
 
                             int blockId = blockArray[j] & 255;

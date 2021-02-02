@@ -104,12 +104,12 @@ public class WorldPackets extends ServerProtocol {
                             int z = pos >> 8 & 15;
 
                             int xPos = x + (chunkX << 4);
-                            int zPos = z + (chunkX << 4);
+                            int zPos = z + (chunkZ << 4);
 
                             int blockId = dis.readShort() >> 4 & 4095;
 
                             if (shouldCache(blockId)) {
-                                blockStorage.setBlockAt(chunkX, chunkZ, xPos, y, z + zPos, blockId);
+                                blockStorage.setBlockAt(chunkX, chunkZ, xPos, y, zPos, blockId);
                             }
                         } catch (IOException e) {
                             e.printStackTrace();

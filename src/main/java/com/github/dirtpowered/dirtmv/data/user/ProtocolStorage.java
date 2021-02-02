@@ -24,11 +24,11 @@ package com.github.dirtpowered.dirtmv.data.user;
 
 import lombok.NonNull;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ProtocolStorage {
-    private final Map<Class, Object> savedObjects = new HashMap<>();
+    private final Map<Class, Object> savedObjects = new ConcurrentHashMap<>();
 
     public boolean hasObject(Class key) {
         return savedObjects.containsKey(key);

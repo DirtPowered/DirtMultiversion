@@ -56,6 +56,7 @@ import com.github.dirtpowered.dirtmv.network.server.codec.netty.PacketDecompress
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.DimensionTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.DataFixers;
+import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.PortalFrameCache;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.PlayerMovementTracker;
@@ -101,6 +102,9 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         storage.set(OnGroundTracker.class, new OnGroundTracker());
         storage.set(WindowTypeTracker.class, new WindowTypeTracker());
         storage.set(QuickBarTracker.class, new QuickBarTracker());
+
+        // additional block storage (for nether portal rotation fix)
+        storage.set(PortalFrameCache.class, new PortalFrameCache());
 
         if (session.getMain().getConfiguration().enableViaVersion()) {
             // it's not needed for 1.8->1.7, but ViaVersion will need that to fix issues
@@ -284,15 +288,20 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 if (groundUp && bitmap == 0) {
                     V1_8Chunk emptyChunk = new V1_8Chunk(chunkX, chunkZ, true, bitmap, new byte[0]);
 
+                    ProtocolStorage storage = session.getStorage();
+                    PortalFrameCache portalFrameCache = storage.get(PortalFrameCache.class);
+
+                    portalFrameCache.removeChunk(chunkX, chunkZ);
+
                     return PacketUtil.createPacket(0x21, new TypeHolder[]{
-                            new TypeHolder(Type.V1_8R_CHUNK, emptyChunk)
+                            new TypeHolder<>(Type.V1_8R_CHUNK, emptyChunk)
                     });
                 }
 
                 V1_3ToV1_8ChunkTranslator chunkTransformer;
                 if (chunk.getStorage() != null) {
                     // use existing chunk storage (pre 1.2 servers)
-                    chunkTransformer = new V1_3ToV1_8ChunkTranslator(chunk.getStorage(), groundUp, bitmap);
+                    chunkTransformer = new V1_3ToV1_8ChunkTranslator(session, chunk.getStorage(), groundUp, bitmap);
                 } else {
                     ProtocolStorage storage = session.getStorage();
 
@@ -301,13 +310,13 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         DimensionTracker tracker = storage.get(DimensionTracker.class);
                         skyLight = tracker.getDimension() == 0;
                     }
-                    chunkTransformer = new V1_3ToV1_8ChunkTranslator(chunk.getUncompressedData(), bitmap, skyLight, groundUp);
+                    chunkTransformer = new V1_3ToV1_8ChunkTranslator(session, chunk.getUncompressedData(), bitmap, skyLight, groundUp);
                 }
 
                 V1_8Chunk newChunk = new V1_8Chunk(chunkX, chunkZ, groundUp, bitmap, chunkTransformer.getChunkData());
 
                 return PacketUtil.createPacket(0x21, new TypeHolder[]{
-                        new TypeHolder(Type.V1_8R_CHUNK, newChunk)
+                        new TypeHolder<>(Type.V1_8R_CHUNK, newChunk)
                 });
             }
         });
@@ -328,6 +337,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 for (int i = 0; i < columnAmount; i++) {
                     bulks[i] = new V1_3ToV1_8ChunkTranslator(
+                            session,
                             oldChunkBulk.getChunks()[i],
                             oldChunkBulk.getPrimaryBitmaps()[i],
                             oldChunkBulk.isSkylight(),
@@ -370,8 +380,24 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         int blockId = packedBlock >> 4;
                         int blockData = packedBlock & 15;
 
-                        blockData = DataFixers.getCorrectedDataFor(blockId, blockData);
+                        if (DataFixers.shouldCache(blockId)) {
+                            ProtocolStorage storage = session.getStorage();
 
+                            PortalFrameCache portalFrameCache = storage.get(PortalFrameCache.class);
+                            int x = pos >> 12 & 15;
+                            int y = pos & 255;
+                            int z = pos >> 8 & 15;
+
+                            int chunkX = data.read(Type.INT, 0);
+                            int chunkZ = data.read(Type.INT, 1);
+
+                            int xPos = x + (chunkX << 4);
+                            int zPos = z + (chunkZ << 4);
+
+                            portalFrameCache.setBlockAt(chunkX, chunkZ, xPos, y, zPos, blockId);
+
+                            blockData = DataFixers.getCorrectedDataFor(portalFrameCache, xPos, y, zPos, blockId, blockData);
+                        }
                         blockChangeRecords[i] = new BlockChangeRecord(pos, (short) (blockId & 4095) << 4 | blockData & 15);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -398,8 +424,14 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 int blockId = data.read(Type.VAR_INT, 3);
                 int blockData = data.read(Type.UNSIGNED_BYTE, 4);
 
-                blockData = DataFixers.getCorrectedDataFor(blockId, blockData);
+                if (DataFixers.shouldCache(blockId)) {
+                    ProtocolStorage storage = session.getStorage();
+                    PortalFrameCache portalFrameCache = storage.get(PortalFrameCache.class);
 
+                    portalFrameCache.setBlockAt(x >> 4, z >> 4, x, y, z, blockId);
+
+                    blockData = DataFixers.getCorrectedDataFor(portalFrameCache, x, y, z, blockId, blockData);
+                }
                 return PacketUtil.createPacket(0x23, new TypeHolder[]{
                         set(Type.LONG, toBlockPosition(x, y, z)),
                         set(Type.VAR_INT, blockId << 4 | blockData & 15)

@@ -52,7 +52,7 @@ public class BlockStorage {
             return 0;
         }
 
-        return part.getBlock(x & 15, y & 127, z & 15);
+        return part.getBlock(x & 15, y & 255, z & 15);
     }
 
     public void setBlockAt(int chunkX, int chunkZ, int x, int y, int z, int blockId) {
@@ -62,12 +62,12 @@ public class BlockStorage {
             blockStorage.put(key, new ChunkPart());
         }
 
-        blockStorage.get(key).setBlock(x & 15, y & 127, z & 15, blockId);
+        blockStorage.get(key).setBlock(x & 15, y & 255, z & 15, blockId);
     }
 
     private static class ChunkPart {
         private static final int SIZE_X = 16;
-        private static final int SIZE_Y = 128;
+        private static final int SIZE_Y = 256;
         private static final int SIZE_Z = 16;
 
         private final byte[] blocks = new byte[SIZE_X * SIZE_Y * SIZE_Z];
