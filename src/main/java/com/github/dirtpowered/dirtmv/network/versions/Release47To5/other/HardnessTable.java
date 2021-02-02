@@ -54,7 +54,8 @@ public enum HardnessTable {
     WALL_SIGN(68, 1.0F, false, -1),
     GLOWSTONE(89, 0.3F, true, 278, 257, 274, 270, 285),
     PUMPKIN(86, 1.0F, false, true,271, 275, 258, 286, 279),
-    JACK_O_LANTERN(91, 1.0F, false, true,271, 275, 258, 286, 279);
+    JACK_O_LANTERN(91, 1.0F, false, true,271, 275, 258, 286, 279),
+    BRICK(45, 2.0F, true, 278, 257, 274, 270, 285);
 
     private final int blockId;
     private final float oldHardness;
