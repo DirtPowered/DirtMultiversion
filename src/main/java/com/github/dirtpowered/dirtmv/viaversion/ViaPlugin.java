@@ -94,6 +94,9 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
             PlayerMovementTracker movementTracker = s.get(PlayerMovementTracker.class);
 
             if ((System.currentTimeMillis() - movementTracker.getLastLocationUpdate()) >= 50) {
+                if (userData.getUniqueId() == null)
+                    return;
+
                 UserConnection userConnection = Via.getManager().getConnection(userData.getUniqueId());
                 if (userConnection == null)
                     return;
