@@ -28,16 +28,9 @@ public class DataFixers {
 
     public static int getCorrectedDataFor(BlockStorage storage, int x, int y, int z, int blockId, int data) {
         if (blockId == 90) {
-            if (storage.getBlockAt(x - 1, y, z) == 49 || storage.getBlockAt(x + 1, y, z) == 49) {
-                return 1;
-            }
-
-            if (storage.getBlockAt(x, y, z - 1) == 49 || storage.getBlockAt(x, y, z + 1) == 49) {
+            if (storage.getBlockAt(x - 1, y, z) != 90 && storage.getBlockAt(x + 1, y, z) != 90) {
                 return 2;
-            }
-
-            // default rotation
-            if (data == 0) {
+            } else {
                 return 1;
             }
         }
@@ -46,6 +39,6 @@ public class DataFixers {
     }
 
     public static boolean shouldCache(int blockId) {
-        return blockId == 49 || blockId == 90;
+        return blockId == 90;
     }
 }
