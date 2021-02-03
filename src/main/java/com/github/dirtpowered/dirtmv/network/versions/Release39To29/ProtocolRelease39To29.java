@@ -246,7 +246,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 Location loc = new Location(x, y, z);
                 tracker.addEntity(-999, new HumanEntity(-999, loc));
 
-                session.getStorage().set(EntityTracker.class, new EntityTracker());
+                session.getStorage().set(EntityTracker.class, tracker);
                 return data;
             }
         });
