@@ -69,7 +69,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
     public void onConnect(ServerSession session) {
         ProtocolStorage storage = session.getStorage();
 
-        storage.set(EntityTracker.class, new EntityTracker());
         storage.set(UpdateTask.class, new UpdateTask(session));
         storage.set(OpenChestTracker.class, new OpenChestTracker());
 
@@ -238,7 +237,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                EntityTracker tracker = session.getStorage().get(EntityTracker.class);
+                EntityTracker tracker = new EntityTracker();
 
                 int x = data.read(Type.INT, 0);
                 int y = data.read(Type.INT, 1);
@@ -246,6 +245,8 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 Location loc = new Location(x, y, z);
                 tracker.addEntity(-999, new HumanEntity(-999, loc));
+
+                session.getStorage().set(EntityTracker.class, new EntityTracker());
                 return data;
             }
         });

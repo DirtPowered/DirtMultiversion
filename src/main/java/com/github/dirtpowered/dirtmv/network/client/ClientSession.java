@@ -29,6 +29,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
+import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
 import io.netty.channel.ChannelHandlerContext;
@@ -72,14 +73,16 @@ public class ClientSession extends SimpleChannelInboundHandler<PacketData> {
         // notify other sessions
         if (!stateLock) {
             boolean postNettyFlag = serverSession.getUserData().getProtocolState() == ProtocolState.PLAY;
-            boolean preNettyFlag = serverSession.getUserData().getPreNettyProtocolState() == PreNettyProtocolState.LOGIN;
+            boolean preNettyFlag = serverSession.getUserData().getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME;
 
             if (preNettyFlag || postNettyFlag) {
                 MinecraftVersion server = main.getConfiguration().getServerVersion();
                 MinecraftVersion client = serverSession.getUserData().getClientVersion();
 
                 // call #onConnect only in user protocols
-                main.getTranslatorRegistry().getAllProtocolsBetween(server, client).forEach(t -> t.onConnect(serverSession));
+                for (ServerProtocol t : main.getTranslatorRegistry().getAllProtocolsBetween(server, client)) {
+                    t.onConnect(serverSession);
+                }
                 stateLock = true;
             }
         }
