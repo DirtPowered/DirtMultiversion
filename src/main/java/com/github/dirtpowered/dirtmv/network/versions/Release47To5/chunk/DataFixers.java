@@ -27,7 +27,7 @@ import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockSt
 public class DataFixers {
 
     public static int getCorrectedDataFor(BlockStorage storage, int x, int y, int z, int blockId, int data) {
-        if (blockId == 90) {
+        if (blockId == 90 && data == 0) {
             if (storage.getBlockAt(x - 1, y, z) != 90 && storage.getBlockAt(x + 1, y, z) != 90) {
                 return 2;
             } else {
