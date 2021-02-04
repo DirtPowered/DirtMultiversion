@@ -99,7 +99,7 @@ public class YamlConfig implements Configuration {
 
     @Override
     public boolean reduceBlockStorageMemory() {
-        return (Boolean) objects.getOrDefault("reduce_blockstorage_memory", true);
+        return (Boolean) objects.getOrDefault("reduce_blockstorage_memory", false);
     }
 
     @Override

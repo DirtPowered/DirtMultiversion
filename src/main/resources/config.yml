@@ -24,7 +24,7 @@ max_packets_per_second: 150
 # -1 to disable, 0 to compress all packets
 compression_threshold: 256
 # Caches blocks only above Y 20 (for b1.7 servers)
-reduce_blockstorage_memory: true
+reduce_blockstorage_memory: false
 # Max connections to proxy (not server)
 max_proxy_connections: 20
 # MOTD for versions where Server Ping Protocol was not available
