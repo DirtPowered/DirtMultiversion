@@ -129,7 +129,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                         set(Type.BYTE, (byte) mouseClick),
                         data.read(3),
                         set(Type.BYTE, (byte) (usingShift ? 1 : 0)),
-                        set(Type.V1_3R_ITEM, new ItemStack(255, 0, 0, null))
+                        set(Type.V1_3R_ITEM, new ItemStack(34, 0, 0, null))
                 });
             }
         });
