@@ -91,8 +91,6 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                 byte param = data.read(Type.BYTE, 2);
                 byte inventoryAction = data.read(Type.BYTE, 4);
 
-                ItemStack item = data.read(Type.V1_3R_ITEM, 5);
-
                 switch (inventoryAction) {
                     case 0:
                         leftClickFlag = param == 0;
@@ -122,21 +120,16 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                     return cancel();
                 }
 
-                // random item
-                ItemStack i = new ItemStack(352, 2, 0, null);
-
-                ItemStack itemStack = item == null ? (slot < 0 ? null : i) : item;
-
-                if (itemStack == null && !clickingOutside)
+                if (slot < 0 && !clickingOutside)
                     return cancel();
 
                 return PacketUtil.createPacket(0x66, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         set(Type.BYTE, (byte) mouseClick),
-                        set(Type.SHORT, 0),
+                        data.read(3),
                         set(Type.BYTE, (byte) (usingShift ? 1 : 0)),
-                        set(Type.V1_3R_ITEM, itemStack)
+                        set(Type.V1_3R_ITEM, new ItemStack(255, 0, 0, null))
                 });
             }
         });
