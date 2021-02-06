@@ -125,18 +125,18 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
 
             newChunkStorage.setBiomeData(biomes);
 
-            byte[] compressedData = newChunkStorage.getCompressedData(true, 0xff);
+            byte[] compressedData = newChunkStorage.getStorageData(true, 0xff);
 
             session.sendPacket(PacketUtil.createPacket(0x33, new TypeHolder[]{
-                    new TypeHolder(Type.V1_2_CHUNK, new V1_2Chunk(
+                    new TypeHolder<>(Type.V1_2_CHUNK, new V1_2Chunk(
                             chunkX,
                             chunkZ,
                             true,
                             (short) newChunkStorage.getPrimaryBitmap(),
                             (short) 0,
                             newChunkStorage.getCompressedSize(),
+                            newChunkStorage.decompressChunk(compressedData),
                             compressedData,
-                            new byte[0],
                             newChunkStorage
                     ))
             }), PacketDirection.TO_CLIENT, MinecraftVersion.R1_2_1);

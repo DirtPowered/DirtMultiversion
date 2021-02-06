@@ -143,7 +143,7 @@ public class V1_2RChunkStorage implements Chunk {
         }
     }
 
-    public byte[] getCompressedData(boolean groundUp, int bitmapValue) {
+    public byte[] getStorageData(boolean groundUp, int bitmapValue) {
         int totalSize = 0;
         int primaryBitmap = bitmapValue;
 
@@ -204,23 +204,26 @@ public class V1_2RChunkStorage implements Chunk {
 
         if (groundUp) {
             System.arraycopy(biomeData, 0, data, totalSize, biomeData.length);
-            totalSize += 256;
         }
 
+        return data;
+    }
+
+    public byte[] decompressChunk(byte[] data) {
         Deflater deflater = new Deflater(-1);
 
-        byte[] compressedChunk;
+        byte[] bytes;
 
         try {
-            deflater.setInput(data, 0, totalSize);
+            deflater.setInput(data, 0, data.length);
             deflater.finish();
 
-            compressedChunk = new byte[totalSize];
-            compressedSize = deflater.deflate(compressedChunk);
+            bytes = new byte[data.length];
+            compressedSize = deflater.deflate(bytes);
         } finally {
             deflater.end();
         }
 
-        return compressedChunk;
+        return bytes;
     }
 }
