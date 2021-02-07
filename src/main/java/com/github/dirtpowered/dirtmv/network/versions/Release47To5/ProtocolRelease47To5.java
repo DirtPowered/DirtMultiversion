@@ -74,6 +74,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.netty.buffer.Unpooled;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.pmw.tinylog.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -792,6 +793,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                         msg = ChatUtils.createChatComponentFromInvalidJson(msg);
                     }
                     msg = ChatUtils.jsonToLegacy(msg);
+                    msg = StringUtils.substring(msg, 0, 15);
                     lines[i] = msg;
                 }
 
