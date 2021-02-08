@@ -28,6 +28,7 @@ import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.PlayerMovementTracker;
 import com.github.dirtpowered.dirtmv.viaversion.config.ViaConfig;
+import com.github.dirtpowered.dirtmv.viaversion.platform.DirtViaApi;
 import com.github.dirtpowered.dirtmv.viaversion.platform.DummyInjector;
 import com.github.dirtpowered.dirtmv.viaversion.providers.ViaHandItemProvider;
 import com.github.dirtpowered.dirtmv.viaversion.util.WrappedLogger;
@@ -60,11 +61,13 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
     private final ViaConnectionManager connectionManager;
     private final DirtServer api;
     private final ViaConfig config;
+    private final ViaAPI<DirtServer> viaAPI;
 
     public ViaPlugin(DirtServer server) {
         this.wrappedLogger = new WrappedLogger();
         this.connectionManager = new ViaConnectionManager();
         this.api = server;
+        this.viaAPI = new DirtViaApi(api);
         this.config = new ViaConfig();
 
         Via.init(ViaManager.builder()
@@ -182,7 +185,7 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
 
     @Override
     public ViaAPI<DirtServer> getApi() {
-        throw new UnsupportedOperationException("not supported yet");
+        return viaAPI;
     }
 
     @Override
