@@ -505,6 +505,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         break;
                     case 74:
                         throwerId = 122;
+                        type = 70;
                         break;
                 }
 
