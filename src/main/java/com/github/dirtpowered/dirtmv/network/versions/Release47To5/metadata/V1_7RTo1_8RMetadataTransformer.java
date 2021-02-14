@@ -56,8 +56,9 @@ public class V1_7RTo1_8RMetadataTransformer implements MetadataTransformer {
                     // enderman carried item
                     newMetaData.add(new WatchableObject(MetadataType.SHORT, 16, ((Byte) value).shortValue()));
                 } else if (entityType == EntityType.HUMAN) {
-                    // TODO: transform all player metadata
-                    if (index == 0) {
+                    if (type == MetadataType.BYTE && index == 16) {
+                        // TODO: check for metadata changes
+                    } else {
                         newMetaData.add(watchableObject);
                     }
                 } else if (type == MetadataType.STRING && index == 10) {
