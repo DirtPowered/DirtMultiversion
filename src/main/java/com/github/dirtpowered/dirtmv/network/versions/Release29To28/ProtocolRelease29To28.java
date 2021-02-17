@@ -82,7 +82,7 @@ public class ProtocolRelease29To28 extends ServerProtocol {
                 ItemStack item = data.read(Type.V1_0R_ITEM, 5);
 
                 if (shiftClick && windowId != 0 /* generic inventory */) {
-                    item.setItemId(999); // sending invalid item will cancel any inventory interaction
+                    item.setItemId(34); // sending other than original item will cancel any inventory interaction
                 }
 
                 return PacketUtil.createPacket(0x66, new TypeHolder[]{
