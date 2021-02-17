@@ -45,6 +45,8 @@ import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPi
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import com.google.common.base.Charsets;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class ProtocolRelease4To78 extends ServerProtocol {
@@ -113,12 +115,39 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 ServerPing.Players players = new ServerPing.Players();
 
                 serverPing.setDescription(motd.getMotd());
+                serverPing.setVersion(version);
+
                 version.setName("1.7.2");
                 version.setProtocol(4);
                 players.setMax(motd.getMax());
                 players.setOnline(motd.getOnline());
 
-                serverPing.setVersion(version);
+                List<ServerPing.Player> playerList = new ArrayList<>();
+
+                for (UserData userData : session.getServer().getAllConnections()) {
+                    if (userData.getUsername() != null) {
+                        ServerPing.Player player = new ServerPing.Player();
+                        player.setId(getOfflineUuid(userData.getUsername()));
+                        player.setName(userData.getUsername());
+
+                        playerList.add(player);
+                    }
+                }
+
+                List<ServerPing.Player> list = new ArrayList<>();
+
+                long limit = 10;
+
+                for (ServerPing.Player player : playerList) {
+                    if (limit-- == 0) break;
+                    list.add(player);
+                }
+                playerList = list;
+
+                if (!playerList.isEmpty()) {
+                    players.setSample(playerList);
+                }
+
                 serverPing.setPlayers(players);
 
                 String serverIcon = session.getServer().getServerIcon();
