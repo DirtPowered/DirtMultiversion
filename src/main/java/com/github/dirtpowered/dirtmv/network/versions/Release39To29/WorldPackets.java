@@ -145,15 +145,18 @@ public class WorldPackets extends ServerProtocol {
                 if (blockStorage.getVersion() == getTo()) {
                     List<ExtendedBlockStorage> parts = new ArrayList<>();
 
-                    // create chunk storage
-                    V1_2RChunkStorage storage = new V1_2RChunkStorage(
-                            true, true, chunk.getChunkX(), chunk.getChunkZ()
-                    );
-
-                    storage.readChunk(chunk.isGroundUp(), chunk.getPrimaryBitmap(), chunk.getUncompressedData());
-
-                    // cache for later use (r1.8 -> r1.7)
-                    chunk.setStorage(storage);
+                    V1_2RChunkStorage storage;
+                    if (chunk.getStorage() != null) {
+                        storage = chunk.getStorage();
+                    } else {
+                        // create chunk storage
+                        storage = new V1_2RChunkStorage(
+                                true, true, chunk.getChunkX(), chunk.getChunkZ()
+                        );
+                        storage.readChunk(chunk.isGroundUp(), chunk.getPrimaryBitmap(), chunk.getUncompressedData());
+                        // cache for later use (r1.8 -> r1.7)
+                        chunk.setStorage(storage);
+                    }
 
                     ExtendedBlockStorage[] columns = storage.getColumnStorage();
 
