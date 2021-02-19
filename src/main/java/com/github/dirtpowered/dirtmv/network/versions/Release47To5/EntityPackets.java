@@ -230,6 +230,13 @@ public class EntityPackets extends ServerProtocol {
                 WatchableObject[] oldMeta = data.read(Type.V1_7R_METADATA, 10);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
 
+                // skin layers
+                WatchableObject[] layers = new WatchableObject[newMeta.length + 1];
+                System.arraycopy(newMeta, 0, layers, 0, newMeta.length);
+                layers[newMeta.length] = new WatchableObject(MetadataType.BYTE, 10, (byte) 127);
+
+                newMeta = layers;
+
                 PacketData playerSpawn = PacketUtil.createPacket(0x0C, new TypeHolder[]{
                         data.read(0),
                         set(Type.UUID, uniqueId),
