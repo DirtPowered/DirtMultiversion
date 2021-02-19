@@ -51,7 +51,8 @@ public class V1_7RTo1_8RMetadataTransformer implements MetadataTransformer {
                     newMetaData.add(new WatchableObject(MetadataType.BYTE, 3, value));
                 } else if (type == MetadataType.INT && index == 12) {
                     // ageable entities
-                    newMetaData.add(new WatchableObject(MetadataType.BYTE, 12, ((Integer) value).byteValue()));
+                    int age = (int) value;
+                    newMetaData.add(new WatchableObject(MetadataType.BYTE, 12, (byte) (age < 0 ? -1 : 0)));
                 } else if (entityType == EntityType.ENDER_MAN && type == MetadataType.BYTE && index == 16) {
                     // enderman carried item
                     newMetaData.add(new WatchableObject(MetadataType.SHORT, 16, ((Byte) value).shortValue()));
