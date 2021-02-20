@@ -40,6 +40,7 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.RotationUtil;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.block.SolidBlockList;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.other.KeepAliveTask;
+import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.other.PlayerHealthTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.HardnessTable;
 import io.netty.util.internal.StringUtil;
@@ -66,6 +67,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
         storage.set(BlockStorage.class, new BlockStorage(MinecraftVersion.B1_7_3));
         storage.set(PlayerTabListCache.class, new PlayerTabListCache());
         storage.set(KeepAliveTask.class, new KeepAliveTask(session));
+        storage.set(PlayerHealthTracker.class, new PlayerHealthTracker());
 
         session.broadcastPacket(createTabEntryPacket(session.getUserData().getUsername(), true), getFrom());
     }
@@ -167,6 +169,11 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getStorage();
+
+                if (storage.hasObject(PlayerHealthTracker.class)) {
+                    storage.get(PlayerHealthTracker.class).setHealth(data.read(Type.SHORT, 0));
+                }
 
                 return PacketUtil.createPacket(0x08, new TypeHolder[]{
                         data.read(0),
@@ -181,6 +188,7 @@ public class ProtocolBeta17to14 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+
                 return PacketUtil.createPacket(0x09, new TypeHolder[]{
                         data.read(0),
                 });
@@ -227,6 +235,26 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                         data.read(0),
                         set(Type.BYTE, (byte) 0)
                 });
+            }
+        });
+
+        // block place
+        addTranslator(0x0F, PacketDirection.TO_SERVER, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                ProtocolStorage storage = session.getStorage();
+
+                if (storage.hasObject(PlayerHealthTracker.class)) {
+                    PacketData updateHealth = PacketUtil.createPacket(0x08, new TypeHolder[]{
+                            set(Type.SHORT, storage.get(PlayerHealthTracker.class).getHealth()),
+                            set(Type.SHORT, (short) 6),
+                            set(Type.FLOAT, 0.0F)
+                    });
+
+                    session.sendPacket(updateHealth, PacketDirection.TO_CLIENT, getFrom());
+                }
+                return data;
             }
         });
 
