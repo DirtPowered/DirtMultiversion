@@ -100,4 +100,10 @@ public interface Configuration {
      * Enables command logging to console
      */
     boolean enableCommandLogging();
+
+    /**
+     * The delay before a client is allowed to connect
+     * again after a recent connection attempt
+     */
+    int getConnectionThrottleTime();
 }

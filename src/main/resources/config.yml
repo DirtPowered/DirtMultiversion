@@ -20,6 +20,9 @@ remote_port: 25567
 # change that value when normal players
 # are getting disconnected by doing completely normal things
 max_packets_per_second: 150
+# The delay before a client is allowed to connect again
+# after a recent connection attempt, including pinging
+connection_throttle: 350
 # Compression threshold
 # -1 to disable, 0 to compress all packets
 compression_threshold: 256

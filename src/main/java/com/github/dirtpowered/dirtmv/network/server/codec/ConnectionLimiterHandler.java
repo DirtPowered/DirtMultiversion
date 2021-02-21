@@ -55,7 +55,7 @@ public class ConnectionLimiterHandler extends ChannelInboundHandlerAdapter {
         String address = isa.getAddress().getHostAddress();
 
         if (connections.containsKey(address)) {
-            if (System.currentTimeMillis() - connections.get(address) < 350L) {
+            if (System.currentTimeMillis() - connections.get(address) < this.config.getConnectionThrottleTime()) {
                 connections.put(address, System.currentTimeMillis());
 
                 ctx.close();

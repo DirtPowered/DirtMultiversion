@@ -131,4 +131,9 @@ public class YamlConfig implements Configuration {
     public boolean enableCommandLogging() {
         return (boolean) objects.getOrDefault("enable_command_logging", false);
     }
+
+    @Override
+    public int getConnectionThrottleTime() {
+        return (int) objects.getOrDefault("connection_throttle", 350);
+    }
 }
