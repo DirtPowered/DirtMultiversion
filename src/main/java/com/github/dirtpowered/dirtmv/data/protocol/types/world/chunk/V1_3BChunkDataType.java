@@ -45,9 +45,9 @@ public class V1_3BChunkDataType extends DataType<V1_3BChunk> {
         int y = packetInput.readShort();
         int z = packetInput.readInt();
 
-        int xSize = packetInput.readByte() + 1;
-        int ySize = packetInput.readByte() + 1;
-        int zSize = packetInput.readByte() + 1;
+        int xSize = packetInput.readUnsignedByte() + 1;
+        int ySize = packetInput.readUnsignedByte() + 1;
+        int zSize = packetInput.readUnsignedByte() + 1;
 
         byte[] chunk;
 
