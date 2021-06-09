@@ -102,6 +102,8 @@ public class V1_3ToV1_8ChunkTranslator {
 
                     portalFrameCache.setBlockAt(chunkStorage.getChunkX(), chunkStorage.getChunkZ(), xPos, y, zPos, blockId);
                     blockData = DataFixers.getCorrectedDataFor(portalFrameCache, xPos, y, zPos, blockId, blockData);
+                } else {
+                    blockData = DataFixers.fixInvalidData(blockId, blockData);
                 }
 
                 char c = (char) (blockId << 4 | blockData);

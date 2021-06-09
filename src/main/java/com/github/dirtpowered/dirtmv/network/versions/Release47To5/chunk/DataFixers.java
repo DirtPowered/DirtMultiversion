@@ -23,8 +23,48 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk;
 
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
+import com.google.common.base.Charsets;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import org.pmw.tinylog.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 
 public class DataFixers {
+    private static final int[] correctedValues = new int[198];
+    private static final boolean[] validBlocks = new boolean[198 << 4];
+
+    static {
+        Arrays.fill(correctedValues, -1);
+        Logger.info("loading allowed block list");
+        InputStream in = DataFixers.class.getResourceAsStream("/blocks.json");
+        try {
+            JsonArray e = JsonParser.parseReader(new InputStreamReader(in, Charsets.UTF_8)).getAsJsonArray();
+
+            for (JsonElement entry : e) {
+                String[] parts = entry.getAsString().split(":");
+
+                int blockId = Integer.parseInt(parts[0]);
+                int blockData = Integer.parseInt(parts[1]);
+
+                validBlocks[blockId << 4 | blockData] = true;
+
+                if (correctedValues[blockId] == -1 || blockData < correctedValues[blockId]) {
+                    correctedValues[blockId] = blockData;
+                }
+            }
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public static int getCorrectedDataFor(BlockStorage storage, int x, int y, int z, int blockId, int data) {
         if (blockId == 90 && data == 0) {
@@ -36,6 +76,14 @@ public class DataFixers {
         }
 
         return data;
+    }
+
+    public static int fixInvalidData(int blockId, int data) {
+        if (validBlocks[blockId << 4 | data]) {
+            return data;
+        } else {
+            return correctedValues[blockId];
+        }
     }
 
     public static boolean shouldCache(int blockId) {

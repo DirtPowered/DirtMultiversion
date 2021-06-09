@@ -398,7 +398,10 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                             portalFrameCache.setBlockAt(chunkX, chunkZ, xPos, y, zPos, blockId);
 
                             blockData = DataFixers.getCorrectedDataFor(portalFrameCache, xPos, y, zPos, blockId, blockData);
+                        } else {
+                            blockData = DataFixers.fixInvalidData(blockId, blockData);
                         }
+
                         blockChangeRecords[i] = new BlockChangeRecord(pos, (short) (blockId & 4095) << 4 | blockData & 15);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -432,7 +435,10 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                     portalFrameCache.setBlockAt(x >> 4, z >> 4, x, y, z, blockId);
 
                     blockData = DataFixers.getCorrectedDataFor(portalFrameCache, x, y, z, blockId, blockData);
+                } else {
+                    blockData = DataFixers.fixInvalidData(blockId, blockData);
                 }
+
                 return PacketUtil.createPacket(0x23, new TypeHolder[]{
                         set(Type.LONG, toBlockPosition(x, y, z)),
                         set(Type.VAR_INT, blockId << 4 | blockData & 15)
