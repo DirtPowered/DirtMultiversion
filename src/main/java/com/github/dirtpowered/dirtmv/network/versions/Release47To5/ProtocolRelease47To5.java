@@ -167,7 +167,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 ServerPing serverPing = new Gson().fromJson(json, ServerPing.class);
 
                 ServerPing.Version versionObj = new ServerPing.Version();
-                versionObj.setName("1.8.x (unstable)");
+                versionObj.setName("1.8.x");
                 versionObj.setProtocol(47);
 
                 serverPing.setVersion(versionObj);
@@ -551,7 +551,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 String username = ChatUtils.stripColor(u);
                 boolean online = data.read(Type.BOOLEAN, 1);
 
-                UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));
+                UUID uuid = UUID.nameUUIDFromBytes(("fake:" + username).getBytes(Charsets.UTF_8));
 
                 if (username.equals(session.getUserData().getUsername())) {
                     uuid = session.getUserData().getUniqueId();
@@ -858,7 +858,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                     ItemStack compressedItem = V1_8RProtocol.ITEM.read(in);
 
-                    V1_3_1RProtocol.ITEM.write(new TypeHolder(Type.V1_3R_ITEM, compressedItem), out);
+                    V1_3_1RProtocol.ITEM.write(new TypeHolder<>(Type.V1_3R_ITEM, compressedItem), out);
                     bytes = out.array();
                 }
 

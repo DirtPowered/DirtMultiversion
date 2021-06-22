@@ -27,9 +27,10 @@ import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
-import us.myles.ViaVersion.api.data.UserConnection;
-import us.myles.ViaVersion.api.minecraft.item.Item;
-import us.myles.ViaVersion.protocols.protocol1_9to1_8.providers.HandItemProvider;
+import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.item.DataItem;
+import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.protocols.protocol1_9to1_8.providers.HandItemProvider;
 
 public class ViaHandItemProvider extends HandItemProvider {
     private final DirtServer api;
@@ -52,7 +53,7 @@ public class ViaHandItemProvider extends HandItemProvider {
                 QuickBarTracker cache = storage.get(QuickBarTracker.class);
 
                 ItemStack item = cache.getItemInHand();
-                return new Item(item.getItemId(), (byte) item.getAmount(), (short) item.getData(), null);
+                return new DataItem(item.getItemId(), (byte) item.getAmount(), (short) item.getData(), null);
             }
         }
         return super.getHandItem(userConnection);

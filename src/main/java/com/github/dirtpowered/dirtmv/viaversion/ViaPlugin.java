@@ -27,30 +27,31 @@ import com.github.dirtpowered.dirtmv.data.interfaces.Tickable;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.PlayerMovementTracker;
-import com.github.dirtpowered.dirtmv.viaversion.config.ViaConfig;
+import com.github.dirtpowered.dirtmv.viaversion.config.ViaConfigImpl;
 import com.github.dirtpowered.dirtmv.viaversion.platform.DirtViaApi;
 import com.github.dirtpowered.dirtmv.viaversion.platform.DummyInjector;
 import com.github.dirtpowered.dirtmv.viaversion.providers.ViaHandItemProvider;
 import com.github.dirtpowered.dirtmv.viaversion.util.WrappedLogger;
-import com.google.gson.JsonObject;
-import us.myles.ViaVersion.ViaManager;
-import us.myles.ViaVersion.api.PacketWrapper;
-import us.myles.ViaVersion.api.Via;
-import us.myles.ViaVersion.api.ViaAPI;
-import us.myles.ViaVersion.api.ViaVersionConfig;
-import us.myles.ViaVersion.api.command.ViaCommandSender;
-import us.myles.ViaVersion.api.configuration.ConfigurationProvider;
-import us.myles.ViaVersion.api.data.UserConnection;
-import us.myles.ViaVersion.api.platform.TaskId;
-import us.myles.ViaVersion.api.platform.ViaConnectionManager;
-import us.myles.ViaVersion.api.platform.ViaPlatform;
+import com.viaversion.viaversion.ViaManagerImpl;
+import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.ViaAPI;
+import com.viaversion.viaversion.api.command.ViaCommandSender;
+import com.viaversion.viaversion.api.configuration.ConfigurationProvider;
+import com.viaversion.viaversion.api.configuration.ViaVersionConfig;
+import com.viaversion.viaversion.api.connection.ProtocolInfo;
+import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.platform.PlatformTask;
+import com.viaversion.viaversion.api.platform.ViaPlatform;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.packet.State;
+import com.viaversion.viaversion.api.protocol.version.VersionProvider;
+import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.connection.ConnectionManagerImpl;
+import com.viaversion.viaversion.libs.gson.JsonObject;
+import com.viaversion.viaversion.protocol.packet.PacketWrapperImpl;
+import com.viaversion.viaversion.protocols.protocol1_9to1_8.Protocol1_9To1_8;
+import com.viaversion.viaversion.protocols.protocol1_9to1_8.providers.HandItemProvider;
 import us.myles.ViaVersion.api.protocol.ProtocolVersion;
-import us.myles.ViaVersion.api.type.Type;
-import us.myles.ViaVersion.packets.State;
-import us.myles.ViaVersion.protocols.base.ProtocolInfo;
-import us.myles.ViaVersion.protocols.base.VersionProvider;
-import us.myles.ViaVersion.protocols.protocol1_9to1_8.Protocol1_9To1_8;
-import us.myles.ViaVersion.protocols.protocol1_9to1_8.providers.HandItemProvider;
 
 import java.io.File;
 import java.util.UUID;
@@ -58,31 +59,26 @@ import java.util.logging.Logger;
 
 public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
     private final Logger wrappedLogger;
-    private final ViaConnectionManager connectionManager;
+    private final ConnectionManagerImpl connectionManager;
     private final DirtServer api;
-    private final ViaConfig config;
+    private final ViaConfigImpl config;
     private final ViaAPI<DirtServer> viaAPI;
 
     public ViaPlugin(DirtServer server) {
         this.wrappedLogger = new WrappedLogger();
-        this.connectionManager = new ViaConnectionManager();
+        this.connectionManager = new ConnectionManagerImpl();
         this.api = server;
-        this.viaAPI = new DirtViaApi(api);
-        this.config = new ViaConfig();
+        this.viaAPI = new DirtViaApi();
+        this.config = new ViaConfigImpl();
 
-        Via.init(ViaManager.builder()
+        Via.init(ViaManagerImpl.builder()
                 .platform(this)
                 .injector(new DummyInjector())
                 .build());
 
-        Via.getManager().init();
-        Via.getManager().getProviders().use(VersionProvider.class, new VersionProvider() {
-            @Override
-            public int getServerProtocol(UserConnection connection) {
-                return ProtocolVersion.v1_8.getVersion();
-            }
-        });
+        ((ViaManagerImpl) Via.getManager()).init();
 
+        Via.getManager().getProviders().use(VersionProvider.class, userConnection -> ProtocolVersion.v1_8.getVersion());
         Via.getManager().getProviders().use(HandItemProvider.class, new ViaHandItemProvider(server));
     }
 
@@ -100,7 +96,7 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
                 if (userData.getUniqueId() == null)
                     return;
 
-                UserConnection userConnection = Via.getManager().getConnection(userData.getUniqueId());
+                UserConnection userConnection = connectionManager.getConnectedClient(userData.getUniqueId());
                 if (userConnection == null)
                     return;
 
@@ -109,11 +105,11 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
                     return;
 
                 if (protocolInfo.getPipeline().contains(Protocol1_9To1_8.class) && protocolInfo.getState() == State.PLAY) {
-                    PacketWrapper wrapper = new PacketWrapper(0x03, null, userConnection);
+                    PacketWrapper wrapper = new PacketWrapperImpl(0x03, null, userConnection);
                     wrapper.write(Type.BOOLEAN, true);
 
                     try {
-                        wrapper.sendToServer(Protocol1_9To1_8.class, true, false);
+                        wrapper.sendToServer(Protocol1_9To1_8.class, true);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -138,6 +134,17 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
     }
 
     @Override
+    public PlatformTask runAsync(Runnable runnable) {
+        throw new UnsupportedOperationException("not supported yet");
+    }
+
+    @Override
+    public PlatformTask runSync(Runnable runnable) {
+        //throw new UnsupportedOperationException("not supported yet");
+        return null;
+    }
+
+    @Override
     public Logger getLogger() {
         return wrappedLogger;
     }
@@ -158,39 +165,18 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
     }
 
     @Override
-    public TaskId runAsync(Runnable runnable) {
+    public PlatformTask runSync(Runnable runnable, long l) {
         throw new UnsupportedOperationException("not supported yet");
     }
 
     @Override
-    public TaskId runSync(Runnable runnable) {
-        //throw new UnsupportedOperationException("not supported yet");
-        return null;
-    }
-
-    @Override
-    public TaskId runSync(Runnable runnable, Long aLong) {
-        throw new UnsupportedOperationException("not supported yet");
-    }
-
-    @Override
-    public TaskId runRepeatingSync(Runnable runnable, Long aLong) {
-        throw new UnsupportedOperationException("not supported yet");
-    }
-
-    @Override
-    public void cancelTask(TaskId taskId) {
+    public PlatformTask runRepeatingSync(Runnable runnable, long l) {
         throw new UnsupportedOperationException("not supported yet");
     }
 
     @Override
     public ViaAPI<DirtServer> getApi() {
         return viaAPI;
-    }
-
-    @Override
-    public JsonObject getDump() {
-        throw new UnsupportedOperationException("not supported yet");
     }
 
     @Override
@@ -206,11 +192,6 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
     @Override
     public boolean isOldClientsAllowed() {
         return true;
-    }
-
-    @Override
-    public ViaConnectionManager getConnectionManager() {
-        return connectionManager;
     }
 
     @Override
@@ -231,5 +212,10 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
     @Override
     public void onReload() {
 
+    }
+
+    @Override
+    public JsonObject getDump() {
+        return null;
     }
 }

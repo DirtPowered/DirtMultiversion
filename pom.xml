@@ -82,18 +82,18 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.16</version>
+            <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.56.Final</version>
+            <version>4.1.65.Final</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
+            <version>30.1.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.tinylog</groupId>
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.6</version>
+            <version>2.8.7</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -114,22 +114,22 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.0.0</version>
+            <version>4.8.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-gson</artifactId>
-            <version>4.0.0</version>
+            <version>4.8.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-legacy</artifactId>
-            <version>4.0.0</version>
+            <version>4.8.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-nbt</artifactId>
-            <version>4.2.0</version>
+            <version>4.8.0</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -154,18 +154,14 @@
         </dependency>
         <!-- ViaVersion -->
         <dependency>
-            <groupId>us.myles</groupId>
+            <groupId>com.viaversion</groupId>
             <artifactId>viaversion-common</artifactId>
-            <version>3.2.2-SNAPSHOT</version>
+            <version>4.0.1-SNAPSHOT</version>
         </dependency>
-        <!--
-        ViaVersion is migrating to adventure, so maybe I'll remove this in future.
-        Who knows
-        -->
         <dependency>
-            <groupId>com.github.steveice10</groupId>
-            <artifactId>opennbt</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <groupId>com.viaversion</groupId>
+            <artifactId>viaversion-api</artifactId>
+            <version>4.0.1-SNAPSHOT</version>
         </dependency>
         <!--
         for GameProfile caching.

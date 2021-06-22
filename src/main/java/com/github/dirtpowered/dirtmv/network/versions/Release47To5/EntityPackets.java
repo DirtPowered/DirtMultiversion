@@ -49,7 +49,10 @@ import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.GamePro
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import lombok.SneakyThrows;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class EntityPackets extends ServerProtocol {
@@ -58,43 +61,6 @@ public class EntityPackets extends ServerProtocol {
     EntityPackets() {
         super(MinecraftVersion.R1_8, MinecraftVersion.R1_7_6);
         metadataTransformer = new V1_7RTo1_8RMetadataTransformer();
-    }
-
-    private void refreshPlayerProfile(ServerSession session, GameProfile gameProfile, PacketData originalSpawn, PacketData translatedSpawn) {
-        UUID uniqueId = UUID.fromString(originalSpawn.read(Type.V1_7_STRING, 1));
-        int entityId = originalSpawn.read(Type.VAR_INT, 0);
-
-        GameProfile filledProfile = new GameProfile(uniqueId, gameProfile.getName());
-        filledProfile.getProperties().putAll(gameProfile.getProperties());
-
-        Property[] propertyArray = gameProfile.getProperties().values().toArray(new Property[0]);
-
-        TabListEntry tabRemoveListEntry = new TabListEntry(TabListAction.REMOVE_PLAYER, new PlayerListEntry[]{
-                new PlayerListEntry(new GameProfile(uniqueId, gameProfile.getName()), new Property[0], 0, 0, null)
-        });
-
-        PacketData removeTab = PacketUtil.createPacket(0x38, new TypeHolder[]{
-                set(Type.TAB_LIST_ENTRY, tabRemoveListEntry)
-        });
-
-        PacketData destroyPlayer = PacketUtil.createPacket(0x13, new TypeHolder[]{
-                set(Type.VAR_INT_ARRAY, new int[]{
-                        entityId
-                })
-        });
-
-        TabListEntry tabAddListEntry = new TabListEntry(TabListAction.ADD_PLAYER, new PlayerListEntry[]{
-                new PlayerListEntry(filledProfile, propertyArray, 0, 0, null)
-        });
-
-        PacketData addTab = PacketUtil.createPacket(0x38, new TypeHolder[]{
-                set(Type.TAB_LIST_ENTRY, tabAddListEntry)
-        });
-
-        session.sendPacket(removeTab, PacketDirection.TO_CLIENT, getFrom());
-        session.sendPacket(destroyPlayer, PacketDirection.TO_CLIENT, getFrom());
-        session.sendPacket(addTab, PacketDirection.TO_CLIENT, getFrom());
-        session.sendPacket(translatedSpawn, PacketDirection.TO_CLIENT, getFrom());
     }
 
     @Override
@@ -215,11 +181,14 @@ public class EntityPackets extends ServerProtocol {
         // spawn player
         addTranslator(0x0C, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
+            @SneakyThrows
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 ProtocolStorage storage = session.getStorage();
                 UUID uniqueId = UUID.fromString(data.read(Type.V1_7_STRING, 1));
                 String username = data.read(Type.V1_7_STRING, 2);
+
+                GameProfile profile = GameProfileFetcher.getProfile(username).get();
 
                 if (storage.hasObject(V1_7EntityTracker.class)) {
                     V1_7EntityTracker tracker = storage.get(V1_7EntityTracker.class);
@@ -239,7 +208,7 @@ public class EntityPackets extends ServerProtocol {
 
                 PacketData playerSpawn = PacketUtil.createPacket(0x0C, new TypeHolder[]{
                         data.read(0),
-                        set(Type.UUID, uniqueId),
+                        set(Type.UUID, profile.getId()),
                         data.read(4),
                         data.read(5),
                         data.read(6),
@@ -250,7 +219,7 @@ public class EntityPackets extends ServerProtocol {
                 });
 
                 // create fake profile
-                GameProfile profile = new GameProfile(uniqueId, username);
+                //GameProfile profile = new GameProfile(uniqueId, username);
 
                 TabListEntry tabAddListEntry = new TabListEntry(TabListAction.ADD_PLAYER, new PlayerListEntry[]{
                         new PlayerListEntry(profile, new Property[0], 0, 0, null)
@@ -266,10 +235,23 @@ public class EntityPackets extends ServerProtocol {
                 // send player spawn (right after tablist packet)
                 session.sendPacket(playerSpawn, PacketDirection.TO_CLIENT, getFrom());
 
-                // apply skin
-                GameProfileFetcher.getProfile(username).whenComplete((gameProfile, throwable) -> {
-                    refreshPlayerProfile(session, gameProfile, data, playerSpawn);
-                });
+                new Timer().schedule(
+                        new TimerTask() {
+                            @Override
+                            public void run() {
+                                TabListEntry tabRemoveListEntry = new TabListEntry(TabListAction.REMOVE_PLAYER, new PlayerListEntry[]{
+                                        new PlayerListEntry(profile,
+                                                new Property[0], 0, 0, null)
+                                });
+
+                                PacketData removeTab = PacketUtil.createPacket(0x38, new TypeHolder[]{
+                                        set(Type.TAB_LIST_ENTRY, tabRemoveListEntry)
+                                });
+
+                                session.sendPacket(removeTab, PacketDirection.TO_CLIENT, getFrom());
+                            }
+                        }, 40L
+                );
 
                 return cancel();
             }

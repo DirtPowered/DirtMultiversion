@@ -22,7 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.viaversion.config;
 
-import us.myles.ViaVersion.AbstractViaConfig;
+import com.viaversion.viaversion.configuration.AbstractViaConfig;
 
 import java.io.File;
 import java.net.URL;
@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class ViaConfig extends AbstractViaConfig {
+public class ViaConfigImpl extends AbstractViaConfig {
     private static final List<String> UNSUPPORTED = Arrays.asList(
             "anti-xray-patch",
             "quick-move-action-fix",
@@ -44,7 +44,7 @@ public class ViaConfig extends AbstractViaConfig {
             "bungee-ping-save", "bungee-servers"
     );
 
-    public ViaConfig() {
+    public ViaConfigImpl() {
         super(new File("ViaVersion", "config.yml"));
         reloadConfig();
     }

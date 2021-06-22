@@ -23,63 +23,18 @@
 package com.github.dirtpowered.dirtmv.viaversion.platform;
 
 import com.github.dirtpowered.dirtmv.api.DirtServer;
+import com.viaversion.viaversion.ViaAPIBase;
 import io.netty.buffer.ByteBuf;
-import us.myles.ViaVersion.api.ViaAPI;
-import us.myles.ViaVersion.api.boss.BossBar;
-import us.myles.ViaVersion.api.boss.BossColor;
-import us.myles.ViaVersion.api.boss.BossStyle;
 
-import java.util.SortedSet;
-import java.util.UUID;
-
-public class DirtViaApi implements ViaAPI<DirtServer> {
-
-    public DirtViaApi(DirtServer api) {
-
-    }
+public class DirtViaApi extends ViaAPIBase<DirtServer> {
 
     @Override
     public int getPlayerVersion(DirtServer dirtServer) {
-        throw new UnsupportedOperationException("not supported yet");
-    }
-
-    @Override
-    public int getPlayerVersion(UUID uuid) {
-        throw new UnsupportedOperationException("not supported yet");
-    }
-
-    @Override
-    public boolean isInjected(UUID uuid) {
-        return true;
-    }
-
-    @Override
-    public String getVersion() {
-        throw new UnsupportedOperationException("not supported yet");
+        return 0;
     }
 
     @Override
     public void sendRawPacket(DirtServer dirtServer, ByteBuf byteBuf) {
-        throw new UnsupportedOperationException("not supported yet");
-    }
-
-    @Override
-    public void sendRawPacket(UUID uuid, ByteBuf byteBuf) {
-        throw new UnsupportedOperationException("not supported yet");
-    }
-
-    @Override
-    public BossBar createBossBar(String s, BossColor bossColor, BossStyle bossStyle) {
-        return new DirtBossbar(s, 0.1F, bossColor, bossStyle);
-    }
-
-    @Override
-    public BossBar createBossBar(String s, float v, BossColor bossColor, BossStyle bossStyle) {
-        return new DirtBossbar(s, v, bossColor, bossStyle);
-    }
-
-    @Override
-    public SortedSet<Integer> getSupportedVersions() {
         throw new UnsupportedOperationException("not supported yet");
     }
 }

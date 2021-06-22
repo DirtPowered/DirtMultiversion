@@ -31,11 +31,12 @@ import com.github.dirtpowered.dirtmv.network.server.codec.PacketDecoder;
 import com.github.dirtpowered.dirtmv.network.server.codec.PacketEncoder;
 import com.github.dirtpowered.dirtmv.viaversion.handler.ViaDecodeHandler;
 import com.github.dirtpowered.dirtmv.viaversion.handler.ViaEncodeHandler;
+import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.connection.UserConnectionImpl;
+import com.viaversion.viaversion.protocol.ProtocolPipelineImpl;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import us.myles.ViaVersion.api.data.UserConnection;
-import us.myles.ViaVersion.api.protocol.ProtocolPipeline;
 
 public class DetectionHandler extends ChannelInboundHandlerAdapter {
     private final UserData userData;
@@ -72,8 +73,8 @@ public class DetectionHandler extends ChannelInboundHandlerAdapter {
                 );
 
                 if (main.getConfiguration().enableViaVersion()) {
-                    UserConnection userConnection = new UserConnection(ctx.channel());
-                    new ProtocolPipeline(userConnection);
+                    UserConnection userConnection = new UserConnectionImpl(ctx.channel());
+                    new ProtocolPipelineImpl(userConnection);
 
                     ctx.channel().pipeline().addBefore(
                             ChannelConstants.NETTY_PACKET_DECODER,
