@@ -12,6 +12,10 @@
     </properties>
     <repositories>
         <repository>
+            <id>local-repo</id>
+            <url>file:///${project.basedir}/libs/</url>
+        </repository>
+        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -155,13 +159,8 @@
         <!-- ViaVersion -->
         <dependency>
             <groupId>com.viaversion</groupId>
-            <artifactId>viaversion-common</artifactId>
-            <version>4.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.viaversion</groupId>
-            <artifactId>viaversion-api</artifactId>
-            <version>4.0.1-SNAPSHOT</version>
+            <artifactId>ViaLocal</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <!--
         for GameProfile caching.

@@ -8,8 +8,8 @@ Proxy that allows connecting older servers using newer client. Work in progress
 https://discord.gg/v6xsRdc
 
 ### Supported versions
-All versions between beta 1.3 - release 1.16.5 (with <a href="https://github.com/ViaVersion/ViaVersion">ViaVersion</a> support enabled in config)
-Example: You can connect to beta 1.7.3 server using every version up to release 1.16.5
+All versions between beta 1.3 - release 1.17.1 (with <a href="https://github.com/ViaVersion/ViaVersion">ViaVersion</a> support enabled in config)
+Example: You can connect to beta 1.7.3 server using every version up to release 1.17.1
 
 ### Bugs
 - [x] All listed above protocols are unfinished, but almost ready for normal usage
