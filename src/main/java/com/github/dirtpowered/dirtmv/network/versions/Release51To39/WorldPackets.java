@@ -27,15 +27,14 @@ import com.github.dirtpowered.dirtmv.data.chunk.storage.ExtendedBlockStorage;
 import com.github.dirtpowered.dirtmv.data.chunk.storage.V1_2RChunkStorage;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
-import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2Chunk;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_2MultiBlockArray;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
-import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Beta17To14.storage.BlockStorage;
+import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.DimensionTracker;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
@@ -131,10 +130,15 @@ public class WorldPackets extends ServerProtocol {
 
                 if (blockStorage.getVersion() == getTo()) {
                     List<ExtendedBlockStorage> parts = new ArrayList<>();
+                    boolean skyLight = true;
 
+                    if (session.getStorage().hasObject(DimensionTracker.class)) {
+                        DimensionTracker tracker = session.getStorage().get(DimensionTracker.class);
+                        skyLight = tracker.getDimension() == 0;
+                    }
                     // create chunk storage
                     V1_2RChunkStorage storage = new V1_2RChunkStorage(
-                            true, true, chunk.getChunkX(), chunk.getChunkZ()
+                            skyLight, true, chunk.getChunkX(), chunk.getChunkZ()
                     );
 
                     storage.readChunk(chunk.isGroundUp(), chunk.getPrimaryBitmap(), chunk.getUncompressedData());
