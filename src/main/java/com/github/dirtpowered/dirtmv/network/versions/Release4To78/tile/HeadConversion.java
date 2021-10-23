@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2020-2021 Dirt Powered
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.github.dirtpowered.dirtmv.network.versions.Release4To78.tile;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
@@ -18,18 +40,13 @@ public class HeadConversion {
 
     public static void convert(ServerSession session, PacketData data, String nickname, MinecraftVersion from) {
         CompoundBinaryTag binaryTag = data.read(Type.COMPOUND_TAG, 4);
-        CompoundBinaryTag.Builder rootTag = CompoundBinaryTag.builder();
-        CompoundBinaryTag.Builder ownerTag = CompoundBinaryTag.builder();
         CompoundBinaryTag.Builder profileTag = CompoundBinaryTag.builder();
-        rootTag.put(binaryTag);
 
         GameProfileFetcher.getProfile(nickname).thenAccept(profile -> {
             serializeGameProfile(profileTag, profile);
-            ownerTag.put("Owner", profileTag.build());
 
-            rootTag.put(ownerTag.build());
-            data.modify(4, new TypeHolder<>(Type.COMPOUND_TAG, rootTag.build()));
-
+            binaryTag.put("Owner", profileTag.build());
+            data.modify(4, new TypeHolder<>(Type.COMPOUND_TAG, binaryTag));
             session.sendPacket(data, PacketDirection.TO_CLIENT, from);
         });
     }
@@ -52,7 +69,7 @@ public class HeadConversion {
                     if (next.hasSignature()) {
                         childTag.put("Signature", StringBinaryTag.of(next.getSignature()));
                     }
-                    propertyList.add(childTag.build().asBinaryTag());
+                    propertyList.add(childTag.build());
                 }
 
                 parent.put(property, propertyList.build());
