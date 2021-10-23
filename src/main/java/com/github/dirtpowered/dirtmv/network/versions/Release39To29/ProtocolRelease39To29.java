@@ -91,24 +91,21 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
     private void updateEntityLocation(ServerSession session, int entityId, int x, int y, int z, boolean relative) {
         EntityTracker tracker = session.getStorage().get(EntityTracker.class);
-        if (tracker != null) {
-            AbstractEntity e = tracker.getEntity(entityId);
-            if (e != null) {
-                Location oldLoc = e.getLocation();
+        AbstractEntity e = tracker.getEntity(entityId);
+        if (e != null) {
+            Location oldLoc = e.getLocation();
+            double xPos = x / 32.0D;
+            double yPos = y / 32.0D;
+            double zPos = z / 32.0D;
 
-                double xPos = x / 32.0D;
-                double yPos = y / 32.0D;
-                double zPos = z / 32.0D;
-
-                Location newLoc;
-                if (relative) {
-                    newLoc = new Location(oldLoc.getX() + xPos, oldLoc.getY() + yPos, oldLoc.getZ() + zPos);
-                } else {
-                    newLoc = new Location(xPos, yPos, zPos);
-                }
-
-                e.setLocation(newLoc);
+            Location newLoc;
+            if (relative) {
+                newLoc = new Location(oldLoc.getX() + xPos, oldLoc.getY() + yPos, oldLoc.getZ() + zPos);
+            } else {
+                newLoc = new Location(xPos, yPos, zPos);
             }
+
+            e.setLocation(newLoc);
         }
     }
 
@@ -316,9 +313,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 int entityId = data.read(Type.INT, 0);
 
                 EntityTracker tracker = session.getStorage().get(EntityTracker.class);
-                if (tracker != null) {
-                    tracker.removeEntity(entityId);
-                }
+                tracker.removeEntity(entityId);
 
                 return PacketUtil.createPacket(0x1D, new TypeHolder[]{
                         set(Type.BYTE_INT_ARRAY, new int[]{entityId})
@@ -342,9 +337,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 Entity entity = new Entity(entityId, location, entityType);
 
                 EntityTracker tracker = session.getStorage().get(EntityTracker.class);
-                if (tracker != null) {
-                    tracker.addEntity(entityId, entity);
-                }
+                tracker.addEntity(entityId, entity);
 
                 return PacketUtil.createPacket(0x18, new TypeHolder[]{
                         data.read(0),
@@ -434,65 +427,60 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 Motion motion = data.read(Type.MOTION, 5);
-
                 int throwerId = motion.getThrowerId();
                 byte type = data.read(Type.BYTE, 1);
 
                 // sound emulation, entity mount fixes
                 EntityTracker tracker = session.getStorage().get(EntityTracker.class);
-                if (tracker != null) {
-                    int entityId = data.read(Type.INT, 0);
-                    double x = data.read(Type.INT, 2) / 32.0D;
-                    double y = data.read(Type.INT, 3) / 32.0D;
-                    double z = data.read(Type.INT, 4) / 32.0D;
+                int entityId = data.read(Type.INT, 0);
+                double x = data.read(Type.INT, 2) / 32.0D;
+                double y = data.read(Type.INT, 3) / 32.0D;
+                double z = data.read(Type.INT, 4) / 32.0D;
+                float pitch;
+                Location loc = new Location(x, y, z);
 
-                    float pitch;
+                switch (type) {
+                    case 1:
+                        // cache boats
+                        Entity boat = new Entity(entityId, loc, EntityType.BOAT);
+                        tracker.addEntity(entityId, boat);
+                        break;
+                    case 10:
+                    case 11:
+                    case 12:
+                        // cache minecarts
+                        Entity minecart = new Entity(entityId, loc, EntityType.MINECART);
+                        tracker.addEntity(entityId, minecart);
+                        break;
+                    case 50:
+                        // cache primed tnt entity
+                        Entity primedTNT = new Entity(entityId, loc, EntityType.PRIMED_TNT);
+                        tracker.addEntity(entityId, primedTNT);
 
-                    Location loc = new Location(x, y, z);
+                        WorldEntityEvent.onCustomAction(session, entityId);
+                        break;
+                    case 60:
+                        // bow sound
+                        pitch = 1.0F / (session.getMain().getSharedRandom().nextFloat() * 0.4F + 1.2F) + 0.5F;
+                        WorldEntityEvent.playSoundAt(session, loc, WorldSound.RANDOM_BOW, 0.2F, pitch);
+                        break;
+                    case 61: // snowball
+                    case 62: // egg
+                    case 90: // fishing rod
+                    case 65: // ender pearl
+                    case 72: // ender eye
+                    case 73: // throwable potion
+                    case 75: // exp bottle
+                        pitch = 0.4F / (session.getMain().getSharedRandom().nextFloat() * 0.4F + 0.8F);
+                        WorldEntityEvent.playSoundAt(session, loc, WorldSound.RANDOM_BOW, 0.5F, pitch);
 
-                    switch (type) {
-                        case 1:
-                            // cache boats
-                            Entity boat = new Entity(entityId, loc, EntityType.BOAT);
-                            tracker.addEntity(entityId, boat);
-                            break;
-                        case 10:
-                        case 11:
-                        case 12:
-                            // cache minecarts
-                            Entity minecart = new Entity(entityId, loc, EntityType.MINECART);
-                            tracker.addEntity(entityId, minecart);
-                            break;
-                        case 50:
-                            // cache primed tnt entity
-                            Entity primedTNT = new Entity(entityId, loc, EntityType.PRIMED_TNT);
-                            tracker.addEntity(entityId, primedTNT);
+                        if (type == 90) {
+                            Location hookLocation = new Location(x, y, z);
+                            AbstractEntity nearest = getNearestEntity(tracker, hookLocation, 2.0D);
 
-                            WorldEntityEvent.onCustomAction(session, entityId);
-                            break;
-                        case 60:
-                            // bow sound
-                            pitch = 1.0F / (session.getMain().getSharedRandom().nextFloat() * 0.4F + 1.2F) + 0.5F;
-                            WorldEntityEvent.playSoundAt(session, loc, WorldSound.RANDOM_BOW, 0.2F, pitch);
-                            break;
-                        case 61: // snowball
-                        case 62: // egg
-                        case 90: // fishing rod
-                        case 65: // ender pearl
-                        case 72: // ender eye
-                        case 73: // throwable potion
-                        case 75: // exp bottle
-                            pitch = 0.4F / (session.getMain().getSharedRandom().nextFloat() * 0.4F + 0.8F);
-                            WorldEntityEvent.playSoundAt(session, loc, WorldSound.RANDOM_BOW, 0.5F, pitch);
-
-                            if (type == 90) {
-                                Location hookLocation = new Location(x, y, z);
-                                AbstractEntity nearest = getNearestEntity(tracker, hookLocation, 2.0D);
-
-                                throwerId = nearest.getEntityId() != -1 ? nearest.getEntityId() : session.getUserData().getEntityId();
-                            }
-                            break;
-                    }
+                            throwerId = nearest.getEntityId() != -1 ? nearest.getEntityId() : session.getUserData().getEntityId();
+                        }
+                        break;
                 }
 
                 switch (type) {
@@ -527,7 +515,6 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-
                 ItemStack newItem = data.read(Type.V1_3R_ITEM, 4);
 
                 return PacketUtil.createPacket(0x0F, new TypeHolder[]{
@@ -569,17 +556,15 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 EntityTracker tracker = session.getStorage().get(EntityTracker.class);
-                if (tracker != null) {
-                    int entityId = data.read(Type.INT, 0);
-                    double x = data.read(Type.INT, 2) / 32.0D;
-                    double y = data.read(Type.INT, 3) / 32.0D;
-                    double z = data.read(Type.INT, 4) / 32.0D;
+                int entityId = data.read(Type.INT, 0);
+                double x = data.read(Type.INT, 2) / 32.0D;
+                double y = data.read(Type.INT, 3) / 32.0D;
+                double z = data.read(Type.INT, 4) / 32.0D;
 
-                    Location loc = new Location(x, y, z);
+                Location loc = new Location(x, y, z);
 
-                    HumanEntity human = new HumanEntity(entityId, loc);
-                    tracker.addEntity(entityId, human);
-                }
+                HumanEntity human = new HumanEntity(entityId, loc);
+                tracker.addEntity(entityId, human);
 
                 /* default 1.3.x metadata */
                 List<WatchableObject> watchableObjects = Arrays.asList(
@@ -613,45 +598,43 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                 WatchableObject[] watchableObjects = data.read(Type.V1_3B_METADATA, 1);
                 EntityTracker tracker = session.getStorage().get(EntityTracker.class);
 
-                if (tracker != null) {
-                    for (WatchableObject watchableObject : watchableObjects) {
-                        int index = watchableObject.getIndex();
-                        MetadataType type = watchableObject.getType();
-                        Object value = watchableObject.getValue();
+                for (WatchableObject watchableObject : watchableObjects) {
+                    int index = watchableObject.getIndex();
+                    MetadataType type = watchableObject.getType();
+                    Object value = watchableObject.getValue();
 
-                        if (type == MetadataType.BYTE && index == 0 && tracker.isEntityTracked(entityId)) {
-                            if (((Byte) value).intValue() == 4) { //entity mount
-                                if (tracker.getEntity(entityId).getEntityType() == EntityType.HUMAN) {
-                                    HumanEntity humanEntity = (HumanEntity) tracker.getEntity(entityId);
+                    if (type == MetadataType.BYTE && index == 0 && tracker.isEntityTracked(entityId)) {
+                        if (((Byte) value).intValue() == 4) { //entity mount
+                            if (tracker.getEntity(entityId).getEntityType() == EntityType.HUMAN) {
+                                HumanEntity humanEntity = (HumanEntity) tracker.getEntity(entityId);
 
-                                    AbstractEntity nearbyEntity = getNearestEntity(tracker, humanEntity.getLocation(), 1.5D);
-                                    EntityType eType = nearbyEntity.getEntityType();
+                                AbstractEntity nearbyEntity = getNearestEntity(tracker, humanEntity.getLocation(), 1.5D);
+                                EntityType eType = nearbyEntity.getEntityType();
 
-                                    if (nearbyEntity.getEntityId() != -1) {
-                                        if (eType == EntityType.MINECART || eType == EntityType.PIG || eType == EntityType.BOAT) {
-                                            PacketData entityAttach = PacketUtil.createPacket(0x27, new TypeHolder[]{
-                                                    set(Type.INT, entityId),
-                                                    set(Type.INT, nearbyEntity.getEntityId()),
-
-                                            });
-
-                                            humanEntity.setRidingEntity(true);
-                                            session.sendPacket(entityAttach, PacketDirection.TO_CLIENT, getFrom());
-                                        }
-                                    }
-                                }
-                            } else if (((Byte) value).intValue() == 0) { // un-mount
-                                if (tracker.isEntityTracked(entityId) && tracker.getEntity(entityId) instanceof HumanEntity) {
-                                    HumanEntity humanEntity = (HumanEntity) tracker.getEntity(entityId);
-                                    if (humanEntity.isRidingEntity()) {
+                                if (nearbyEntity.getEntityId() != -1) {
+                                    if (eType == EntityType.MINECART || eType == EntityType.PIG || eType == EntityType.BOAT) {
                                         PacketData entityAttach = PacketUtil.createPacket(0x27, new TypeHolder[]{
                                                 set(Type.INT, entityId),
-                                                set(Type.INT, -1),
+                                                set(Type.INT, nearbyEntity.getEntityId()),
+
                                         });
 
-                                        humanEntity.setRidingEntity(false);
+                                        humanEntity.setRidingEntity(true);
                                         session.sendPacket(entityAttach, PacketDirection.TO_CLIENT, getFrom());
                                     }
+                                }
+                            }
+                        } else if (((Byte) value).intValue() == 0) { // un-mount
+                            if (tracker.isEntityTracked(entityId) && tracker.getEntity(entityId) instanceof HumanEntity) {
+                                HumanEntity humanEntity = (HumanEntity) tracker.getEntity(entityId);
+                                if (humanEntity.isRidingEntity()) {
+                                    PacketData entityAttach = PacketUtil.createPacket(0x27, new TypeHolder[]{
+                                            set(Type.INT, entityId),
+                                            set(Type.INT, -1),
+                                    });
+
+                                    humanEntity.setRidingEntity(false);
+                                    session.sendPacket(entityAttach, PacketDirection.TO_CLIENT, getFrom());
                                 }
                             }
                         }

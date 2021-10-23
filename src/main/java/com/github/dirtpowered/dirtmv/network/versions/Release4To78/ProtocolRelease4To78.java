@@ -42,8 +42,11 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.item.ItemRemapper;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
+import com.github.dirtpowered.dirtmv.network.versions.Release4To78.tile.HeadConversion;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import com.google.common.base.Charsets;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -669,7 +672,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 String itemName = data.read(Type.STRING, 0);
                 int action = data.read(Type.BYTE, 1);
 
-                TypeHolder[] types = new TypeHolder[action != 1 ? 4 : 2];
+                TypeHolder<?>[] types = new TypeHolder[action != 1 ? 4 : 2];
 
                 types[0] = set(Type.V1_7_STRING, itemName);
                 types[1] = set(Type.BYTE, (byte) action);
@@ -900,14 +903,23 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                final CompoundBinaryTag binaryTag = data.read(Type.COMPOUND_TAG, 4);
+                @NotNull String value = binaryTag.getString("ExtraType");
 
-                return PacketUtil.createPacket(0x35, new TypeHolder[]{
+                PacketData packet = PacketUtil.createPacket(0x35, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
                         data.read(2),
                         set(Type.UNSIGNED_BYTE, data.read(Type.BYTE, 3).shortValue()),
-                        data.read(4)
+                        set(Type.COMPOUND_TAG, binaryTag)
                 });
+
+                if (!value.isEmpty()) {
+                    HeadConversion.convert(session, packet, value, getFrom());
+                    return cancel();
+                }
+
+                return packet;
             }
         });
 

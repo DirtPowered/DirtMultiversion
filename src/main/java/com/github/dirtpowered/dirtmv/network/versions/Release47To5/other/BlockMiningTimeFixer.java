@@ -84,11 +84,11 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
     private void finishBreaking() {
         // it's b1.7.3 packet, so it skips all translators
         PacketData blockDig = PacketUtil.createPacket(0x0E, new TypeHolder[]{
-                new TypeHolder(Type.BYTE, (byte) 2),
-                new TypeHolder(Type.INT, pos.getX()),
-                new TypeHolder(Type.BYTE, (byte) pos.getY()),
-                new TypeHolder(Type.INT, pos.getZ()),
-                new TypeHolder(Type.BYTE, (byte) 0)
+                new TypeHolder<>(Type.BYTE, (byte) 2),
+                new TypeHolder<>(Type.INT, pos.getX()),
+                new TypeHolder<>(Type.BYTE, (byte) pos.getY()),
+                new TypeHolder<>(Type.INT, pos.getZ()),
+                new TypeHolder<>(Type.BYTE, (byte) 0)
         });
 
         // send raw packet
@@ -96,10 +96,10 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
 
         // send block break effect
         PacketData blockEffect = PacketUtil.createPacket(0x28, new TypeHolder[]{
-                new TypeHolder(Type.INT, 2001),
-                new TypeHolder(Type.LONG, ProtocolRelease47To5.toBlockPosition(pos.getX(), pos.getY(), pos.getZ())),
-                new TypeHolder(Type.INT, blockId),
-                new TypeHolder(Type.BOOLEAN, false)
+                new TypeHolder<>(Type.INT, 2001),
+                new TypeHolder<>(Type.LONG, ProtocolRelease47To5.toBlockPosition(pos.getX(), pos.getY(), pos.getZ())),
+                new TypeHolder<>(Type.INT, blockId),
+                new TypeHolder<>(Type.BOOLEAN, false)
         });
 
         session.sendPacket(blockEffect, PacketDirection.TO_CLIENT, MinecraftVersion.R1_8);
@@ -163,24 +163,24 @@ public class BlockMiningTimeFixer implements Tickable, PlayerBlockAction {
     private void sendBreakingEffect(BlockLocation position, int stage) {
 
         session.sendPacket(PacketUtil.createPacket(0x25, new TypeHolder[]{
-                new TypeHolder(Type.VAR_INT, randomEid),
-                new TypeHolder(Type.LONG, ProtocolRelease47To5.toBlockPosition(pos.getX(), position.getY(), pos.getZ())),
+                new TypeHolder<>(Type.VAR_INT, randomEid),
+                new TypeHolder<>(Type.LONG, ProtocolRelease47To5.toBlockPosition(pos.getX(), position.getY(), pos.getZ())),
                 new TypeHolder(Type.BYTE, stage)
         }), PacketDirection.TO_CLIENT, MinecraftVersion.R1_8);
     }
 
     private void sendEffect(boolean remove) {
         PacketData addEffect = PacketUtil.createPacket(0x1D /* add */, new TypeHolder[]{
-                new TypeHolder(Type.VAR_INT, session.getUserData().getEntityId()),
-                new TypeHolder(Type.BYTE, (byte) 4),
-                new TypeHolder(Type.BYTE, (byte) -1),
-                new TypeHolder(Type.VAR_INT, 1),
-                new TypeHolder(Type.BOOLEAN, true),
+                new TypeHolder<>(Type.VAR_INT, session.getUserData().getEntityId()),
+                new TypeHolder<>(Type.BYTE, (byte) 4),
+                new TypeHolder<>(Type.BYTE, (byte) -1),
+                new TypeHolder<>(Type.VAR_INT, 1),
+                new TypeHolder<>(Type.BOOLEAN, true),
         });
 
         PacketData removeEffect = PacketUtil.createPacket(0x1E /* remove */, new TypeHolder[]{
-                new TypeHolder(Type.VAR_INT, session.getUserData().getEntityId()),
-                new TypeHolder(Type.BYTE, (byte) 4)
+                new TypeHolder<>(Type.VAR_INT, session.getUserData().getEntityId()),
+                new TypeHolder<>(Type.BYTE, (byte) 4)
         });
 
         if (remove) {

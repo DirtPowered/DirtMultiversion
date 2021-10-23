@@ -186,9 +186,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 int entityId = data.read(Type.INT, 0);
 
                 EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
-                if (tracker != null) {
-                    tracker.addEntity(entityId, entityType);
-                }
+                tracker.addEntity(entityId, entityType);
 
                 WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 11);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(entityType, oldMeta);
@@ -219,9 +217,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
                 EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
                 for (int entityId : entities) {
-                    if (tracker != null) {
-                        tracker.removeEntity(entityId);
-                    }
+                    tracker.removeEntity(entityId);
                 }
 
                 return data;
@@ -235,11 +231,8 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 int entityId = data.read(Type.INT, 0);
 
-                EntityType entityType = null;
                 EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
-                if (tracker != null) {
-                    entityType = tracker.getEntityById(entityId);
-                }
+                EntityType entityType = tracker.getEntityById(entityId);
 
                 if (entityType == null) {
                     Logger.warn("[{}] skipping translating metadata for {}. Entity is not tracked", session.getLogTag(), entityId);
@@ -264,9 +257,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 int entityId = data.read(Type.INT, 0);
 
                 EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
-                if (tracker != null) {
-                    tracker.addEntity(entityId, EntityType.HUMAN);
-                }
+                tracker.addEntity(entityId, EntityType.HUMAN);
 
                 WatchableObject[] oldMeta = data.read(Type.V1_4R_METADATA, 8);
                 WatchableObject[] newMeta = metadataTransformer.transformMetadata(EntityType.HUMAN, oldMeta);
@@ -290,15 +281,20 @@ public class ProtocolRelease73To61 extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                if (data.read(Type.BYTE, 1) == 0x02 /* item */) {
-                    int entityId = data.read(Type.INT, 0);
+                int entityId = data.read(Type.INT, 0);
+                byte vehicleEntity = data.read(Type.BYTE, 1);
+                EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
 
-                    EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
-                    if (tracker != null) {
+                switch (vehicleEntity) {
+                    case 0x02:
+                        /* item */
                         tracker.addEntity(entityId, EntityType.ITEM);
-                    }
+                        break;
+                    case 0x46:
+                        /* sand, gravel */
+                        tracker.addEntity(entityId, EntityType.FALLING_OBJECT);
+                        break;
                 }
-
                 return data;
             }
         });

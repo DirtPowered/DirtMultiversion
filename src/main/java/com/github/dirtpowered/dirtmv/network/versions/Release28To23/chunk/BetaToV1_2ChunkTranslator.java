@@ -128,7 +128,7 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
             byte[] compressedData = newChunkStorage.getCompressedData(true, 0xff);
 
             session.sendPacket(PacketUtil.createPacket(0x33, new TypeHolder[]{
-                    new TypeHolder(Type.V1_2_CHUNK, new V1_2Chunk(
+                    new TypeHolder<>(Type.V1_2_CHUNK, new V1_2Chunk(
                             chunkX,
                             chunkZ,
                             true,
@@ -196,9 +196,9 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
                     }
 
                     PacketData multiBlockChange = PacketUtil.createPacket(0x34, new TypeHolder[]{
-                            new TypeHolder(Type.INT, chunkX),
-                            new TypeHolder(Type.INT, chunkZ),
-                            new TypeHolder(Type.V1_2MULTIBLOCK_ARRAY, blockArray)
+                            new TypeHolder<>(Type.INT, chunkX),
+                            new TypeHolder<>(Type.INT, chunkZ),
+                            new TypeHolder<>(Type.V1_2MULTIBLOCK_ARRAY, blockArray)
                     });
 
                     session.sendPacket(multiBlockChange, PacketDirection.TO_CLIENT, MinecraftVersion.R1_2_1);
@@ -206,11 +206,11 @@ public class BetaToV1_2ChunkTranslator extends PacketTranslator {
             } else {
                 for (WorldBlock block : worldBlocks) {
                     PacketData blockUpdate = PacketUtil.createPacket(0x35, new TypeHolder[]{
-                            new TypeHolder(Type.INT, block.getX()),
-                            new TypeHolder(Type.BYTE, (byte) block.getY()),
-                            new TypeHolder(Type.INT, block.getZ()),
-                            new TypeHolder(Type.BYTE, (byte) block.getBlockId()),
-                            new TypeHolder(Type.BYTE, (byte) block.getBlockData())
+                            new TypeHolder<>(Type.INT, block.getX()),
+                            new TypeHolder<>(Type.BYTE, (byte) block.getY()),
+                            new TypeHolder<>(Type.INT, block.getZ()),
+                            new TypeHolder<>(Type.BYTE, (byte) block.getBlockId()),
+                            new TypeHolder<>(Type.BYTE, (byte) block.getBlockData())
                     });
 
                     session.sendPacket(blockUpdate, PacketDirection.TO_CLIENT, MinecraftVersion.R1_2_1);

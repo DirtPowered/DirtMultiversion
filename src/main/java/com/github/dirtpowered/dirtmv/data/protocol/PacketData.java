@@ -37,28 +37,36 @@ public class PacketData {
     private final int opCode;
 
     @Getter
-    private final TypeHolder[] objects;
+    private final TypeHolder<?>[] objects;
 
     @Getter
     @Setter
     private ProtocolState nettyState;
 
-    public PacketData(int opCode, TypeHolder... objects) {
+    public PacketData(int opCode, TypeHolder<?>... objects) {
         this.opCode = opCode;
         this.objects = objects;
     }
 
-    public PacketData(int opCode, ProtocolState state, TypeHolder... objects) {
+    public PacketData(int opCode, ProtocolState state, TypeHolder<?>... objects) {
         this.opCode = opCode;
         this.nettyState = state;
         this.objects = objects;
     }
 
-    public TypeHolder read(int index) {
+    public TypeHolder<?> read(int index) {
         try {
             return objects[index];
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
+        }
+    }
+
+    public void modify(int index, TypeHolder<?> holder) {
+        try {
+            objects[index] = holder;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
         }
     }
 
@@ -69,7 +77,7 @@ public class PacketData {
     public PacketOutput toMessage() throws IOException {
         PacketOutput packetOutput = new NettyOutputWrapper(Unpooled.buffer());
 
-        for (TypeHolder typeHolder : objects) {
+        for (TypeHolder<?> typeHolder : objects) {
             typeHolder.getType().getTypeHandler().handle(typeHolder, packetOutput);
         }
 

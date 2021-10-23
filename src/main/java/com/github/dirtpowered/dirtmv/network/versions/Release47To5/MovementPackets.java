@@ -66,9 +66,7 @@ public class MovementPackets extends ServerProtocol {
                 double y = data.read(Type.BYTE, 2) / 32.0D;
                 boolean onGround = !(y < 0.0D);
 
-                if (groundTracker != null) {
-                    groundTracker.setGroundStateFor(entityId, onGround);
-                }
+                groundTracker.setGroundStateFor(entityId, onGround);
                 return PacketUtil.createPacket(0x15, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         data.read(1),
@@ -87,11 +85,7 @@ public class MovementPackets extends ServerProtocol {
                 OnGroundTracker groundTracker = session.getUserData().getProtocolStorage().get(OnGroundTracker.class);
                 int entityId = data.read(Type.INT, 0);
 
-                boolean onGround = false;
-
-                if (groundTracker != null) {
-                    onGround = groundTracker.isOnGround(entityId);
-                }
+                boolean onGround = groundTracker.isOnGround(entityId);
                 return PacketUtil.createPacket(0x16, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         data.read(1),
@@ -112,9 +106,7 @@ public class MovementPackets extends ServerProtocol {
                 double y = data.read(Type.BYTE, 2) / 32.0D;
                 boolean onGround = !(y < 0.0D);
 
-                if (groundTracker != null) {
-                    groundTracker.setGroundStateFor(entityId, onGround);
-                }
+                groundTracker.setGroundStateFor(entityId, onGround);
                 return PacketUtil.createPacket(0x17, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
                         data.read(1),

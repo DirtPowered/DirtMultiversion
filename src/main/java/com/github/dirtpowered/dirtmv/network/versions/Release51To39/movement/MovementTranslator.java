@@ -54,11 +54,9 @@ public class MovementTranslator {
 
         BoundingBox boundingBox = storage.get(BoundingBox.class);
 
-        if (boundingBox != null) {
-            boundingBox.setMiddleX(position.getX());
-            boundingBox.setMiddleY(position.getY() + 0.9D);
-            boundingBox.setMiddleZ(position.getZ());
-        }
+        boundingBox.setMiddleX(position.getX());
+        boundingBox.setMiddleY(position.getY() + 0.9D);
+        boundingBox.setMiddleZ(position.getZ());
     }
 
     private static boolean needsCorrection(int blockId) {
