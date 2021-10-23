@@ -36,17 +36,28 @@ import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.nbt.StringBinaryTag;
 
+import java.util.Map;
+
 public class HeadConversion {
 
     public static void convert(ServerSession session, PacketData data, String nickname, MinecraftVersion from) {
         CompoundBinaryTag binaryTag = data.read(Type.COMPOUND_TAG, 4);
+        CompoundBinaryTag.Builder rootTag = CompoundBinaryTag.builder();
+        CompoundBinaryTag.Builder ownerTag = CompoundBinaryTag.builder();
         CompoundBinaryTag.Builder profileTag = CompoundBinaryTag.builder();
+
+        for (Map.Entry<String, ? extends BinaryTag> stringEntry : binaryTag) {
+            rootTag.put(stringEntry.getKey(), stringEntry.getValue());
+        }
 
         GameProfileFetcher.getProfile(nickname).thenAccept(profile -> {
             serializeGameProfile(profileTag, profile);
+            ownerTag.put("Owner", profileTag.build());
+            for (Map.Entry<String, ? extends BinaryTag> stringEntry : ownerTag.build()) {
+                rootTag.put(stringEntry.getKey(), stringEntry.getValue());
+            }
+            data.modify(4, new TypeHolder<>(Type.COMPOUND_TAG, rootTag.build()));
 
-            binaryTag.put("Owner", profileTag.build());
-            data.modify(4, new TypeHolder<>(Type.COMPOUND_TAG, binaryTag));
             session.sendPacket(data, PacketDirection.TO_CLIENT, from);
         });
     }
