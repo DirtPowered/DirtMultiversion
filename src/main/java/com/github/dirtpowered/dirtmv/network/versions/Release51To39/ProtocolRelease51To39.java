@@ -174,7 +174,7 @@ public class ProtocolRelease51To39 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
-                        set(Type.BYTE, 39),
+                        set(Type.BYTE, (byte) 39),
                         data.read(1),
                         data.read(2),
                         data.read(3)
@@ -442,9 +442,9 @@ public class ProtocolRelease51To39 extends ServerProtocol {
                 if (itemId >= 298 && itemId <= 317) {
                     return PacketUtil.createPacket(0x66, new TypeHolder[]{
                             set(Type.BYTE, (byte) 0),
-                            set(Type.SHORT, 0),
+                            set(Type.SHORT, (short) 0),
                             set(Type.BYTE, (byte) 0),
-                            set(Type.SHORT, 0),
+                            set(Type.SHORT, (short) 0),
                             set(Type.BYTE, (byte) 0),
                             // fake item
                             set(Type.V1_3R_ITEM, new ItemStack(256, 0, 0, null))

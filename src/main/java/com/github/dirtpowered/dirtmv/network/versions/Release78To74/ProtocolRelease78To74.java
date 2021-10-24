@@ -27,7 +27,7 @@ public class ProtocolRelease78To74 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
-                        set(Type.BYTE, 74),
+                        set(Type.BYTE, (byte) 74),
                         data.read(1),
                         data.read(2),
                         data.read(3)

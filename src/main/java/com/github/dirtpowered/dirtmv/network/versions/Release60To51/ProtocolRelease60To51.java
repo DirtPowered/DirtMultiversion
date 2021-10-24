@@ -51,7 +51,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
-                        set(Type.BYTE, 51),
+                        set(Type.BYTE, (byte) 51),
                         data.read(1),
                         data.read(2),
                         data.read(3)
@@ -70,7 +70,7 @@ public class ProtocolRelease60To51 extends ServerProtocol {
                         data.read(1),
                         data.read(2),
                         data.read(3),
-                        set(Type.BYTE, 0) // use original title
+                        set(Type.BYTE, (byte) 0) // use original title
                 });
             }
         });

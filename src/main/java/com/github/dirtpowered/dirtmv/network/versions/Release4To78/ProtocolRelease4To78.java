@@ -81,10 +81,10 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 int port = 25565;
 
                 return PacketUtil.createPacket(0xFE, new TypeHolder[]{
-                        set(Type.UNSIGNED_BYTE, 1),
-                        set(Type.UNSIGNED_BYTE, 0xFA),
+                        set(Type.UNSIGNED_BYTE, (short) 1),
+                        set(Type.UNSIGNED_BYTE, (short) 0xFA),
                         set(Type.STRING, "MC|PingHost"),
-                        set(Type.SHORT, 3 + 2 * address.length() + 4),
+                        set(Type.SHORT, (short) (3 + 2 * address.length() + 4)),
                         set(Type.BYTE, (byte) 78),
                         set(Type.STRING, address),
                         set(Type.INT, port)
@@ -178,7 +178,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 // handshake
                 PacketData handshake = PacketUtil.createPacket(0x02, new TypeHolder[]{
-                        set(Type.BYTE, 78), // protocol version
+                        set(Type.BYTE, (byte) 78), // protocol version
                         set(Type.STRING, username),
                         set(Type.STRING, userData.getAddress()),
                         set(Type.INT, userData.getPort())
@@ -450,11 +450,11 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                         metadataArray[i] = new WatchableObject(MetadataType.ITEM, watchableObject.getIndex(), obj);
                     }
                 }
-
                 return PacketUtil.createPacket(0x1C, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_7R_METADATA, metadataArray)
                 });
+                //return cancel();
             }
         });
 
@@ -472,7 +472,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                 }
 
                 return PacketUtil.createPacket(0x2B, new TypeHolder[]{
-                        set(Type.UNSIGNED_BYTE, reason),
+                        set(Type.UNSIGNED_BYTE, (short) reason),
                         set(Type.FLOAT, data.read(Type.BYTE, 1).floatValue())
                 });
             }
@@ -778,7 +778,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x0B, new TypeHolder[]{
                         set(Type.VAR_INT, data.read(Type.INT, 0)),
-                        set(Type.UNSIGNED_BYTE, animationType)
+                        set(Type.UNSIGNED_BYTE, (short) animationType)
                 });
             }
         });

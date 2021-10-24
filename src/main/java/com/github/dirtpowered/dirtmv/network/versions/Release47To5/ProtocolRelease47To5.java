@@ -27,6 +27,7 @@ import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_3.V1_3_1RProtocol;
+import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_7.V1_7_2RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.definitions.R1_8.V1_8RProtocol;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyInputWrapper;
 import com.github.dirtpowered.dirtmv.data.protocol.io.NettyOutputWrapper;
@@ -81,6 +82,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class ProtocolRelease47To5 extends ServerProtocol {
@@ -490,6 +492,27 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 byte y = data.read(Type.BYTE, 2);
                 int z = data.read(Type.INT, 3);
 
+                int effectType = data.read(Type.INT, 0);
+                if (effectType == 2006) {
+                    double dist = Math.min(0.2F + data.read(Type.INT, 4) / 15.0F, 10.0F);
+                    if (dist > 2.5D) {
+                        dist = 2.5D;
+                    }
+                    int i = (int) (150.0D * dist);
+                    return PacketUtil.createPacket(0x2A, new TypeHolder[]{
+                            set(Type.INT, 38),
+                            set(Type.BOOLEAN, false),
+                            set(Type.FLOAT, (float) x + 0.5f),
+                            set(Type.FLOAT, (float) y + 1.0f),
+                            set(Type.FLOAT, (float) z + 0.5f),
+                            set(Type.FLOAT, 0f),
+                            set(Type.FLOAT, 0f),
+                            set(Type.FLOAT, 0f),
+                            set(Type.FLOAT, 0.15000000596046448f),
+                            set(Type.INT, i),
+                            set(Type.VAR_INT, 1) // stone
+                    });
+                }
                 return PacketUtil.createPacket(0x28, new TypeHolder[]{
                         data.read(0),
                         set(Type.LONG, toBlockPosition(x, y, z)),
@@ -623,14 +646,51 @@ public class ProtocolRelease47To5 extends ServerProtocol {
         // custom payload
         addTranslator(0x3F, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new PacketTranslator() {
 
+            @SneakyThrows
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
+                String channel = data.read(Type.V1_7_STRING, 0);
                 byte[] bytes = data.read(Type.SHORT_BYTE_ARRAY, 1);
+                byte[] remappedData;
+                NettyOutputWrapper fixedPayload = new NettyOutputWrapper(Unpooled.buffer());
 
-                // TODO: TrList channel remap
+                switch (channel) {
+                    case "MC|TrList":
+                        NettyInputWrapper buf = new NettyInputWrapper(Unpooled.wrappedBuffer(bytes));
+                        fixedPayload.writeInt(buf.readInt());
+                        int items = buf.readByte();
+
+                        fixedPayload.writeByte(items);
+                        for (int i = 0; i < items; i++) {
+                            V1_8RProtocol.ITEM.write(set(Type.V1_8R_ITEM, V1_3_1RProtocol.ITEM.read(buf)), fixedPayload);
+                            V1_8RProtocol.ITEM.write(set(Type.V1_8R_ITEM, V1_3_1RProtocol.ITEM.read(buf)), fixedPayload);
+
+                            boolean hasAdditionalItem = buf.readBoolean();
+                            fixedPayload.writeBoolean(hasAdditionalItem);
+                            if (hasAdditionalItem) {
+                                V1_8RProtocol.ITEM.write(set(Type.V1_8R_ITEM, V1_3_1RProtocol.ITEM.read(buf)), fixedPayload);
+                            }
+                            fixedPayload.writeBoolean(buf.readBoolean());
+                            fixedPayload.writeInt(0);
+                            fixedPayload.writeInt(7);
+                        }
+
+                        remappedData = fixedPayload.array();
+                        break;
+                    case "MC|RPack":
+                        return cancel();
+                    case "MC|Brand":
+                        V1_7_2RProtocol.STRING.write(set(Type.V1_7_STRING, new String(bytes, StandardCharsets.UTF_8)), fixedPayload);
+                        remappedData = fixedPayload.array();
+                        break;
+                    default:
+                        remappedData = bytes;
+                        break;
+                }
+
                 return PacketUtil.createPacket(0x3F, new TypeHolder[]{
                         data.read(0),
-                        set(Type.READABLE_BYTES, bytes)
+                        set(Type.READABLE_BYTES, remappedData)
                 });
             }
         });

@@ -87,8 +87,8 @@ public abstract class ServerProtocol implements ConnectionHandler {
         return registeredTranslators.get(key);
     }
 
-    public TypeHolder set(TypeObject type, Object obj) {
-        return new TypeHolder(type, obj);
+    public <T> TypeHolder<T> set(TypeObject<T> type, T obj) {
+        return new TypeHolder<>(type, obj);
     }
 
     public void addGroup(ServerProtocol translators) {

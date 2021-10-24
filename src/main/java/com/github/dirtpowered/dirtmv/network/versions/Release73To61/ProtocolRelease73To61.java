@@ -121,7 +121,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x02, new TypeHolder[]{
-                        set(Type.BYTE, 61),
+                        set(Type.BYTE, (byte) 61),
                         data.read(1),
                         data.read(2),
                         data.read(3)

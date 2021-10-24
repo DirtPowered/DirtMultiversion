@@ -235,7 +235,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
                         data.read(4),
                         data.read(5),
                         data.read(6),
-                        set(Type.BYTE, 0), // head yaw
+                        set(Type.BYTE, (byte) 0), // head yaw
                         data.read(7),
                 });
             }
@@ -248,7 +248,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x09, new TypeHolder[]{
-                        set(Type.BYTE, data.read(0).getObject()),
+                        set(Type.BYTE, (byte) data.read(0).getObject()),
                         data.read(1),
                         data.read(2),
                         data.read(3),

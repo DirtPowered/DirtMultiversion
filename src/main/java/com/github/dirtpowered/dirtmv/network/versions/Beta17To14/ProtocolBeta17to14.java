@@ -157,8 +157,8 @@ public class ProtocolBeta17to14 extends ServerProtocol {
                         data.read(2), // LONG - world seed
                         set(Type.INT, 0), // INT - gameMode
                         data.read(3), // BYTE - dimension
-                        set(Type.BYTE, 1), // BYTE - difficulty
-                        set(Type.BYTE, -128), // BYTE - world height
+                        set(Type.BYTE, (byte) 1), // BYTE - difficulty
+                        set(Type.BYTE, (byte) -128), // BYTE - world height
                         set(Type.BYTE, (byte) max), // BYTE - maxPlayers
                 });
             }
@@ -202,10 +202,10 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
                 return PacketUtil.createPacket(0x09, new TypeHolder[]{
                         data.read(0),
-                        set(Type.BYTE, 1),
-                        set(Type.BYTE, 0),
-                        set(Type.SHORT, 128),
-                        set(Type.LONG, 0),
+                        set(Type.BYTE, (byte) 1),
+                        set(Type.BYTE, (byte) 0),
+                        set(Type.SHORT, (short) 128),
+                        set(Type.LONG, 0L),
                 });
             }
         });

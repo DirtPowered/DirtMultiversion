@@ -173,17 +173,17 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                             set(Type.STRING, "default"),
                             set(Type.INT, 0),
                             set(Type.INT, 0),
-                            set(Type.BYTE, 0),
-                            set(Type.BYTE, 0),
-                            set(Type.BYTE, 0),
+                            set(Type.BYTE, (byte) 0),
+                            set(Type.BYTE, (byte) 0),
+                            set(Type.BYTE, (byte) 0),
                     });
                 } else {
 
                     return PacketUtil.createPacket(0x09, new TypeHolder[]{
                             set(Type.INT, 0),
-                            set(Type.BYTE, 0),
-                            set(Type.BYTE, 0),
-                            set(Type.SHORT, 0),
+                            set(Type.BYTE, (byte) 0),
+                            set(Type.BYTE, (byte) 0),
+                            set(Type.SHORT, (short) 0),
                             set(Type.STRING, "default"),
                     });
                 }
@@ -348,9 +348,9 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                         data.read(5),
                         data.read(6),
                         data.read(7),
-                        set(Type.SHORT, 0),
-                        set(Type.SHORT, 0),
-                        set(Type.SHORT, 0),
+                        set(Type.SHORT, (short) 0),
+                        set(Type.SHORT, (short) 0),
+                        set(Type.SHORT, (short) 0),
                         data.read(8)
                 });
             }
@@ -699,17 +699,15 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 EntityTracker tracker = session.getStorage().get(EntityTracker.class);
-                if (tracker != null) {
-                    int entityId = data.read(Type.INT, 0);
-                    double x = data.read(Type.INT, 4) / 32.0D;
-                    double y = data.read(Type.INT, 5) / 32.0D;
-                    double z = data.read(Type.INT, 6) / 32.0D;
+                int entityId = data.read(Type.INT, 0);
+                double x = data.read(Type.INT, 4) / 32.0D;
+                double y = data.read(Type.INT, 5) / 32.0D;
+                double z = data.read(Type.INT, 6) / 32.0D;
 
-                    Location b = new Location(x, y, z);
+                Location b = new Location(x, y, z);
 
-                    Entity itemPickup = new Entity(entityId, b, EntityType.ITEM);
-                    tracker.addEntity(entityId, itemPickup);
-                }
+                Entity itemPickup = new Entity(entityId, b, EntityType.ITEM);
+                tracker.addEntity(entityId, itemPickup);
 
                 return data;
             }

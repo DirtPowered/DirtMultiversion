@@ -206,7 +206,7 @@ public class InventoryPackets extends ServerProtocol {
                 return PacketUtil.createPacket(0x2D, new TypeHolder[]{
                         data.read(0),
                         set(Type.V1_7_STRING, InventoryUtils.getNamedTypeFromId(type)),
-                        set(Type.V1_7_STRING, InventoryUtils.addTranslateComponent(title)),
+                        set(Type.V1_7_STRING, InventoryUtils.addTranslateComponent(type == 6 ? "entity.Villager.name" : title)),
                         set(Type.UNSIGNED_BYTE, slots)
                 });
             }
@@ -331,7 +331,7 @@ public class InventoryPackets extends ServerProtocol {
 
                 return PacketUtil.createPacket(0x31, new TypeHolder[]{
                         data.read(0),
-                        set(Type.SHORT, property),
+                        set(Type.SHORT, (short) property),
                         data.read(2)
                 });
             }
