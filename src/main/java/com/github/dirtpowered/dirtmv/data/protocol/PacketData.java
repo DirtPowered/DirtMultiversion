@@ -71,7 +71,11 @@ public class PacketData {
     }
 
     public <T> T read(TypeObject<T> type, int index) {
-        return type.getType().cast(objects[index].getObject());
+        try {
+            return type.getType().cast(objects[index].getObject());
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
     }
 
     public PacketOutput toMessage() throws IOException {
