@@ -248,7 +248,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
             public PacketData translate(ServerSession session, PacketData data) {
 
                 return PacketUtil.createPacket(0x09, new TypeHolder[]{
-                        set(Type.BYTE, (byte) data.read(0).getObject()),
+                        set(Type.INT, (int) data.read(0).getObject()),
                         data.read(1),
                         data.read(2),
                         data.read(3),
