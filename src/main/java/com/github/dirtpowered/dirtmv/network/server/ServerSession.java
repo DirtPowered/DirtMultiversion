@@ -30,17 +30,16 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
+import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
-import com.github.dirtpowered.dirtmv.data.utils.other.PreNettyPacketNames;
 import com.github.dirtpowered.dirtmv.network.client.Client;
 import com.github.dirtpowered.dirtmv.network.client.ClientSession;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
-import com.google.common.base.Preconditions;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
@@ -53,6 +52,7 @@ import org.pmw.tinylog.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -79,6 +79,8 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     private final Queue<PacketData> initialPacketQueue = new LinkedBlockingQueue<>();
     private final Queue<QueuedPacket> packetQueue = new LinkedBlockingQueue<>();
     private final AtomicInteger packetCounter = new AtomicInteger();
+    private final List<ServerProtocol> reverseCache = new LinkedList<>();
+
     @Getter
     private final Server server;
     private int currentTick = 0;
@@ -110,7 +112,18 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
         boolean flag = direction == PacketDirection.TO_CLIENT;
 
-        if (!flag) Collections.reverse(protocols);
+        if (!flag) {
+            if (!reverseCache.isEmpty()) {
+                protocols = reverseCache;
+            } else {
+                Collections.reverse(protocols);
+
+                if (userData.getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME
+                        || userData.getProtocolState() == ProtocolState.PLAY) {
+                    reverseCache.addAll(protocols);
+                }
+            }
+        }
 
         PacketData target = packet;
 
@@ -130,29 +143,17 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
             PacketTranslator translator = protocol.getTranslatorFor(target.getOpCode(), state, direction);
 
-            String protocolName = protocol.getClass().getSimpleName();
-
             if (translator != null) {
                 if (from == null || from != protocol.getFrom()) {
                     try {
                         target = translator.translate(this, target);
                     } catch (IOException e) {
                         disconnect(e.getMessage());
-                    }
-
-                    String namedOpCode = PreNettyPacketNames.getPacketName(packet.getOpCode());
-                    Preconditions.checkNotNull(target, "%s returned null while translating %s", protocolName, namedOpCode);
-
-                    boolean debug = main.getConfiguration().isDebugMode();
-
-                    if (target.getOpCode() == -1) {
-                        if (state == ProtocolState.PRE_NETTY && debug) {
-                            Logger.debug("cancelling {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
-                        }
                         return;
                     }
-                    if (state == ProtocolState.PRE_NETTY && debug) {
-                        Logger.debug("translating {} | direction: {} | through {}", namedOpCode, direction.name(), protocolName);
+
+                    if (target.getOpCode() == -1) {
+                        return;
                     }
                 }
             }
@@ -279,6 +280,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         initialPacketQueue.clear();
         packetQueue.clear();
         channel.close();
+        reverseCache.clear();
     }
 
     private void sendDisconnectPacket(String message) {
@@ -288,11 +290,11 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
             boolean state = userData.getProtocolState() == ProtocolState.LOGIN;
 
             kickPacket = PacketUtil.createPacket(state ? 0x00 : 0x40, new TypeHolder[]{
-                    new TypeHolder(Type.V1_7_STRING, ChatUtils.legacyToJsonString(message)),
+                    new TypeHolder<>(Type.V1_7_STRING, ChatUtils.legacyToJsonString(message)),
             });
         } else {
             kickPacket = PacketUtil.createPacket(0xFF, new TypeHolder[]{
-                    new TypeHolder(Type.STRING, message),
+                    new TypeHolder<>(Type.STRING, message),
             });
         }
 
