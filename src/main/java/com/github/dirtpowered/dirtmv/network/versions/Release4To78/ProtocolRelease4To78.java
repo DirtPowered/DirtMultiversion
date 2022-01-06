@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 Dirt Powered
+ * Copyright (c) 2020-2022 Dirt Powered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62,6 +62,18 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
         soundRemapper = new SoundRemapper("1_6To1_7SoundMappings");
         itemRemapper = new ItemRemapper();
+    }
+
+    @Override
+    public void onDisconnect(ServerSession session) {
+        if (session.getUserData().getProtocolState() != ProtocolState.PLAY)
+            return;
+
+        PacketData kickDisconnect = PacketUtil.createPacket(0xFF, new TypeHolder[]{
+                set(Type.STRING, "Quitting")
+        });
+
+        session.sendPacket(kickDisconnect, PacketDirection.TO_SERVER, null);
     }
 
     private String getOfflineUuid(String username) {

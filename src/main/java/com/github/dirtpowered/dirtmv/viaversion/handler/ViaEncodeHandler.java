@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 Dirt Powered
+ * Copyright (c) 2020-2022 Dirt Powered
  * Copyright (c) 2018- creeper123123321 <https://creeper123123321.keybase.pub/>
  * Copyright (c) 2019- contributors <https://github.com/ViaVersion/ViaFabric/graphs/contributors>
 
