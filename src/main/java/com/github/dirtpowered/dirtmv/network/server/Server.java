@@ -36,9 +36,14 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.ServerChannel;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -55,8 +60,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Server implements DirtServer {
-    private final EventLoopGroup bossGroup = new NioEventLoopGroup();
-    private final EventLoopGroup workerGroup = new NioEventLoopGroup();
+    private EventLoopGroup bossGroup;
 
     @Getter
     private final DirtMultiVersion main;
@@ -74,15 +78,30 @@ public class Server implements DirtServer {
     }
 
     public void bind() {
+        Class<? extends ServerChannel> socketChannel;
+
+        if (Epoll.isAvailable()) {
+            Logger.info("Epoll is available. Using it");
+            socketChannel = EpollServerSocketChannel.class;
+            bossGroup = new EpollEventLoopGroup();
+        } else {
+            Logger.warn("Epoll not available, using NIO. Reason: " + Epoll.unavailabilityCause().getMessage());
+            socketChannel = NioServerSocketChannel.class;
+            bossGroup = new NioEventLoopGroup();
+        }
+
         ServerBootstrap b = new ServerBootstrap();
-        b.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
+        b.group(bossGroup)
+                .channel(socketChannel)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel channel) {
                         ServerSession serverSession = new ServerSession(channel, main, instance);
 
                         channel.pipeline().addFirst(
+                                "timer", new ReadTimeoutHandler(30)
+                        );
+                        channel.pipeline().addLast(
                                 ChannelConstants.CONNECTION_THROTTLE,
                                 new ConnectionLimiterHandler(main.getConfiguration())
                         );
@@ -96,6 +115,7 @@ public class Server implements DirtServer {
                         );
                     }
                 })
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
 
         ChannelFuture future;
@@ -184,8 +204,6 @@ public class Server implements DirtServer {
 
     public void stop() {
         bossGroup.shutdownGracefully();
-        workerGroup.shutdownGracefully();
-
         main.getSessionRegistry().getSessions().clear();
     }
 }

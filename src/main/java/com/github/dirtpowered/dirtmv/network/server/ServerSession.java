@@ -30,7 +30,6 @@ import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
-import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ProtocolState;
 import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
@@ -52,7 +51,6 @@ import org.pmw.tinylog.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -79,7 +77,6 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     private final Queue<PacketData> initialPacketQueue = new LinkedBlockingQueue<>();
     private final Queue<QueuedPacket> packetQueue = new LinkedBlockingQueue<>();
     private final AtomicInteger packetCounter = new AtomicInteger();
-    private final List<ServerProtocol> reverseCache = new LinkedList<>();
 
     @Getter
     private final Server server;
@@ -113,16 +110,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         boolean flag = direction == PacketDirection.TO_CLIENT;
 
         if (!flag) {
-            if (!reverseCache.isEmpty()) {
-                protocols = reverseCache;
-            } else {
-                Collections.reverse(protocols);
-
-                if (userData.getPreNettyProtocolState() == PreNettyProtocolState.IN_GAME
-                        || userData.getProtocolState() == ProtocolState.PLAY) {
-                    reverseCache.addAll(protocols);
-                }
-            }
+            Collections.reverse(protocols);
         }
 
         PacketData target = packet;
@@ -280,7 +268,6 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
         initialPacketQueue.clear();
         packetQueue.clear();
         channel.close();
-        reverseCache.clear();
     }
 
     private void sendDisconnectPacket(String message) {
