@@ -22,23 +22,30 @@
 
 package com.github.dirtpowered.dirtmv.network.server.codec.encryption;
 
+import com.velocitypowered.natives.encryption.VelocityCipher;
+import com.velocitypowered.natives.util.MoreByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.handler.codec.MessageToMessageEncoder;
 
-import javax.crypto.Cipher;
-import javax.crypto.ShortBufferException;
+import java.util.List;
 
-public class PacketEncryptionCodec extends MessageToByteEncoder<ByteBuf> {
+public class PacketEncryptionCodec extends MessageToMessageEncoder<ByteBuf> {
+    private final VelocityCipher cipher;
 
-    private final EncryptionHandler encryptionHandler;
-
-    public PacketEncryptionCodec(Cipher cipher) {
-        this.encryptionHandler = new EncryptionHandler(cipher);
+    public PacketEncryptionCodec(VelocityCipher cipher) {
+        this.cipher = cipher;
     }
 
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf buf, ByteBuf byteBuf) throws ShortBufferException {
-        encryptionHandler.encrypt(buf, byteBuf);
+    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
+        ByteBuf buf = MoreByteBufUtils.ensureCompatible(channelHandlerContext.alloc(), cipher, byteBuf);
+        try {
+            cipher.process(buf);
+            list.add(buf);
+        } catch (Exception e) {
+            buf.release();
+            throw e;
+        }
     }
 }

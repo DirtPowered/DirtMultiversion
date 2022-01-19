@@ -33,6 +33,10 @@
             <id>minecraft-repo</id>
             <url>https://libraries.minecraft.net/</url>
         </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
+        </repository>
     </repositories>
     <build>
         <resources>
@@ -107,6 +111,11 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-native</artifactId>
+            <version>3.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
@@ -115,7 +124,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.65.Final</version>
+            <version>4.1.72.Final</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

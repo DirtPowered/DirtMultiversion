@@ -31,11 +31,12 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
 import com.github.dirtpowered.dirtmv.network.server.codec.encryption.PacketDecryptionCodec;
 import com.github.dirtpowered.dirtmv.network.server.codec.encryption.PacketEncryptionCodec;
+import com.velocitypowered.natives.encryption.VelocityCipher;
+import com.velocitypowered.natives.util.Natives;
 import io.netty.channel.Channel;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.GeneralSecurityException;
 import java.security.Key;
@@ -73,9 +74,9 @@ public class EncryptionUtils {
         session.getMain().getSharedRandom().nextBytes(verify);
 
         PacketData encryptRequest = PacketUtil.createPacket(0xFD, new TypeHolder[]{
-                new TypeHolder(Type.STRING, "-"),
-                new TypeHolder(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
-                new TypeHolder(Type.SHORT_BYTE_ARRAY, verify)
+                new TypeHolder<>(Type.STRING, "-"),
+                new TypeHolder<>(Type.SHORT_BYTE_ARRAY, key.getEncoded()),
+                new TypeHolder<>(Type.SHORT_BYTE_ARRAY, verify)
         });
 
         session.getUserData().setProxyRequest(encryptRequest);
@@ -90,8 +91,8 @@ public class EncryptionUtils {
      */
     public static void sendEmptyEncryptionResponse(ServerSession session, MinecraftVersion from) {
         PacketData response = PacketUtil.createPacket(0xFC, new TypeHolder[]{
-                new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0]),
-                new TypeHolder(Type.SHORT_BYTE_ARRAY, new byte[0])
+                new TypeHolder<>(Type.SHORT_BYTE_ARRAY, new byte[0]),
+                new TypeHolder<>(Type.SHORT_BYTE_ARRAY, new byte[0])
         });
 
         session.sendPacket(response, PacketDirection.TO_CLIENT, from);
@@ -104,15 +105,22 @@ public class EncryptionUtils {
      * @param sharedKey - {@link javax.crypto.SecretKey key} shared secret key
      */
     public static void setEncryption(Channel channel, SecretKey sharedKey) {
-        channel.pipeline().addBefore(
-                ChannelConstants.LEGACY_DECODER, ChannelConstants.PACKET_DECRYPTION,
-                new PacketDecryptionCodec(getCipher(false, sharedKey))
-        );
+        try {
+            VelocityCipher decryption = Natives.cipher.get().forDecryption(sharedKey);
+            VelocityCipher encryption = Natives.cipher.get().forEncryption(sharedKey);
 
-        channel.pipeline().addBefore(
-                ChannelConstants.LEGACY_ENCODER, ChannelConstants.PACKET_ENCRYPTION,
-                new PacketEncryptionCodec(getCipher(true, sharedKey))
-        );
+            channel.pipeline().addBefore(
+                    ChannelConstants.LEGACY_DECODER, ChannelConstants.PACKET_DECRYPTION,
+                    new PacketDecryptionCodec(decryption)
+            );
+
+            channel.pipeline().addBefore(
+                    ChannelConstants.LEGACY_ENCODER, ChannelConstants.PACKET_ENCRYPTION,
+                    new PacketEncryptionCodec(encryption)
+            );
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException("cannot set encryption", e.getCause());
+        }
     }
 
     public static SecretKey getSecretKey() {
@@ -131,17 +139,6 @@ public class EncryptionUtils {
         cipher.init(Cipher.ENCRYPT_MODE, key);
 
         return cipher.doFinal(b);
-    }
-
-    private static Cipher getCipher(boolean forEncryption, Key key) {
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
-            cipher.init(forEncryption ? 1 : 2, key, new IvParameterSpec(key.getEncoded()));
-
-            return cipher;
-        } catch (GeneralSecurityException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     public static SecretKey getSecret(PacketData response, PacketData request) throws Exception {

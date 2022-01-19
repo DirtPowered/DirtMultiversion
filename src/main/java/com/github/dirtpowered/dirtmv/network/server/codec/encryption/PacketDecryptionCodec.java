@@ -22,24 +22,29 @@
 
 package com.github.dirtpowered.dirtmv.network.server.codec.encryption;
 
+import com.velocitypowered.natives.encryption.VelocityCipher;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
-import javax.crypto.Cipher;
-import javax.crypto.ShortBufferException;
 import java.util.List;
 
 public class PacketDecryptionCodec extends MessageToMessageDecoder<ByteBuf> {
+    private final VelocityCipher cipher;
 
-    private final EncryptionHandler encryptionHandler;
-
-    public PacketDecryptionCodec(Cipher cipher) {
-        this.encryptionHandler = new EncryptionHandler(cipher);
+    public PacketDecryptionCodec(VelocityCipher cipher) {
+        this.cipher = cipher;
     }
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf buf, List<Object> list) throws ShortBufferException {
-        list.add(encryptionHandler.decrypt(channelHandlerContext, buf));
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf buf, List<Object> list) {
+        ByteBuf byteBuf = com.velocitypowered.natives.util.MoreByteBufUtils.ensureCompatible(channelHandlerContext.alloc(), cipher, buf);
+        try {
+            cipher.process(byteBuf);
+            list.add(byteBuf);
+        } catch (Exception e) {
+            byteBuf.release();
+            throw e;
+        }
     }
 }
