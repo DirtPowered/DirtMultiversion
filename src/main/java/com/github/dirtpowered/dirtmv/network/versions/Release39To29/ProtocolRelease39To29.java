@@ -24,6 +24,8 @@ package com.github.dirtpowered.dirtmv.network.versions.Release39To29;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.mappings.MappingLoader;
+import com.github.dirtpowered.dirtmv.data.mappings.model.CreativeTabListModel;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
@@ -46,7 +48,6 @@ import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.Entit
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.HumanEntity;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.WorldEntityEvent;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.entity.model.AbstractEntity;
-import com.github.dirtpowered.dirtmv.network.versions.Release39To29.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.OpenChestTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.UpdateTask;
 import com.github.dirtpowered.dirtmv.network.versions.Release39To29.sound.WorldSound;
@@ -59,9 +60,11 @@ import java.util.List;
 import java.util.Random;
 
 public class ProtocolRelease39To29 extends ServerProtocol {
+    private final CreativeTabListModel creativeTab;
 
     public ProtocolRelease39To29() {
         super(MinecraftVersion.R1_3_1, MinecraftVersion.R1_2_4);
+        creativeTab = MappingLoader.load(CreativeTabListModel.class, "39To29CreativeTabItems");
         addGroup(new WorldPackets());
     }
 
@@ -539,7 +542,7 @@ public class ProtocolRelease39To29 extends ServerProtocol {
 
                 boolean notNull = newItem != null;
 
-                if (notNull && !CreativeItemList.exists(newItem.getItemId())) {
+                if (notNull && !creativeTab.exists(newItem.getItemId())) {
                     // replace all unknown items to stone
                     newItem.setItemId(1);
                     newItem.setData(0);

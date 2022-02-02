@@ -1,6 +1,8 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release74To73;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.mappings.MappingLoader;
+import com.github.dirtpowered.dirtmv.data.mappings.model.CreativeTabListModel;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
@@ -16,16 +18,17 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
-import com.github.dirtpowered.dirtmv.network.versions.Release74To73.item.CreativeItemList;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ProtocolRelease74To73 extends ServerProtocol {
+    private final CreativeTabListModel creativeTab;
 
     public ProtocolRelease74To73() {
         super(MinecraftVersion.R1_6_2, MinecraftVersion.R1_6_1);
+        creativeTab = MappingLoader.load(CreativeTabListModel.class, "74To37CreativeTabItems");
     }
 
     @Override
@@ -96,7 +99,7 @@ public class ProtocolRelease74To73 extends ServerProtocol {
 
                 boolean notNull = item != null;
 
-                if (notNull && !CreativeItemList.exists(item.getItemId())) {
+                if (notNull && !creativeTab.exists(item.getItemId())) {
                     // replace all unknown items to stone
                     item.setItemId(1);
                     item.setData(0);

@@ -67,6 +67,8 @@ import com.github.dirtpowered.dirtmv.network.versions.Release78To74.ProtocolRele
 import com.github.dirtpowered.dirtmv.session.MultiSession;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
 import com.github.dirtpowered.dirtmv.viaversion.ViaPlugin;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.Getter;
@@ -80,6 +82,8 @@ import java.util.concurrent.TimeUnit;
 
 @Getter
 public class DirtMultiVersion implements Runnable {
+    public static final Gson GSON = new Gson();
+
     private final ExecutorService executorService;
     private final SessionRegistry sessionRegistry;
     private final TranslatorRegistry translatorRegistry;

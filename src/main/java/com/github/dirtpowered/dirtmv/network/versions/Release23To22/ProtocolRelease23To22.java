@@ -23,6 +23,8 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release23To22;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.mappings.MappingLoader;
+import com.github.dirtpowered.dirtmv.data.mappings.model.CreativeTabListModel;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
@@ -34,12 +36,14 @@ import com.github.dirtpowered.dirtmv.data.translator.ServerProtocol;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release23To22.chat.ChatFilter;
-import com.github.dirtpowered.dirtmv.network.versions.Release23To22.item.CreativeItemList;
 
 public class ProtocolRelease23To22 extends ServerProtocol {
+    private final CreativeTabListModel creativeTab;
 
     public ProtocolRelease23To22() {
         super(MinecraftVersion.R1_1, MinecraftVersion.R1_0);
+
+        creativeTab = MappingLoader.load(CreativeTabListModel.class, "23To22CreativeTabItems");
     }
 
     @Override
@@ -147,7 +151,7 @@ public class ProtocolRelease23To22 extends ServerProtocol {
 
                 boolean notNull = item != null;
 
-                if (notNull && !CreativeItemList.exists(item.getItemId())) {
+                if (notNull && !creativeTab.exists(item.getItemId())) {
                     // replace all unknown items to stone
                     item.setItemId(1);
                     item.setData(0);

@@ -1,15 +1,13 @@
 {
-  "sound_replacements": [
-    {
-      "random.breath": "",
-      "damage.fallbig": "game.neutral.hurt.fall.big",
-      "damage.fallsmall": "game.neutral.hurt.fall.small",
-      "damage.hit": "game.neutral.hurt",
-      "liquid.splash": "game.neutral.swim.splash",
-      "liquid.swim": "game.neutral.swim",
-      "random.classic_hurt": "game.neutral.hurt",
-      "random.fuse": "creeper.primed",
-      "random.glass": "dig.glass"
-    }
-  ]
+  "soundMappings": {
+    "liquid.swim": "game.neutral.swim",
+    "random.breath": "",
+    "random.glass": "dig.glass",
+    "damage.hit": "game.neutral.hurt",
+    "random.fuse": "creeper.primed",
+    "random.classic_hurt": "game.neutral.hurt",
+    "damage.fallbig": "game.neutral.hurt.fall.big",
+    "liquid.splash": "game.neutral.swim.splash",
+    "damage.fallsmall": "game.neutral.hurt.fall.small"
+  }
 }

@@ -23,13 +23,15 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release4To78;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.mappings.MappingLoader;
+import com.github.dirtpowered.dirtmv.data.mappings.model.CreativeTabListModel;
+import com.github.dirtpowered.dirtmv.data.mappings.model.SoundMappingModel;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
-import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.transformers.block.ItemBlockDataTransformer;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
@@ -39,7 +41,6 @@ import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
-import com.github.dirtpowered.dirtmv.network.versions.Release4To78.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.item.ItemRemapper;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.tile.HeadConversion;
@@ -53,14 +54,14 @@ import java.util.List;
 import java.util.UUID;
 
 public class ProtocolRelease4To78 extends ServerProtocol {
-
-    private final SoundRemapper soundRemapper;
+    private final CreativeTabListModel creativeTab;
+    private final SoundMappingModel soundRemapper;
     private final ItemBlockDataTransformer itemRemapper;
 
     public ProtocolRelease4To78() {
         super(MinecraftVersion.R1_7_2, MinecraftVersion.R1_6_4);
-
-        soundRemapper = new SoundRemapper("1_6To1_7SoundMappings");
+        soundRemapper = MappingLoader.load(SoundMappingModel.class, "1_6To1_7SoundMappings");
+        creativeTab = MappingLoader.load(CreativeTabListModel.class, "4To78CreativeTabItems");
         itemRemapper = new ItemRemapper();
     }
 
@@ -1161,7 +1162,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 boolean notNull = item != null;
 
-                if (notNull && !CreativeItemList.exists(item.getItemId())) {
+                if (notNull && !creativeTab.exists(item.getItemId())) {
                     // replace all unknown items to stone
                     item.setItemId(1);
                     item.setData(0);

@@ -23,6 +23,8 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release47To5;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
+import com.github.dirtpowered.dirtmv.data.mappings.MappingLoader;
+import com.github.dirtpowered.dirtmv.data.mappings.model.CreativeTabListModel;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
@@ -38,15 +40,15 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.InventoryUtils;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.WindowTypeTracker;
-import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.item.ItemRemapper;
 
 public class InventoryPackets extends ServerProtocol {
     static ItemBlockDataTransformer itemRemapper;
+    private final CreativeTabListModel creativeTab;
 
     InventoryPackets() {
         super(MinecraftVersion.R1_8, MinecraftVersion.R1_7_6);
-
+        creativeTab = MappingLoader.load(CreativeTabListModel.class, "47To5CreativeTabItems");
         itemRemapper = new ItemRemapper();
     }
 
@@ -260,7 +262,7 @@ public class InventoryPackets extends ServerProtocol {
 
                 boolean notNull = item != null;
 
-                if (notNull && !CreativeItemList.exists(item.getItemId())) {
+                if (notNull && !creativeTab.exists(item.getItemId())) {
                     // replace all unknown items to stone
                     item.setItemId(1);
                     item.setData(0);

@@ -24,13 +24,15 @@ package com.github.dirtpowered.dirtmv.network.versions.Release73To61;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.mappings.MappingLoader;
+import com.github.dirtpowered.dirtmv.data.mappings.model.CreativeTabListModel;
+import com.github.dirtpowered.dirtmv.data.mappings.model.SoundMappingModel;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.ItemStack;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.V1_6_1EntityAttributes;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
-import com.github.dirtpowered.dirtmv.data.sound.SoundRemapper;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.translator.PacketTranslator;
 import com.github.dirtpowered.dirtmv.data.translator.PreNettyProtocolState;
@@ -41,7 +43,6 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.VehicleTracker;
-import com.github.dirtpowered.dirtmv.network.versions.Release73To61.item.CreativeItemList;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata.V1_5RTo1_6RMetadataTransformer;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import org.pmw.tinylog.Logger;
@@ -50,14 +51,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProtocolRelease73To61 extends ServerProtocol {
-
-    private final SoundRemapper soundRemapper;
+    private final SoundMappingModel soundRemapper;
+    private final CreativeTabListModel creativeTab;
     private final V1_5RTo1_6RMetadataTransformer metadataTransformer;
 
     public ProtocolRelease73To61() {
         super(MinecraftVersion.R1_6_1, MinecraftVersion.R1_5_2);
+        soundRemapper = MappingLoader.load(SoundMappingModel.class, "1_5To1_6SoundMappings");
+        creativeTab = MappingLoader.load(CreativeTabListModel.class, "74To37CreativeTabItems");
 
-        soundRemapper = new SoundRemapper("1_5To1_6SoundMappings");
         metadataTransformer = new V1_5RTo1_6RMetadataTransformer();
     }
 
@@ -401,10 +403,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 ItemStack item = data.read(Type.V1_3R_ITEM, 1);
-
-                boolean notNull = item != null;
-
-                if (notNull && !CreativeItemList.exists(item.getItemId())) {
+                if (item != null && !creativeTab.exists(item.getItemId())) {
                     // replace all unknown items to stone
                     item.setItemId(1);
                     item.setData(0);

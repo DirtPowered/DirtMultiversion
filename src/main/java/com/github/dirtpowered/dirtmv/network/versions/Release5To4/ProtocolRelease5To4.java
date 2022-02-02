@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release5To4;
 
+import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
@@ -55,7 +56,7 @@ public class ProtocolRelease5To4 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 String json = data.read(Type.V1_7_STRING, 0);
-                ServerPing serverPing = new Gson().fromJson(json, ServerPing.class);
+                ServerPing serverPing = DirtMultiVersion.GSON.fromJson(json, ServerPing.class);
 
                 ServerPing.Version versionObj = new ServerPing.Version();
                 versionObj.setName("1.7.10");

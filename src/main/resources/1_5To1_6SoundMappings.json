@@ -1,7 +1,5 @@
 {
-  "sound_replacements": [
-    {
-      "mob.ghast.affectionate scream": "mob.ghast.affectionate_scream"
-    }
-  ]
+  "soundMappings": {
+    "mob.ghast.affectionate scream": "mob.ghast.affectionate_scream"
+  }
 }

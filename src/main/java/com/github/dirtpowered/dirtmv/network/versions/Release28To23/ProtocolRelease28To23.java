@@ -24,6 +24,8 @@ package com.github.dirtpowered.dirtmv.network.versions.Release28To23;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.chunk.biome.OldChunkData;
+import com.github.dirtpowered.dirtmv.data.mappings.MappingLoader;
+import com.github.dirtpowered.dirtmv.data.mappings.model.CreativeTabListModel;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
 import com.github.dirtpowered.dirtmv.data.protocol.Type;
 import com.github.dirtpowered.dirtmv.data.protocol.TypeHolder;
@@ -42,7 +44,6 @@ import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.BetaToV1_2ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.DimensionTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release28To23.chunk.LoadedChunkTracker;
-import com.github.dirtpowered.dirtmv.network.versions.Release28To23.item.CreativeItemList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -50,6 +51,7 @@ import java.io.IOException;
 
 public class ProtocolRelease28To23 extends ServerProtocol {
     private static final ItemBlockDataTransformer blockDataTransformer;
+    private final CreativeTabListModel creativeTab;
 
     static {
         blockDataTransformer = new BlockRemapper();
@@ -57,6 +59,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
     public ProtocolRelease28To23() {
         super(MinecraftVersion.R1_2_1, MinecraftVersion.R1_1);
+        creativeTab = MappingLoader.load(CreativeTabListModel.class, "28To23CreativeTabItems");
     }
 
     @Override
@@ -345,7 +348,7 @@ public class ProtocolRelease28To23 extends ServerProtocol {
 
                 boolean notNull = item != null;
 
-                if (notNull && !CreativeItemList.exists(item.getItemId())) {
+                if (notNull && !creativeTab.exists(item.getItemId())) {
                     // replace all unknown items to stone
                     item.setItemId(1);
                     item.setData(0);

@@ -20,47 +20,14 @@
  * SOFTWARE.
  */
 
-package com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping;
+package com.github.dirtpowered.dirtmv.data.mappings.model;
 
-import com.github.dirtpowered.dirtmv.DirtMultiVersion;
-import com.google.gson.Gson;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Map;
 
-import java.util.List;
+public class SoundMappingModel {
+    private Map<String, String> soundMappings;
 
-@Data
-public class ServerPing {
-    private String description;
-    private Players players;
-    private Version version;
-    private String favicon;
-
-    @Override
-    public String toString() {
-        return DirtMultiVersion.GSON.toJson(this);
-    }
-
-    @Getter
-    @Setter
-    public static class Players {
-        private int max;
-        private int online;
-        private List<Player> sample;
-    }
-
-    @Getter
-    @Setter
-    public static class Player {
-        private String name;
-        private String id;
-    }
-
-    @Getter
-    @Setter
-    public static class Version {
-        private String name;
-        private int protocol;
+    public String getNewSoundName(String old) {
+        return soundMappings.getOrDefault(old, old);
     }
 }
