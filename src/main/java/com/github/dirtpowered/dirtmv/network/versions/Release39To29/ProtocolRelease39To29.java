@@ -75,6 +75,9 @@ public class ProtocolRelease39To29 extends ServerProtocol {
         if (!storage.hasObject(BlockStorage.class)) {
             storage.set(BlockStorage.class, new BlockStorage(MinecraftVersion.R1_2_4));
         }
+        if (!storage.hasObject(EntityTracker.class)) {
+            storage.set(EntityTracker.class, new EntityTracker());
+        }
     }
 
     private AbstractEntity getNearestEntity(EntityTracker tracker, Location location, double range) {
@@ -676,17 +679,15 @@ public class ProtocolRelease39To29 extends ServerProtocol {
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
                 EntityTracker tracker = session.getStorage().get(EntityTracker.class);
-                if (tracker != null) {
-                    int entityId = data.read(Type.INT, 0);
+                int entityId = data.read(Type.INT, 0);
 
-                    AbstractEntity itemPickup = tracker.getEntity(entityId);
-                    if (itemPickup != null) {
+                AbstractEntity itemPickup = tracker.getEntity(entityId);
+                if (itemPickup != null) {
 
-                        Random shared = session.getMain().getSharedRandom();
+                    Random shared = session.getMain().getSharedRandom();
 
-                        float pitch = ((shared.nextFloat() - shared.nextFloat()) * 0.7F + 1.0F) * 2.0F;
-                        WorldEntityEvent.playSoundAt(session, itemPickup.getLocation(), WorldSound.RANDOM_POP, 0.2F, pitch);
-                    }
+                    float pitch = ((shared.nextFloat() - shared.nextFloat()) * 0.7F + 1.0F) * 2.0F;
+                    WorldEntityEvent.playSoundAt(session, itemPickup.getLocation(), WorldSound.RANDOM_POP, 0.2F, pitch);
                 }
 
                 return data;
