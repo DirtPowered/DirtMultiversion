@@ -71,7 +71,6 @@ import com.github.dirtpowered.dirtmv.network.versions.Release47To5.other.Hardnes
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPing;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity.EntityTracker;
 import com.google.common.base.Charsets;
-import com.google.gson.Gson;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.netty.buffer.Unpooled;
@@ -220,7 +219,8 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 String username = data.read(Type.STRING, 1);
 
                 // block connection thread until profile is fetched
-                UUID uuid = GameProfileFetcher.getProfile(username).get().getId();
+                GameProfile profile = GameProfileFetcher.createOfflineProfile(username);
+                UUID uuid = profile.getId();
                 String uniqueId = uuid.toString();
 
                 session.getUserData().setUniqueId(uuid);
@@ -844,6 +844,9 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 });
             }
         });
+
+        // custom payload
+        addTranslator(0xFA, -1, ProtocolState.LOGIN, PacketDirection.TO_CLIENT);
 
         // update sign
         addTranslator(0x12, ProtocolState.PLAY, PacketDirection.TO_SERVER, new PacketTranslator() {
