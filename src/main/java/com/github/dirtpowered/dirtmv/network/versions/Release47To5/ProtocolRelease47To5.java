@@ -219,8 +219,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 String username = data.read(Type.STRING, 1);
 
                 // block connection thread until profile is fetched
-                GameProfile profile = GameProfileFetcher.createOfflineProfile(username);
-                UUID uuid = profile.getId();
+                UUID uuid = GameProfileFetcher.getProfile(username).get().getId();
                 String uniqueId = uuid.toString();
 
                 session.getUserData().setUniqueId(uuid);
