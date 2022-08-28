@@ -87,7 +87,12 @@ public class V1_3_4RChunkBulkDataType extends DataType<V1_3_4ChunkBulk> {
                 offset += primaryBitMasks[i] >> j & 1;
             }
 
-            int dataSize = 2048 * (5 * offset) + 256;
+            int dataSize;
+            if (skylight) {
+                dataSize = 2048 * 5 * offset + 256;
+            } else {
+                dataSize = 2048 * 4 * offset + 256;
+            }
 
             chunks[i] = new byte[dataSize];
             System.arraycopy(decompressed, length, chunks[i], 0, dataSize);
