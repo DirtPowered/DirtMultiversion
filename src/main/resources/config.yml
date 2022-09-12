@@ -37,6 +37,6 @@ prerelease_motd_max_online: 20
 # Replace chests to ender chests to prevent rendering glitches (r1.3+)
 replace_chests: true
 # Enable ViaVersion support (experimental)
-viaversion_support: false
+viaversion_support: true
 # Enable command logging to console
 enable_command_logging: false

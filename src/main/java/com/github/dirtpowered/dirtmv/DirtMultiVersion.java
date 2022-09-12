@@ -68,7 +68,6 @@ import com.github.dirtpowered.dirtmv.session.MultiSession;
 import com.github.dirtpowered.dirtmv.session.SessionRegistry;
 import com.github.dirtpowered.dirtmv.viaversion.ViaPlugin;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.Getter;

@@ -44,6 +44,7 @@ import com.viaversion.viaversion.api.platform.PlatformTask;
 import com.viaversion.viaversion.api.platform.ViaPlatform;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.protocol.version.VersionProvider;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.connection.ConnectionManagerImpl;
@@ -51,7 +52,6 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.protocol.packet.PacketWrapperImpl;
 import com.viaversion.viaversion.protocols.protocol1_9to1_8.Protocol1_9To1_8;
 import com.viaversion.viaversion.protocols.protocol1_9to1_8.providers.HandItemProvider;
-import us.myles.ViaVersion.api.protocol.ProtocolVersion;
 
 import java.io.File;
 import java.util.UUID;
@@ -134,12 +134,12 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
     }
 
     @Override
-    public PlatformTask runAsync(Runnable runnable) {
+    public PlatformTask<?> runAsync(Runnable runnable) {
         throw new UnsupportedOperationException("not supported yet");
     }
 
     @Override
-    public PlatformTask runSync(Runnable runnable) {
+    public PlatformTask<?> runSync(Runnable runnable) {
         //throw new UnsupportedOperationException("not supported yet");
         return null;
     }
@@ -165,12 +165,12 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
     }
 
     @Override
-    public PlatformTask runSync(Runnable runnable, long l) {
+    public PlatformTask<?> runSync(Runnable runnable, long l) {
         throw new UnsupportedOperationException("not supported yet");
     }
 
     @Override
-    public PlatformTask runRepeatingSync(Runnable runnable, long l) {
+    public PlatformTask<?> runRepeatingSync(Runnable runnable, long l) {
         throw new UnsupportedOperationException("not supported yet");
     }
 
@@ -192,6 +192,11 @@ public class ViaPlugin implements ViaPlatform<DirtServer>, Tickable {
     @Override
     public boolean isOldClientsAllowed() {
         return true;
+    }
+
+    @Override
+    public boolean hasPlugin(String s) {
+        return false;
     }
 
     @Override
