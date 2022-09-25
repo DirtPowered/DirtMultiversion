@@ -39,11 +39,9 @@ import java.net.Proxy;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public class GameProfileFetcher {
     private static final AsyncLoadingCache<String, GameProfile> skinCache = Caffeine.newBuilder()
-            .expireAfterWrite(12, TimeUnit.HOURS)
             .buildAsync(GameProfileFetcher::fetchBlocking);
 
     public static CompletableFuture<GameProfile> getProfile(String username) {
