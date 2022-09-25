@@ -52,9 +52,9 @@ import org.pmw.tinylog.Logger;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +145,7 @@ public class Server implements DirtServer {
                     return;
                 }
 
-                byte[] bytes = IOUtils.toByteArray(new FileInputStream(file));
+                byte[] bytes = IOUtils.toByteArray(Files.newInputStream(file.toPath()));
                 String encodedString = new String(Base64.encodeBase64(bytes), StandardCharsets.UTF_8);
 
                 this.serverIcon = MessageFormat.format("data:image/png;base64,{0}", encodedString);

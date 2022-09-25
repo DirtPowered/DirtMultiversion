@@ -652,13 +652,13 @@ public class ProtocolRelease47To5 extends ServerProtocol {
                 String channel = data.read(Type.V1_7_STRING, 0);
                 byte[] bytes = data.read(Type.SHORT_BYTE_ARRAY, 1);
                 byte[] remappedData;
-                NettyOutputWrapper fixedPayload = new NettyOutputWrapper(Unpooled.buffer());
+                NettyOutputWrapper fixedPayload = new NettyOutputWrapper(Unpooled.buffer(0));
 
                 switch (channel) {
                     case "MC|TrList":
                         NettyInputWrapper buf = new NettyInputWrapper(Unpooled.wrappedBuffer(bytes));
                         fixedPayload.writeInt(buf.readInt());
-                        int items = buf.readByte();
+                        int items = buf.readUnsignedByte();
 
                         fixedPayload.writeByte(items);
                         for (int i = 0; i < items; i++) {
@@ -917,7 +917,7 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
                 if (channel.equals("MC|BEdit") || channel.equals("MC|BSign")) {
                     NettyInputWrapper in = new NettyInputWrapper(Unpooled.wrappedBuffer(bytes));
-                    NettyOutputWrapper out = new NettyOutputWrapper(Unpooled.buffer());
+                    NettyOutputWrapper out = new NettyOutputWrapper(Unpooled.buffer(0));
 
                     ItemStack compressedItem = V1_8RProtocol.ITEM.read(in);
 

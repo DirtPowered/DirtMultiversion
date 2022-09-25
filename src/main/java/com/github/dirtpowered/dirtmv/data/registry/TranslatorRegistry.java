@@ -86,11 +86,13 @@ public class TranslatorRegistry {
 
             return Arrays.asList(serverProtocol, globalProtocolHandler);
         } else {
-            if (from.getRegistryId() < 39) {
+            if (from.getRegistryId() < MinecraftVersion.R1_3_1.getRegistryId()) {
                 serverProtocols.add(new ProtocolPassthrough(from, versionTo));
             }
 
-            if ((from.getRegistryId() >= 39 && c.getServerVersion().getRegistryId() >= 39) && !from.isNettyProtocol()) {
+            if ((from.getRegistryId() >= MinecraftVersion.R1_3_1.getRegistryId()
+                    && c.getServerVersion().getRegistryId() >= MinecraftVersion.R1_3_1.getRegistryId())
+                    && !from.isNettyProtocol()) {
                 // add encryption translators to pipeline
                 serverProtocols.add(new ProtocolPassthroughEncrypted(from, versionTo));
             }

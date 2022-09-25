@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.data.protocol.io;
 
 import com.github.dirtpowered.dirtmv.data.protocol.io.model.PacketOutput;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 
 public class NettyOutputWrapper implements PacketOutput {
     private final ByteBuf buf;
@@ -101,6 +102,6 @@ public class NettyOutputWrapper implements PacketOutput {
     }
 
     public byte[] array() {
-        return buf.array();
+        return ByteBufUtil.getBytes(buf);
     }
 }
