@@ -34,7 +34,6 @@ import com.github.dirtpowered.dirtmv.data.user.ProtocolStorage;
 import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.server.ServerSession;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
-import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.PlayerMovementTracker;
 
 public class MovementPackets extends ServerProtocol {
 
@@ -176,11 +175,7 @@ public class MovementPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage s = session.getStorage();
 
-                if (s.hasObject(PlayerMovementTracker.class)) {
-                    s.get(PlayerMovementTracker.class).setLastLocationUpdate(System.currentTimeMillis());
-                }
                 return PacketUtil.createPacket(0x03, new TypeHolder[]{
                         set(Type.BYTE, data.read(Type.UNSIGNED_BYTE, 0).byteValue())
                 });
@@ -192,11 +187,7 @@ public class MovementPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage s = session.getStorage();
 
-                if (s.hasObject(PlayerMovementTracker.class)) {
-                    s.get(PlayerMovementTracker.class).setLastLocationUpdate(System.currentTimeMillis());
-                }
                 return PacketUtil.createPacket(0x04, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
@@ -212,11 +203,7 @@ public class MovementPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage s = session.getStorage();
 
-                if (s.hasObject(PlayerMovementTracker.class)) {
-                    s.get(PlayerMovementTracker.class).setLastLocationUpdate(System.currentTimeMillis());
-                }
                 return PacketUtil.createPacket(0x05, new TypeHolder[]{
                         data.read(0),
                         data.read(1),
@@ -230,11 +217,7 @@ public class MovementPackets extends ServerProtocol {
 
             @Override
             public PacketData translate(ServerSession session, PacketData data) {
-                ProtocolStorage s = session.getStorage();
 
-                if (s.hasObject(PlayerMovementTracker.class)) {
-                    s.get(PlayerMovementTracker.class).setLastLocationUpdate(System.currentTimeMillis());
-                }
                 return PacketUtil.createPacket(0x06, new TypeHolder[]{
                         data.read(0),
                         data.read(1),

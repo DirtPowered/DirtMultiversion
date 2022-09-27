@@ -24,8 +24,8 @@ package com.github.dirtpowered.dirtmv.viaversion.platform;
 
 import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
 import com.viaversion.viaversion.api.platform.ViaInjector;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import us.myles.ViaVersion.api.protocol.ProtocolVersion;
 
 public class DummyInjector implements ViaInjector {
 

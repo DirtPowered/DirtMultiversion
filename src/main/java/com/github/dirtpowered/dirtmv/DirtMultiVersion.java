@@ -182,9 +182,6 @@ public class DirtMultiVersion implements Runnable {
     @Override
     public void run() {
         try {
-            if (this.viaPlugin != null) {
-                this.viaPlugin.tick();
-            }
             for (MultiSession val : sessionRegistry.getSessions().values()) {
                 val.getServerSession().tick();
             }

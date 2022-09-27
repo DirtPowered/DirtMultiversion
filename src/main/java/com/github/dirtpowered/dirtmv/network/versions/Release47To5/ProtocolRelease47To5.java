@@ -61,7 +61,6 @@ import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.DataFix
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.PortalFrameCache;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.chunk.V1_3ToV1_8ChunkTranslator;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.OnGroundTracker;
-import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.PlayerMovementTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.entity.V1_7EntityTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.QuickBarTracker;
 import com.github.dirtpowered.dirtmv.network.versions.Release47To5.inventory.WindowTypeTracker;
@@ -108,12 +107,6 @@ public class ProtocolRelease47To5 extends ServerProtocol {
 
         // additional block storage (for nether portal rotation fix)
         storage.set(PortalFrameCache.class, new PortalFrameCache());
-
-        if (session.getMain().getConfiguration().enableViaVersion()) {
-            // it's not needed for 1.8->1.7, but ViaVersion will need that to fix issues
-            // with eating, entering portals, effects (potions)
-            storage.set(PlayerMovementTracker.class, new PlayerMovementTracker());
-        }
 
         // check if 1.6 entity tracker exists - if not, create one
         if (!storage.hasObject(EntityTracker.class)) {
