@@ -23,6 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.versions.Release73To61.metadata;
 
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.entity.ObjectType;
 import com.github.dirtpowered.dirtmv.data.entity.SpawnableObject;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.MetadataType;
 import com.github.dirtpowered.dirtmv.data.protocol.objects.WatchableObject;
@@ -44,7 +45,21 @@ public class V1_5RTo1_6RMetadataTransformer implements MetadataTransformer {
 
             int index = watchableObject.getIndex();
 
-            if (entityType.isLivingEntity()) {
+            if (!entityType.isLivingEntity()) {
+                if (!(entityType instanceof ObjectType))
+                    continue;
+
+                ObjectType obj = (ObjectType) entityType;
+                if (obj == ObjectType.MINECART || obj == ObjectType.BOAT) {
+                    if (index == 19) {
+                        newMetaData.add(new WatchableObject(MetadataType.FLOAT, 19, ((Integer) value).floatValue()));
+                    } else {
+                        newMetaData.add(watchableObject);
+                    }
+                } else {
+                    newMetaData.add(watchableObject);
+                }
+            } else {
                 if (index == 8) {
                     // potion color
                     newMetaData.add(new WatchableObject(type, 7, value));
@@ -56,7 +71,10 @@ public class V1_5RTo1_6RMetadataTransformer implements MetadataTransformer {
                     newMetaData.add(new WatchableObject(type, 9, value));
                 } else if (index == 5) {
                     // name tag
-                    newMetaData.add(new WatchableObject(type, 10, value));
+                    if (entityType != EntityType.HUMAN) {
+                        // human has no name tag since it's named entity
+                        newMetaData.add(new WatchableObject(type, 10, value));
+                    }
                 } else if (index == 6) {
                     // name tag visibility
                     newMetaData.add(new WatchableObject(type, 11, value));
@@ -87,8 +105,6 @@ public class V1_5RTo1_6RMetadataTransformer implements MetadataTransformer {
                 } else {
                     newMetaData.add(watchableObject);
                 }
-            } else {
-                newMetaData.add(watchableObject);
             }
         }
 

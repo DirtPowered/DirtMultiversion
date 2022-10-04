@@ -22,19 +22,19 @@
 
 package com.github.dirtpowered.dirtmv.network.versions.Release73To61.entity;
 
-import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.entity.SpawnableObject;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EntityTracker {
-    private final Map<Integer, EntityType> entities = new ConcurrentHashMap<>();
+    private final Map<Integer, SpawnableObject> entities = new ConcurrentHashMap<>();
 
-    public void addEntity(int entityId, EntityType entity) {
+    public void addEntity(int entityId, SpawnableObject entity) {
         entities.putIfAbsent(entityId, entity);
     }
 
-    public EntityType getEntityById(int entityId) {
+    public SpawnableObject getEntityById(int entityId) {
         return entities.get(entityId);
     }
 

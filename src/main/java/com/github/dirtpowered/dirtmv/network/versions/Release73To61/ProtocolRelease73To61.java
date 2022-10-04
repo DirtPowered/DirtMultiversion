@@ -24,6 +24,8 @@ package com.github.dirtpowered.dirtmv.network.versions.Release73To61;
 
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.entity.EntityType;
+import com.github.dirtpowered.dirtmv.data.entity.ObjectType;
+import com.github.dirtpowered.dirtmv.data.entity.SpawnableObject;
 import com.github.dirtpowered.dirtmv.data.mappings.MappingLoader;
 import com.github.dirtpowered.dirtmv.data.mappings.model.CreativeTabListModel;
 import com.github.dirtpowered.dirtmv.data.mappings.model.SoundMappingModel;
@@ -234,7 +236,7 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 int entityId = data.read(Type.INT, 0);
 
                 EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
-                EntityType entityType = tracker.getEntityById(entityId);
+                SpawnableObject entityType = tracker.getEntityById(entityId);
 
                 if (entityType == null) {
                     Logger.warn("[{}] skipping translating metadata for {}. Entity is not tracked", session.getLogTag(), entityId);
@@ -288,13 +290,38 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                 EntityTracker tracker = session.getUserData().getProtocolStorage().get(EntityTracker.class);
 
                 switch (vehicleEntity) {
+                    case 0x01:
+                        tracker.addEntity(entityId, ObjectType.BOAT);
+                        break;
                     case 0x02:
-                        /* item */
-                        tracker.addEntity(entityId, EntityType.ITEM);
+                        tracker.addEntity(entityId, ObjectType.ITEM);
                         break;
                     case 0x46:
-                        /* sand, gravel */
-                        tracker.addEntity(entityId, EntityType.FALLING_OBJECT);
+                        tracker.addEntity(entityId, ObjectType.FALLING_OBJECT);
+                        break;
+                    case 0x0A:
+                        tracker.addEntity(entityId, ObjectType.MINECART);
+                        break;
+                    case 0x3E:
+                        tracker.addEntity(entityId, ObjectType.EGG);
+                        break;
+                    case 0x3D:
+                        tracker.addEntity(entityId, ObjectType.SNOWBALL);
+                        break;
+                    case 0x3C:
+                        tracker.addEntity(entityId, ObjectType.ARROW);
+                        break;
+                    case 0x41:
+                        tracker.addEntity(entityId, ObjectType.ENDER_PEARL);
+                        break;
+                    case 0x4B:
+                        tracker.addEntity(entityId, ObjectType.EXP_BOTTLE);
+                        break;
+                    case 0x48:
+                        tracker.addEntity(entityId, ObjectType.ENDER_EYE);
+                        break;
+                    default:
+                        Logger.warn("missing entityType {}, entityId: {}", vehicleEntity, entityId);
                         break;
                 }
                 return data;

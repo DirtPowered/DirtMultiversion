@@ -38,7 +38,7 @@ public enum EntityType implements SpawnableObject {
     ENDER_PEARL(14, false),
     ENDER_EYE(15, false),
     POTION(16, false),
-    EXP_BOOTLE(17, false),
+    EXP_BOTTLE(17, false),
     ITEM_FRAME(18, false),
     WITHER_SKULL(19, false),
     PRIMED_TNT(20, false),
