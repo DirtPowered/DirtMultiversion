@@ -57,8 +57,10 @@ public class V1_7RTo1_8RMetadataTransformer implements MetadataTransformer {
                     // enderman carried item
                     newMetaData.add(new WatchableObject(MetadataType.SHORT, 16, ((Byte) value).shortValue()));
                 } else if (entityType == EntityType.HUMAN) {
+                    // this metadata is not handled by the client, so it's right place to send something else
                     if (type == MetadataType.BYTE && index == 16) {
-                        // TODO: check for metadata changes
+                        // enable skin layers for 1.8+ players
+                        newMetaData.add(new WatchableObject(MetadataType.BYTE, 10, (byte) 0x7F));
                     } else {
                         newMetaData.add(watchableObject);
                     }
