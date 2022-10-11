@@ -609,41 +609,46 @@ public class ProtocolRelease39To29 extends ServerProtocol {
                     MetadataType type = watchableObject.getType();
                     Object value = watchableObject.getValue();
 
-                    if (type == MetadataType.BYTE && index == 0 && tracker.isEntityTracked(entityId)) {
-                        if (((Byte) value).intValue() == 4) { //entity mount
-                            if (tracker.getEntity(entityId).getEntityType() == EntityType.HUMAN) {
-                                HumanEntity humanEntity = (HumanEntity) tracker.getEntity(entityId);
+                    AbstractEntity entity = tracker.getEntity(entityId);
 
-                                AbstractEntity nearbyEntity = getNearestEntity(tracker, humanEntity.getLocation(), 1.5D);
-                                EntityType eType = nearbyEntity.getEntityType();
+                    if (entity == null || type != MetadataType.BYTE)
+                        continue;
 
-                                if (nearbyEntity.getEntityId() != -1) {
-                                    if (eType == EntityType.MINECART || eType == EntityType.PIG || eType == EntityType.BOAT) {
-                                        PacketData entityAttach = PacketUtil.createPacket(0x27, new TypeHolder[]{
-                                                set(Type.INT, entityId),
-                                                set(Type.INT, nearbyEntity.getEntityId()),
+                    if ((Byte) value == 4 && index == 0) { //entity mount
+                        if (entity.getEntityType() == EntityType.HUMAN) {
+                            HumanEntity humanEntity = (HumanEntity) entity;
 
-                                        });
+                            AbstractEntity nearbyEntity = getNearestEntity(tracker, humanEntity.getLocation(), 1.5D);
+                            EntityType eType = nearbyEntity.getEntityType();
 
-                                        humanEntity.setRidingEntity(true);
-                                        session.sendPacket(entityAttach, PacketDirection.TO_CLIENT, getFrom());
-                                    }
-                                }
-                            }
-                        } else if (((Byte) value).intValue() == 0) { // un-mount
-                            if (tracker.isEntityTracked(entityId) && tracker.getEntity(entityId) instanceof HumanEntity) {
-                                HumanEntity humanEntity = (HumanEntity) tracker.getEntity(entityId);
-                                if (humanEntity.isRidingEntity()) {
+                            if (nearbyEntity.getEntityId() != -1) {
+                                if (eType == EntityType.MINECART || eType == EntityType.PIG || eType == EntityType.BOAT) {
                                     PacketData entityAttach = PacketUtil.createPacket(0x27, new TypeHolder[]{
                                             set(Type.INT, entityId),
-                                            set(Type.INT, -1),
+                                            set(Type.INT, nearbyEntity.getEntityId()),
+
                                     });
 
-                                    humanEntity.setRidingEntity(false);
+                                    humanEntity.setRidingEntity(true);
                                     session.sendPacket(entityAttach, PacketDirection.TO_CLIENT, getFrom());
                                 }
                             }
                         }
+                    } else if ((Byte) value == 0 && index == 0) { // un-mount
+                        if (entity instanceof HumanEntity) {
+                            HumanEntity humanEntity = (HumanEntity) entity;
+                            if (humanEntity.isRidingEntity()) {
+                                PacketData entityAttach = PacketUtil.createPacket(0x27, new TypeHolder[]{
+                                        set(Type.INT, entityId),
+                                        set(Type.INT, -1),
+                                });
+
+                                humanEntity.setRidingEntity(false);
+                                session.sendPacket(entityAttach, PacketDirection.TO_CLIENT, getFrom());
+                            }
+                        }
+                    } else if (index == 16 && (Byte) value == 1) { // creeper fuse
+                        WorldEntityEvent.playSoundAt(session, entity.getLocation(), WorldSound.RANDOM_FUSE, 1.0f, 1.0f);
                     }
                 }
 

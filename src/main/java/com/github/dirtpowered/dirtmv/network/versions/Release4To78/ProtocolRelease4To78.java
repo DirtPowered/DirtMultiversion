@@ -538,7 +538,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                     return cancel();
 
                 return PacketUtil.createPacket(0x29, new TypeHolder[]{
-                        set(Type.V1_7_STRING, soundName),
+                        set(Type.V1_7_STRING, newSoundName),
                         data.read(1),
                         data.read(2),
                         data.read(3),
