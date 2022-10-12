@@ -64,8 +64,18 @@ public class YamlConfig implements Configuration {
     }
 
     @Override
+    public void setRemoteServerAddress(String address) {
+        // empty
+    }
+
+    @Override
     public int getRemoteServerPort() {
         return (int) objects.getOrDefault("remote_port", 25565);
+    }
+
+    @Override
+    public void setRemoteServerPort(int port) {
+        // empty
     }
 
     @Override
@@ -80,6 +90,11 @@ public class YamlConfig implements Configuration {
             System.exit(0);
         }
         return version;
+    }
+
+    @Override
+    public void setServerVersion(MinecraftVersion minecraftVersion) {
+        // empty
     }
 
     @Override

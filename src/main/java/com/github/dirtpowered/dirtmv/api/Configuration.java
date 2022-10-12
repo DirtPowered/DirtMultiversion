@@ -42,14 +42,35 @@ public interface Configuration {
     String getRemoteServerAddress();
 
     /**
+     * Sets remote server address
+     *
+     * @param address the remote server address
+     */
+    void setRemoteServerAddress(String address);
+
+    /**
      * Remote server port
      */
     int getRemoteServerPort();
 
     /**
+     * Sets remote server port
+     *
+     * @param port the remote server port
+     */
+    void setRemoteServerPort(int port);
+
+    /**
      * Remote server version
      */
     MinecraftVersion getServerVersion();
+
+    /**
+     * Sets remote server protocol version
+     *
+     * @param minecraftVersion the minecraft protocol version
+     */
+    void setServerVersion(MinecraftVersion minecraftVersion);
 
     /**
      * Message of the day for pre b1.8 servers

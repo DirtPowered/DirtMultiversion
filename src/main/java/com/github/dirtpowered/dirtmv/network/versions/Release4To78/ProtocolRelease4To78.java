@@ -166,7 +166,7 @@ public class ProtocolRelease4To78 extends ServerProtocol {
 
                 serverPing.setPlayers(players);
 
-                String serverIcon = session.getServer().getServerIcon();
+                String serverIcon = session.getServer().getServerIconBase64();
 
                 if (serverIcon != null && !serverIcon.isEmpty()) {
                     serverPing.setFavicon(serverIcon);

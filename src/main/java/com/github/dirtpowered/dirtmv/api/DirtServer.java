@@ -22,12 +22,12 @@
 
 package com.github.dirtpowered.dirtmv.api;
 
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-//TODO: API
 public interface DirtServer {
 
     /**
@@ -66,4 +66,26 @@ public interface DirtServer {
      * @return List of {@link UserData UserData}
      */
     List<UserData> getAllConnections();
+
+    /**
+     * Sets remote server address, port to provided values
+     *
+     * @param address the remote server address
+     * @param port    the remote server port
+     */
+    void setRemoteServer(String address, int port);
+
+    /**
+     * Sets remote server protocol
+     *
+     * @param version the remote server version
+     */
+    void setRemoteVersion(MinecraftVersion version);
+
+    /**
+     * Returns server-icon as encoded string
+     *
+     * @return base64 encoded image
+     */
+    String getServerIconBase64();
 }

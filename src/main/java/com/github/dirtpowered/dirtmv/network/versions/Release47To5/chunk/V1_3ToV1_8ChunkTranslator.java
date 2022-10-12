@@ -96,7 +96,7 @@ public class V1_3ToV1_8ChunkTranslator {
                     ProtocolStorage storage = session.getStorage();
                     PortalFrameCache portalFrameCache = storage.get(PortalFrameCache.class);
 
-                    y =+ i * 16 & 255;
+                    y = i * 16 & 255;
                     int xPos = x + (chunkStorage.getChunkX() << 4);
                     int zPos = z + (chunkStorage.getChunkZ() << 4);
 

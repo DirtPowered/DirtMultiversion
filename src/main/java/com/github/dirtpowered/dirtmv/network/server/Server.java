@@ -25,12 +25,14 @@ package com.github.dirtpowered.dirtmv.network.server;
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
 import com.github.dirtpowered.dirtmv.api.Configuration;
 import com.github.dirtpowered.dirtmv.api.DirtServer;
+import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.user.UserData;
 import com.github.dirtpowered.dirtmv.network.server.codec.ChannelConstants;
 import com.github.dirtpowered.dirtmv.network.server.codec.ConnectionLimiterHandler;
 import com.github.dirtpowered.dirtmv.network.server.codec.PipelineFactory;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
+import com.google.common.base.Preconditions;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -66,8 +68,6 @@ public class Server implements DirtServer {
     private final DirtMultiVersion main;
 
     private final Server instance;
-
-    @Getter
     private String serverIcon;
 
     public Server(DirtMultiVersion main) {
@@ -122,9 +122,7 @@ public class Server implements DirtServer {
         try {
             Configuration c = main.getConfiguration();
 
-            future = b.bind(c.getBindAddress(), c.getBindPort()).sync().addListener(callback -> {
-                Logger.info("ready for connections!");
-            });
+            future = b.bind(c.getBindAddress(), c.getBindPort()).sync().addListener(callback -> Logger.info("ready for connections!"));
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             Logger.error("address already in use: {}", e.getLocalizedMessage());
@@ -202,8 +200,28 @@ public class Server implements DirtServer {
         return list;
     }
 
+    @Override
+    public void setRemoteServer(String address, int port) {
+        Preconditions.checkNotNull(address, "remote address cannot be null");
+        Preconditions.checkArgument(port < 65535, "remote port out of range");
+
+        getConfiguration().setRemoteServerAddress(address);
+        getConfiguration().setRemoteServerPort(port);
+    }
+
+    @Override
+    public void setRemoteVersion(MinecraftVersion version) {
+        Preconditions.checkNotNull(version, "version cannot be null");
+        getConfiguration().setServerVersion(version);
+    }
+
+    @Override
+    public String getServerIconBase64() {
+        return serverIcon;
+    }
+
     public void stop() {
-        bossGroup.shutdownGracefully();
-        main.getSessionRegistry().getSessions().clear();
+        this.bossGroup.shutdownGracefully();
+        this.main.getSessionRegistry().getSessions().clear();
     }
 }

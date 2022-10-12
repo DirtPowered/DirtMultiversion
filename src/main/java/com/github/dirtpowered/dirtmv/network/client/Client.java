@@ -23,6 +23,7 @@
 package com.github.dirtpowered.dirtmv.network.client;
 
 import com.github.dirtpowered.dirtmv.api.Configuration;
+import com.github.dirtpowered.dirtmv.api.DirtClient;
 import com.github.dirtpowered.dirtmv.data.interfaces.Callback;
 import com.github.dirtpowered.dirtmv.data.translator.PacketDirection;
 import com.github.dirtpowered.dirtmv.data.utils.ChatUtils;
@@ -40,14 +41,17 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
-public class Client {
+public class Client implements DirtClient {
     private final ServerSession serverSession;
 
     public Client(ServerSession serverSession) {
         this.serverSession = serverSession;
     }
 
-    public void createClient(UUID key, Callback callback) {
+    @Override
+    public void createClient(UUID sessionId, Callback callback) {
+        Configuration configuration = serverSession.getServer().getConfiguration();
+
         EventLoopGroup loopGroup = serverSession.getMain().getLoopGroup();
         Bootstrap clientBootstrap = new Bootstrap();
 
@@ -56,9 +60,7 @@ public class Client {
         clientBootstrap.option(ChannelOption.SO_KEEPALIVE, true);
         clientBootstrap.option(ChannelOption.TCP_NODELAY, true);
 
-        Configuration c = serverSession.getMain().getConfiguration();
-
-        clientBootstrap.remoteAddress(new InetSocketAddress(c.getRemoteServerAddress(), c.getRemoteServerPort()));
+        clientBootstrap.remoteAddress(new InetSocketAddress(configuration.getRemoteServerAddress(), configuration.getRemoteServerPort()));
 
         clientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
@@ -70,14 +72,14 @@ public class Client {
                 );
                 ch.pipeline().addLast(
                         ChannelConstants.CLIENT_HANDLER,
-                        new ClientSession(serverSession.getMain(), key, serverSession, ch, callback)
+                        new ClientSession(serverSession.getMain(), sessionId, serverSession, ch, callback)
                 );
             }
         });
 
         clientBootstrap.connect().addListener((ChannelFutureListener) channelFuture -> {
             if (!channelFuture.isSuccess()) {
-                serverSession.disconnect(ChatUtils.LEGACY_COLOR_CHAR + "cUnable to connect to remote server");
+                this.serverSession.disconnect(ChatUtils.LEGACY_COLOR_CHAR + "cUnable to connect to remote server");
                 channelFuture.channel().close();
             }
         });
