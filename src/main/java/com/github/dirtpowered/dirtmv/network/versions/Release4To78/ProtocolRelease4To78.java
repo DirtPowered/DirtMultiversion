@@ -46,9 +46,12 @@ import com.github.dirtpowered.dirtmv.network.versions.Release4To78.ping.ServerPi
 import com.github.dirtpowered.dirtmv.network.versions.Release4To78.tile.HeadConversion;
 import com.github.dirtpowered.dirtmv.network.versions.Release73To61.ping.ServerMotd;
 import com.google.common.base.Charsets;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -197,15 +200,34 @@ public class ProtocolRelease4To78 extends ServerProtocol {
                         set(Type.INT, userData.getPort())
                 });
 
+                // client command
                 PacketData clientCommand = PacketUtil.createPacket(0xCD, new TypeHolder[]{
                         set(Type.BYTE, (byte) 0)
                 });
 
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                String[] split = userData.getAddress().split("\00");
+
+                out.writeUTF( "Login" ); // Old BungeeCord support
+                out.writeUTF( split[1] );
+                out.writeInt( session.getChannel().remoteAddress().getPort() );
+
+                // custom payload
+                PacketData custompayload = PacketUtil.createPacket(0xFA, new TypeHolder[]{
+                        set(Type.STRING, "BungeeCord"),
+                        set(Type.SHORT_BYTE_ARRAY, out.toByteArray())
+                });
+
+                // custom payload
+                session.sendPacket(custompayload, PacketDirection.TO_SERVER, null);
+
+                // handshake
                 userData.setUsername(username);
                 session.sendPacket(handshake, PacketDirection.TO_SERVER, null);
 
                 // client command
                 session.sendPacket(clientCommand, PacketDirection.TO_SERVER, null);
+
 
                 return cancel();
             }
