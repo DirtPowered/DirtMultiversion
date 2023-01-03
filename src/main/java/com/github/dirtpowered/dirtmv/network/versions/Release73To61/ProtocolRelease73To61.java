@@ -320,6 +320,9 @@ public class ProtocolRelease73To61 extends ServerProtocol {
                     case 0x48:
                         tracker.addEntity(entityId, ObjectType.ENDER_EYE);
                         break;
+                    case 0x4C:
+                        tracker.addEntity(entityId, ObjectType.FIREWORK_ROCKET);
+                        break;
                     default:
                         Logger.warn("missing entityType {}, entityId: {}", vehicleEntity, entityId);
                         break;
