@@ -49,5 +49,12 @@ public class V1_7_6ProtocolDefinitions extends StateDependedProtocol {
                 BaseProtocol.SHORT, // held item
                 V1_7_2RProtocol.METADATA
         });
+
+        addPacket(0x37, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
+                V1_7_2RProtocol.VAR_INT, // count
+                //BaseProtocol.STRING, // Entry -> Statistic's name // TODO: Implement statistics packet
+                //V1_7_2RProtocol.VAR_INT // Entry -> Value
+        });
+
     }
 }
