@@ -312,6 +312,7 @@ public class V1_7_2ProtocolDefinitions extends StateDependedProtocol {
 
         // entity attributes
         addPacket(0x20, ProtocolState.PLAY, PacketDirection.TO_CLIENT, new DataType[]{
+                BaseProtocol.INT,
                 V1_7_2RProtocol.ENTITY_ATTRIBUTES
         });
 
