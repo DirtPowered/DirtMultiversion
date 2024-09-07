@@ -32,14 +32,13 @@ import com.viaversion.viaversion.ViaManagerImpl;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.ViaAPI;
 import com.viaversion.viaversion.api.command.ViaCommandSender;
-import com.viaversion.viaversion.api.configuration.ConfigurationProvider;
 import com.viaversion.viaversion.api.configuration.ViaVersionConfig;
 import com.viaversion.viaversion.api.platform.PlatformTask;
 import com.viaversion.viaversion.api.platform.ViaPlatform;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.protocol.version.VersionProvider;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import com.viaversion.viaversion.protocols.protocol1_9to1_8.providers.HandItemProvider;
+import com.viaversion.viaversion.protocols.v1_8to1_9.provider.HandItemProvider;
 
 import java.io.File;
 import java.util.UUID;
@@ -64,7 +63,7 @@ public class ViaPlugin implements ViaPlatform<DirtServer> {
 
         ((ViaManagerImpl) Via.getManager()).init();
 
-        Via.getManager().getProviders().use(VersionProvider.class, userConnection -> ProtocolVersion.v1_8.getVersion());
+        Via.getManager().getProviders().use(VersionProvider.class, userConnection -> ProtocolVersion.v1_8);
         Via.getManager().getProviders().use(HandItemProvider.class, new ViaHandItemProvider(server));
     }
 
@@ -89,6 +88,11 @@ public class ViaPlugin implements ViaPlatform<DirtServer> {
     }
 
     @Override
+    public PlatformTask<?> runRepeatingAsync(Runnable runnable, long l) {
+        return null;
+    }
+
+    @Override
     public PlatformTask<?> runSync(Runnable runnable) {
         //throw new UnsupportedOperationException("not supported yet");
         return null;
@@ -106,11 +110,6 @@ public class ViaPlugin implements ViaPlatform<DirtServer> {
 
     @Override
     public ViaVersionConfig getConf() {
-        return config;
-    }
-
-    @Override
-    public ConfigurationProvider getConfigurationProvider() {
         return config;
     }
 
@@ -137,11 +136,6 @@ public class ViaPlugin implements ViaPlatform<DirtServer> {
     @Override
     public boolean kickPlayer(UUID uuid, String s) {
         throw new UnsupportedOperationException("not supported yet");
-    }
-
-    @Override
-    public boolean isOldClientsAllowed() {
-        return true;
     }
 
     @Override

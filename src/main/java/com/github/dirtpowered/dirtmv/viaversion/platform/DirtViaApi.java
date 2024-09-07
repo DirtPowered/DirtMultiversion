@@ -24,6 +24,7 @@ package com.github.dirtpowered.dirtmv.viaversion.platform;
 
 import com.github.dirtpowered.dirtmv.api.DirtServer;
 import com.viaversion.viaversion.ViaAPIBase;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import io.netty.buffer.ByteBuf;
 
 public class DirtViaApi extends ViaAPIBase<DirtServer> {
@@ -31,6 +32,11 @@ public class DirtViaApi extends ViaAPIBase<DirtServer> {
     @Override
     public int getPlayerVersion(DirtServer dirtServer) {
         return 0;
+    }
+
+    @Override
+    public ProtocolVersion getPlayerProtocolVersion(DirtServer dirtServer) {
+        return null;
     }
 
     @Override

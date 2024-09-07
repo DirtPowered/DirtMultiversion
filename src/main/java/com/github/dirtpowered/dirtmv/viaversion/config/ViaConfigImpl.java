@@ -22,6 +22,7 @@
 
 package com.github.dirtpowered.dirtmv.viaversion.config;
 
+import com.github.dirtpowered.dirtmv.viaversion.util.WrappedLogger;
 import com.viaversion.viaversion.configuration.AbstractViaConfig;
 
 import java.io.File;
@@ -45,8 +46,8 @@ public class ViaConfigImpl extends AbstractViaConfig {
     );
 
     public ViaConfigImpl() {
-        super(new File("ViaVersion", "config.yml"));
-        reloadConfig();
+        super(new File("ViaVersion", "config.yml"), new WrappedLogger());
+        reload();
     }
 
     @Override
@@ -67,11 +68,6 @@ public class ViaConfigImpl extends AbstractViaConfig {
     @Override
     public List<String> getUnsupportedOptions() {
         return UNSUPPORTED;
-    }
-
-    @Override
-    public boolean isAntiXRay() {
-        return false;
     }
 
     @Override

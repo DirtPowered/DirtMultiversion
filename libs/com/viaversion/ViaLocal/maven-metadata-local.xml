@@ -3,10 +3,10 @@
   <groupId>com.viaversion</groupId>
   <artifactId>ViaLocal</artifactId>
   <versioning>
-    <release>4.5.1</release>
+    <release>5.0.4</release>
     <versions>
-      <version>4.5.1</version>
+      <version>5.0.4</version>
     </versions>
-    <lastUpdated>20221211175855</lastUpdated>
+    <lastUpdated>20240907112158</lastUpdated>
   </versioning>
 </metadata>

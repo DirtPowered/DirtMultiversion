@@ -40,8 +40,8 @@ public class DummyInjector implements ViaInjector {
     }
 
     @Override
-    public int getServerProtocolVersion() {
-        return ProtocolVersion.v1_8.getVersion();
+    public ProtocolVersion getServerProtocolVersion() {
+        return ProtocolVersion.v1_8;
     }
 
     @Override
