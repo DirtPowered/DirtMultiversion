@@ -23,8 +23,6 @@
 package com.github.dirtpowered.dirtmv.network.server;
 
 import com.github.dirtpowered.dirtmv.DirtMultiVersion;
-import com.github.dirtpowered.dirtmv.api.DirtClient;
-import com.github.dirtpowered.dirtmv.api.DirtServer;
 import com.github.dirtpowered.dirtmv.data.MinecraftVersion;
 import com.github.dirtpowered.dirtmv.data.interfaces.Tickable;
 import com.github.dirtpowered.dirtmv.data.protocol.PacketData;
@@ -41,7 +39,6 @@ import com.github.dirtpowered.dirtmv.data.utils.PacketUtil;
 import com.github.dirtpowered.dirtmv.network.client.Client;
 import com.github.dirtpowered.dirtmv.network.client.ClientSession;
 import com.github.dirtpowered.dirtmv.session.MultiSession;
-import com.google.common.collect.Lists;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
@@ -53,7 +50,7 @@ import lombok.SneakyThrows;
 import org.pmw.tinylog.Logger;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -74,20 +71,18 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
     @Getter
     private final UserData userData;
 
-    private final DirtClient client;
+    private final Client client;
     private final UUID key;
 
     private final Queue<PacketData> initialPacketQueue = new LinkedBlockingQueue<>();
     private final Queue<QueuedPacket> packetQueue = new LinkedBlockingQueue<>();
-    private final List<ServerProtocol> protocolCacheReversed = new LinkedList<>();
-    private final List<ServerProtocol> protocolCache = new LinkedList<>();
     private final AtomicInteger packetCounter = new AtomicInteger();
 
     @Getter
-    private final DirtServer server;
+    private final Server server;
     private int currentTick = 0;
 
-    ServerSession(SocketChannel channel, DirtMultiVersion instance, DirtServer server) {
+    ServerSession(SocketChannel channel, DirtMultiVersion instance, Server server) {
         this.key = UUID.randomUUID();
         this.userData = new UserData();
         this.channel = channel;
@@ -109,27 +104,12 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
             version = from;
         }
 
-        boolean flag = direction == PacketDirection.TO_CLIENT;
-        List<ServerProtocol> protocols;
+        List<ServerProtocol> protocols = main.getTranslatorRegistry().findProtocol(userData, version);
 
-        if (userData.isProtocolDetected()) {
-            if (protocolCache.isEmpty()) {
-                protocols = main.getTranslatorRegistry().findProtocol(userData, version);
-                this.protocolCacheReversed.addAll(Lists.reverse(protocols));
-                this.protocolCache.addAll(protocols);
-            } else {
-                protocols = protocolCache;
-            }
-        } else {
-            protocols = main.getTranslatorRegistry().findProtocol(userData, version);
-        }
+        boolean flag = direction == PacketDirection.TO_CLIENT;
 
         if (!flag) {
-            if (!userData.isProtocolDetected()) {
-                protocols = Lists.reverse(protocols);
-            } else {
-                protocols = protocolCacheReversed;
-            }
+            Collections.reverse(protocols);
         }
 
         PacketData target = packet;
@@ -326,7 +306,7 @@ public class ServerSession extends SimpleChannelInboundHandler<PacketData> imple
 
     private void connectToServer() {
         if (getClientSession() == null) {
-            this.client.createClient(key, () -> {
+            client.createClient(key, () -> {
                 while (!initialPacketQueue.isEmpty()) {
                     sendPacket(initialPacketQueue.poll(), PacketDirection.TO_SERVER, userData.getClientVersion());
                 }

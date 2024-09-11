@@ -78,7 +78,7 @@ public class PacketDecoder extends ReplayingDecoder<PacketData> {
             case 0xFA: // custom payload
                 userData.setPreNettyProtocolState(PreNettyProtocolState.STATUS);
                 break;
-            case 0x06 /* spawn position */:
+            case 0x01 /* login */:
                 userData.setPreNettyProtocolState(PreNettyProtocolState.IN_GAME);
                 break;
             default:
