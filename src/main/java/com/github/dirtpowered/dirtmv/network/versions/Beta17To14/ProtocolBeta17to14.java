@@ -88,6 +88,15 @@ public class ProtocolBeta17to14 extends ServerProtocol {
             }
         });
 
+        // keep-alive
+        addTranslator(0x00, PacketDirection.TO_CLIENT, new PacketTranslator() {
+
+            @Override
+            public PacketData translate(ServerSession session, PacketData data) {
+                return cancel();
+            }
+        });
+
         // ping request
         addTranslator(0xFE, PacketDirection.TO_SERVER, new PacketTranslator() {
 
